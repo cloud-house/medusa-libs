@@ -14,13 +14,6 @@ Słowa: `src/api/middlewares.ts`, `matcher`, `closedRoutes`, Express, `baseUrl`
 - **Przyczyna:** wpisy bez `method` są prefiksami (`app.use`), a Express dopasowuje po `req.baseUrl + req.path`.
 - **Rozwiązanie:** wewnątrz middleware sprawdzaj dokładną ścieżkę. Natywne trasy, których nie chcesz (np. `POST /store/returns`, rejestracja klienta), zamykaj jawnie i przetestuj obejścia.
 
-## Strażnik sekretu storefrontu
-Słowa: `x-storefront-secret`, `STOREFRONT_API_SECRET`, 401, guard
-
-- **Objaw:** trasy publiczne zapisujące dane (np. zapis do newslettera) przyjmują ruch z dowolnego miejsca albo odrzucają wszystko po zmianie env.
-- **Przyczyna:** guard porównujący nagłówek z env, gdy env jest pusty, łatwo "przepuszcza" pusty nagłówek.
-- **Rozwiązanie:** pusty sekret = odrzuć każde żądanie kodem 401; porównuj stałoczasowo; test "rejects every request when the secret env is empty".
-
 ## Konta klientów: JWT nie wygasa, rejestracja przyjmuje każdy e-mail
 Słowa: `jwtExpiresIn`, `/auth/token/refresh`, `/auth/session`, `emailpass`, `verification`, `reset-password`
 
@@ -53,5 +46,5 @@ Słowa: `FetchError`, js-sdk, body, message, status
 Słowa: `medusa develop`, nowy plik trasy, 9000, proces potomny
 
 - **Objaw:** nowo dodany plik trasy zwraca 404; po zabiciu `medusa develop` port nadal zajęty.
-- **Przyczyna:** watcher nie zbiera nowych plików tras; proces potomny przeżywa rodzica. W worktree serwer bywa, że nie restartuje się po zmianach (log ma jedno "Server is ready").
+- **Przyczyna:** `medusa develop` nie zbiera nowo dodanego pliku trasy, a po zabiciu rodzica zostaje proces potomny na porcie (przyczyny nie zbadano). W worktree serwer raz nie zrestartował się po zmianach backendu (log miał jedno "Server is ready").
 - **Rozwiązanie:** po dodaniu trasy lub zmianach backendu restartuj serwer; zabij proces potomny po porcie (`lsof -ti :PORT | xargs kill`).

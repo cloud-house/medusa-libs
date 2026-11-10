@@ -25,8 +25,8 @@ Słowa: vacuous test, pusty zbiór, `aria-labelledby`
 Słowa: `playwright test nazwa`, filtr, cały zestaw
 
 - **Objaw:** `playwright test quiz` uruchamia cały pakiet.
-- **Przyczyna:** nieprecyzyjny filtr (nazwa dopasowana jako wyrażenie do ścieżek) nie zawęził zestawu; łatwo tego nie zauważyć.
-- **Rozwiązanie:** podaj pełną ścieżkę pliku, a przed długim przebiegiem sprawdź `--list`.
+- **Przyczyna:** nie ustalono.
+- **Rozwiązanie:** przed długim przebiegiem uruchom z `--list` i sprawdź, ile testów wybrał filtr.
 
 ## Stan współdzielony i obciążenie
 Słowa: workers, flaky, rerun, `--last-failed`, rezerwacje magazynowe
