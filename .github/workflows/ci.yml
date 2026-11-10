@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: medusa
+          POSTGRES_PASSWORD: medusa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medusa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: medusa
+      DB_PASSWORD: medusa
+      JWT_SECRET: test-jwt-secret
+      COOKIE_SECRET: test-cookie-secret
+      STOREFRONT_API_SECRET: test-only-storefront-api-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm test

@@ -1,0 +1,23 @@
+{
+  "name": "medusa-libs",
+  "private": true,
+  "packageManager": "pnpm@11.28.2",
+  "engines": {
+    "node": ">=22.22.0 <25"
+  },
+  "scripts": {
+    "preinstall": "node scripts/check-node.mjs",
+    "build": "node scripts/check-node.mjs && turbo run build",
+    "typecheck": "node scripts/check-node.mjs && turbo run typecheck",
+    "test": "node scripts/check-node.mjs && turbo run test",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "changeset": "changeset",
+    "release": "turbo run build --filter=./packages/* && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@changesets/cli": "^2.29.0",
+    "turbo": "2.11.8"
+  }
+}

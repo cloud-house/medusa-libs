@@ -1,0 +1,11 @@
+node_modules
+dist
+.medusa
+.turbo
+coverage
+*.tsbuildinfo
+.DS_Store
+
+# local secrets (examples go in .env.example)
+.env*
+!.env.example
