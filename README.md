@@ -6,11 +6,9 @@ under the `@cloud-house` scope.
 
 ## Packages
 
-Planned (none published yet):
-
-- `@cloud-house/commerce-rules`
-- `@cloud-house/medusa-newsletter`
-- `@cloud-house/medusa-omnibus`
+- [`@cloud-house/commerce-rules`](packages/commerce-rules) – pure commerce rules
+- [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) – Medusa plugin: newsletter sign-ups
+- `@cloud-house/medusa-omnibus` (planned)
 
 ## Installing in a shop
 
