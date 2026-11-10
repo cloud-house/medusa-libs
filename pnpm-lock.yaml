@@ -61,6 +61,9 @@ importers:
       '@cloud-house/medusa-newsletter':
         specifier: workspace:*
         version: link:../../packages/medusa-newsletter
+      '@cloud-house/medusa-omnibus':
+        specifier: workspace:*
+        version: link:../../packages/medusa-omnibus
       '@medusajs/admin-sdk':
         specifier: catalog:medusa
         version: 2.21.2
@@ -164,6 +167,49 @@ importers:
       react-dom:
         specifier: catalog:medusa
         version: 18.3.1(react@18.3.1)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@swc/core@1.16.22(@swc/helpers@0.5.24))(@types/node@24.19.2)(typescript@5.9.3)
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.3.6
+        version: 7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1)
+
+  packages/medusa-omnibus:
+    dependencies:
+      '@cloud-house/commerce-rules':
+        specifier: workspace:^
+        version: link:../commerce-rules
+    devDependencies:
+      '@medusajs/cli':
+        specifier: catalog:medusa
+        version: 2.21.2(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      '@medusajs/framework':
+        specifier: catalog:medusa
+        version: 2.21.2(@medusajs/cli@2.21.2(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.11.1(supports-color@8.1.1))(supports-color@8.1.1)(vite@7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1))(zod@4.2.0)
+      '@medusajs/medusa':
+        specifier: catalog:medusa
+        version: 2.21.2(0994a3f5f1760d3cb8e13d5de74f49ee)
+      '@medusajs/test-utils':
+        specifier: catalog:medusa
+        version: 2.21.2(@medusajs/core-flows@2.21.2(@medusajs/framework@2.21.2(@medusajs/cli@2.21.2(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.11.1(supports-color@8.1.1))(supports-color@8.1.1)(vite@7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1))(zod@4.2.0)))(@medusajs/framework@2.21.2(@medusajs/cli@2.21.2(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.11.1(supports-color@8.1.1))(supports-color@8.1.1)(vite@7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1))(zod@4.2.0))(@medusajs/medusa@2.21.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      '@swc/core':
+        specifier: ^1.7.28
+        version: 1.16.22(@swc/helpers@0.5.24)
+      '@swc/jest':
+        specifier: ^0.2.36
+        version: 0.2.39(@swc/core@1.16.22(@swc/helpers@0.5.24))
+      '@types/jest':
+        specifier: ^29.5.13
+        version: 29.5.14
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@24.19.2)(supports-color@8.1.1)(ts-node@10.9.2(@swc/core@1.16.22(@swc/helpers@0.5.24))(@types/node@24.19.2)(typescript@5.9.3))
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.16.22(@swc/helpers@0.5.24))(@types/node@24.19.2)(typescript@5.9.3)

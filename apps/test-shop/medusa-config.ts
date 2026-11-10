@@ -19,5 +19,10 @@ module.exports = defineConfig({
       // Defaults everywhere except one text: the HTTP test proves plugin options reach the module.
       options: { messages: { adminTitle: 'Newsletter (test-shop)' } },
     },
+    {
+      resolve: '@cloud-house/medusa-omnibus',
+      // The one non-default option: the HTTP test proves it reaches the module and the job's log.
+      options: { logPrefix: 'Test' },
+    },
   ],
 })
