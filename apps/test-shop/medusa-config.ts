@@ -13,5 +13,11 @@ module.exports = defineConfig({
     },
   },
   // Plugins under test are added here as they are written.
-  plugins: [],
+  plugins: [
+    {
+      resolve: '@cloud-house/medusa-newsletter',
+      // Defaults everywhere except one text: the HTTP test proves plugin options reach the module.
+      options: { messages: { adminTitle: 'Newsletter (test-shop)' } },
+    },
+  ],
 })
