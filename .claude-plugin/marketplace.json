@@ -1,0 +1,14 @@
+{
+  "name": "cloud-house",
+  "owner": { "name": "cloud-house" },
+  "metadata": {
+    "description": "Narzędzia Claude Code do sklepów na Medusie 2 i Next.js (kit cloud-house)."
+  },
+  "plugins": [
+    {
+      "name": "kit-sklepow",
+      "source": "./claude-plugin",
+      "description": "Kit sklepów na Medusie 2 i Next.js: pułapki z produkcyjnego wdrożenia, dodawanie pluginów kitu, uruchamianie nowego sklepu."
+    }
+  ]
+}
