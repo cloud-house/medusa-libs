@@ -1,0 +1,28 @@
+{
+  "name": "test-shop",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Minimal Medusa app that runs the HTTP integration tests of the plugins.",
+  "scripts": {
+    "test": "pnpm run test:integration:http",
+    "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=\"--experimental-vm-modules --max-old-space-size=8192\" jest --silent=false --maxWorkers=1 --workerIdleMemoryLimit=3GB --forceExit --passWithNoTests"
+  },
+  "dependencies": {
+    "@medusajs/admin-sdk": "catalog:medusa",
+    "@medusajs/cli": "catalog:medusa",
+    "@medusajs/framework": "catalog:medusa",
+    "@medusajs/medusa": "catalog:medusa"
+  },
+  "devDependencies": {
+    "@medusajs/test-utils": "catalog:medusa",
+    "@swc/core": "^1.7.28",
+    "@swc/jest": "^0.2.36",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^24.0.0",
+    "jest": "^29.7.0",
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22.22.0 <25"
+  }
+}
