@@ -18,15 +18,22 @@ The packages live in GitHub Packages, which requires a token even for public pac
 
 1. Create a token with the `read:packages` scope (classic personal access token, or
    `gh auth refresh -h github.com -s read:packages`).
-2. Add to the shop's `.npmrc` (never commit the token):
+2. Add to the shop's project `.npmrc` only the registry (no token; pnpm 11 ignores credentials
+   with env variables in a project `.npmrc`):
 
    ```
    @cloud-house:registry=https://npm.pkg.github.com
-   //npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
    ```
 
-3. `export GITHUB_PACKAGES_TOKEN=...` and install with an exact version, e.g.
-   `pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.0`.
+3. Put the token reference in your user-level `~/.npmrc` (CI: `actions/setup-node` with
+   `registry-url: https://npm.pkg.github.com` writes the same line), and export the token:
+
+   ```sh
+   echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
+   export NODE_AUTH_TOKEN=...
+   ```
+
+4. Install with an exact version, e.g. `pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.0`.
 
 ## Development
 
