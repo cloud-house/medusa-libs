@@ -12,21 +12,21 @@ Słowa: `heap out of memory`, `runInBand`, `maxWorkers`, `max-old-space-size`, s
 
 - **Objaw:** po kilkudziesięciu suitach `medusaIntegrationTestRunner` pada na `JavaScript heap out of memory`, a seed w kolejnym teście kończy się timeoutem.
 - **Przyczyna:** wszystkie suity w jednym procesie trzymają pamięć (aplikacja Medusy startuje w każdym).
-- **Rozwiązanie:** `NODE_OPTIONS=--max-old-space-size=8192` oraz jest z `--maxWorkers=1 --workerIdleMemoryLimit=3GB` (worker jest restartowany po przekroczeniu limitu). Szablon Medusy używa też `--experimental-vm-modules` i `--forceExit`; `--forceExit` jest potrzebny, bo otwarte połączenia (Postgres, Redis) potrafią zawiesić koniec przebiegu.
+- **Rozwiązanie:** działające ustawienie pierwszego sklepu: `NODE_OPTIONS="--experimental-vm-modules --max-old-space-size=8192"` oraz `jest --maxWorkers=1 --workerIdleMemoryLimit=3GB --forceExit` dla testów HTTP; testy modułów i unit z `--runInBand --forceExit`. Powód `--forceExit` nie jest udokumentowany, flagi pochodzą z działającej konfiguracji.
 
 ## `53300 too many clients already` i "Timeout acquiring a connection"
 Słowa: Postgres, 53300, knex, pool, flaky
 
 - **Objaw:** losowe testy padają na `sorry, too many clients already`, `Timeout acquiring a connection` albo `Connection ended unexpectedly` w `beforeAll`; przechodzą przy ponownym uruchomieniu.
-- **Przyczyna:** każdy runner tworzy własną bazę i pulę połączeń. Równolegle działające dev serwery, inne worktree albo E2E dokładają kolejne połączenia do tego samego Postgresa. Start serwerów dev w trakcie testów HTTP daje timeout puli knex.
-- **Rozwiązanie:** zatrzymaj nieużywane serwery dev, uruchamiaj specyfikacje HTTP pojedynczo (`--runInBand` / jeden worker), a przed szukaniem błędu w kodzie puść padnięty plik jeszcze raz. Zwiększ `max_connections` Postgresa testowego, jeśli to się powtarza.
+- **Przyczyna:** obserwowane przy pełnym `pnpm test`, gdy obok działają serwery dev innych worktree lub E2E na tym samym Postgresie, albo gdy serwery dev startują w trakcie testów HTTP (timeout puli knex w setupie). Dokładny mechanizm nie został zbadany.
+- **Rozwiązanie:** zatrzymaj nieużywane serwery dev, uruchamiaj specyfikacje HTTP pojedynczo, a przed szukaniem błędu w kodzie puść padnięty plik jeszcze raz.
 
-## Flaky seed: wyścig przy tworzeniu powiązań
-Słowa: seed, duplicate link, `ensureBoardCategory`, flaky
+## Flaky seed: duplikat powiązania w setupie
+Słowa: seed, duplicate link, flaky, setup
 
 - **Objaw:** jedna suita pada w setupie na duplikacie powiązania (produkt-kategoria), po uruchomieniu osobno przechodzi.
-- **Przyczyna:** helpery seedujące wołane równolegle (`Promise.all`) tworzą to samo powiązanie dwa razy; unikalność egzekwuje baza.
-- **Rozwiązanie:** helper seedujący ma być idempotentny (sprawdź istnienie przed utworzeniem) i wołany sekwencyjnie. Nie "naprawiaj" retry'em w teście.
+- **Przyczyna:** nieustalona; zaobserwowano jednorazowo przerywany wyścig przy tworzeniu powiązania w seedzie.
+- **Rozwiązanie:** uruchom padnięty plik jeszcze raz osobno. (Sugestia, nie sprawdzone: idempotentne helpery seedujące.)
 
 ## Szpiegowanie serwisów modułu nie działa
 Słowa: `jest.spyOn`, `moduleIntegrationTestRunner`, proxy, `container.resolve`

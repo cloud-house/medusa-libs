@@ -31,8 +31,8 @@ Słowa: `dist`, rebuild, po pull, workspace, `catalog-rules`, stale
 ## Zła wersja Node
 Słowa: Node 26, `.nvmrc`, `engines`, `check-node`, preinstall
 
-- **Objaw:** dziwne błędy toolchainu na domyślnym (zbyt nowym) Node; skrypty w powłoce nieinteraktywnej biorą systemowy Node.
-- **Przyczyna:** Medusa 2.21 wspiera tylko LTS (22.22+ lub 24); Node 25+ psuje część narzędzi.
+- **Objaw:** błędy toolchainu na zbyt nowym Node (systemowy Node był w wersji 26); skrypty w powłoce nieinteraktywnej biorą systemowy Node.
+- **Przyczyna:** Medusa 2.21 wspiera tylko LTS (22.22+ lub 24); komentarz w `scripts/check-node.mjs` pierwszego sklepu mówi, że Node 25+ psuje m.in. storefront Next.js.
 - **Rozwiązanie:** `.nvmrc` (24), `engines` + `engineStrict: true` i skrypt `check-node` w `preinstall`/`build`/`test`; w powłoce nieinteraktywnej `export PATH=$HOME/.nvm/versions/node/v24.14.0/bin:$PATH`.
 
 ## Turbo: flagi po `--` trafiają do narzędzia
@@ -54,4 +54,4 @@ Słowa: porty, Postgres, Redis, Docker, `EADDRINUSE`
 
 - **Objaw:** usługi nie startują, bo porty (5432, 6379, 9000) są zajęte przez inny projekt.
 - **Przyczyna:** domyślne porty Medusy i Dockera kolidują z innymi projektami na tej samej maszynie.
-- **Rozwiązanie:** własne porty dla bazy, Redisa i MinIO w `docker-compose` i `.env.test`; udokumentuj je w README. Docker Desktop potrafi zawisnąć (CLI i Postgres nie odpowiadają), zwykle wraca sam po dłuższym czasie.
+- **Rozwiązanie:** własne porty dla bazy, Redisa i MinIO w `docker-compose` i `.env.test`; udokumentuj je w README. Raz zdarzyło się, że Docker Desktop zawisł (CLI i Postgres nie odpowiadały) i wrócił sam po ok. godzinie; przyczyny nie ustalono.
