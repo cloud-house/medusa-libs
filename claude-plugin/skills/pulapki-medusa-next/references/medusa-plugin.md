@@ -14,6 +14,20 @@ Słowa: `src/admin`, tsconfig admin, import serwera, typy
 - **Przyczyna:** `tsconfig` panelu jest ścisły i nie widzi kodu serwera; plugin nie może zależeć od plików hosta.
 - **Rozwiązanie:** typy wspólne trzymaj w plikach-liściach bez zależności serwerowych; kod klienta API wchodzi do pluginu. Zależności panelu (React, `@tanstack/react-query`, `react-router-dom`) mają być rozwiązywalne z korzenia (zob. hoisting w `pnpm-monorepo.md`).
 
+## Opcje pluginu a moduły pluginu
+Słowa: `plugins[].options`, `moduleOptions`, `getOptions`, `configModule.plugins`, `.medusa/server/src/modules`
+
+- **Objaw:** nie wiadomo, jak trasa, middleware albo strona panelu pluginu ma odczytać `options` z `plugins: [{ resolve, options }]` w `medusa-config.ts`; kusi czytanie `configModule.plugins` po nazwie pakietu.
+- **Przyczyna:** Medusa 2.21 (`getResolvedPlugins` w `@medusajs/utils`) rejestruje każdy katalog z `.medusa/server/src/modules/*` pluginu jako moduł z `options: plugin.options`, a `mergePluginModules` dokleja je do `configModule.modules`. Serwis modułu dostaje te opcje jako drugi argument konstruktora (tak samo jak `moduleOptions` w `moduleIntegrationTestRunner`). Trasy dostają tylko `req.scope`.
+- **Rozwiązanie:** serwis modułu w konstruktorze `(container, options)` zapisuje opcje z domyślnymi i wystawia `getOptions()`; trasy i middleware biorą je przez `req.scope.resolve(MODULE).getOptions()`, panel przez własną trasę admina. Fallback z `configModule.plugins` nie jest potrzebny. Dwa warunki: w `exports` pakietu musi być `"./.medusa/server/src/modules/*"` (bez tego `Cannot find module '<plugin>/.medusa/server/src/modules/<nazwa>'`), a sklep nie może mieć tego samego modułu w `modules` (wpis sklepu wygrywa i opcje pluginu przepadają). Middleware z walidatorem zależnym od opcji: zbuduj schemat w funkcji middleware (`validateAndTransformBody(schema)(req, res, next)`), bo `defineMiddlewares` to statyczna konfiguracja bez dostępu do kontenera.
+
+## `code` w `MedusaError` znika dla części typów
+Słowa: `DUPLICATE_ERROR`, `invalid_request_error`, `CONFLICT`, `DB_ERROR`, kod błędu, 422
+
+- **Objaw:** `throw new MedusaError(MedusaError.Types.DUPLICATE_ERROR, msg, 'already_subscribed')` daje 422, ale w odpowiedzi `code: 'invalid_request_error'`.
+- **Przyczyna:** handler błędów Medusy (`getHttpResponseFromError` w `@medusajs/framework/http`) nadpisuje `code` dla `DUPLICATE_ERROR`, `CONFLICT` i `DB_ERROR`; dla `UNAUTHORIZED`, `NOT_FOUND`, `INVALID_DATA`, `NOT_ALLOWED` zostawia trzeci argument.
+- **Rozwiązanie:** dla tych typów odpowiedz wprost: `res.status(422).json({ type: 'duplicate_error', code, message })`. Asercja na `code` w teście HTTP.
+
 ## Dekoratory Medusy a Biome
 Słowa: `@MedusaContext`, `unsafeParameterDecoratorsEnabled`, biome
 
