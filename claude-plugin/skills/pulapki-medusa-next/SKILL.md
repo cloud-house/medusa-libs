@@ -14,11 +14,11 @@ Wersje: Medusa 2.21.x, Next 16.x, pnpm 11, Node 24. Przy innych wersjach sprawd�
 - `references/medusa-testy.md` - jest i `moduleIntegrationTestRunner` / `medusaIntegrationTestRunner`: izolacja od bazy deweloperskiej, pamięć, limity połączeń, szpiegowanie serwisów, joby w testach, flaky seed.
 - `references/medusa-workflows.md` - workflows i zdarzenia: `transform` zamiast dotykania `input`, hooki, nazwy zdarzeń, kwoty zamówień i promocji, migracje i transakcje.
 - `references/medusa-bledy-http.md` - mapowanie `MedusaError` na statusy HTTP, middleware, zamknięte trasy, konta i sesje klientów, kształt odpowiedzi SDK.
-- `references/medusa-plugin.md` - budowa pluginu Medusy: migracje, panel admina, opcje pluginu, kody błędów, typy, zależności, moduł Notification.
+- `references/medusa-plugin.md` - budowa pluginu Medusy: migracje i wydzielanie modułów ze sklepu, panel admina, `plugin:build` bez `src/admin`, `exports`, opcje pluginu, kody błędów, nadpisania tekstów, typy, zależności, moduł Notification.
 - `references/next-cache-metadane.md` - Next 16: cache danych, wersja kształtu w kluczu, metadane, `ImageResponse`, historia przeglądarki, `redirect()`, nagłówki proxy.
 - `references/stripe.md` - Stripe.js: skutki uboczne importu, ciasteczka trzecich stron, opcje Elements.
 - `references/lexical.md` - edytor Lexical w panelu: węzły dekoratorów, scalanie tekstu.
 - `references/playwright.md` - Playwright i testy E2E: `exact: true`, `aria-disabled`, kolejność uruchamiania, stan współdzielony, dev server.
 - `references/vitest.md` - Vitest (tryb browser): `optimizeDeps`, mocki, timery, `beforeEach`.
-- `references/pnpm-monorepo.md` - pnpm 11, hoisting Medusy, Node, przebudowa pakietów po pullu, rejestr GitHub Packages, CI.
+- `references/pnpm-monorepo.md` - pnpm 11, hoisting Medusy, Node, przebudowa pakietów po pullu, rejestr GitHub Packages (token, widoczność, uprawnienia `gh`), release z changesetami, CI.
 - `references/shell.md` - powłoka: `set -o pipefail`, heredoc z backtickami, zsh.

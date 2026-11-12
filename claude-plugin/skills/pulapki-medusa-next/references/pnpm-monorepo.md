@@ -55,3 +55,31 @@ Słowa: porty, Postgres, Redis, Docker, `EADDRINUSE`
 - **Objaw:** usługi nie startują, bo porty (5432, 6379, 9000) są zajęte przez inny projekt.
 - **Przyczyna:** domyślne porty Medusy i Dockera kolidują z innymi projektami na tej samej maszynie.
 - **Rozwiązanie:** własne porty dla bazy, Redisa i MinIO w `docker-compose` i `.env.test`; udokumentuj je w README. Raz zdarzyło się, że Docker Desktop zawisł (CLI i Postgres nie odpowiadały) i wrócił sam po ok. godzinie; przyczyny nie ustalono.
+
+## GitHub Packages wymaga tokenu także dla pakietów publicznych
+Słowa: `npm.pkg.github.com`, 401, `read:packages`, public, "Package creation", widoczność pakietu
+
+- **Objaw:** anonimowe `GET` na pakiet z `npm.pkg.github.com` daje 401, choć pakiet jest publiczny; `gh api` na pakiet daje 403; nie da się przełączyć nowego pakietu na Public.
+- **Przyczyna:** rejestr npm GitHuba zawsze wymaga uwierzytelnienia (tak działa GitHub Packages). Zmiana widoczności pakietu jest możliwa tylko w interfejsie, nie przez API, i tylko gdy organizacja pozwala na tworzenie pakietów publicznych.
+- **Rozwiązanie:** każdy konsument (dev, CI, Docker, hosting) ma token z `read:packages` (zob. wpis o `.npmrc` wyżej). Zanim przełączysz pakiet na Public, włącz w Org Settings → Packages → Package creation publiczne pakiety.
+
+## Brak tokenu przy instalacji: 401 i ostrzeżenie o zmiennej
+Słowa: `Failed to replace env`, `NODE_AUTH_TOKEN`, 401, `pnpm install`
+
+- **Objaw:** `pnpm install` (a nawet inne polecenia pnpm) wypisuje „Failed to replace env in config: ${NODE_AUTH_TOKEN}”; instalacja pakietu `@cloud-house/*` kończy się 401.
+- **Przyczyna:** `~/.npmrc` odwołuje się do `${NODE_AUTH_TOKEN}`, a zmienna nie jest ustawiona w tej powłoce albo token wygasł.
+- **Rozwiązanie:** `export NODE_AUTH_TOKEN=$(gh auth token)` (lokalnie), sekret w CI/Dockerze/hostingu. Ostrzeżenie przy poleceniach innych niż install jest nieszkodliwe.
+
+## `gh` nie ma uprawnień `read:packages`
+Słowa: `gh auth refresh`, `write:packages`, `npm view`, 403
+
+- **Objaw:** `npm view @cloud-house/...` zwraca 401, `gh api orgs/<org>/packages/...` 403, mimo że `gh` jest zalogowany.
+- **Przyczyna:** domyślny token `gh` nie ma zakresu pakietów.
+- **Rozwiązanie:** `gh auth refresh -h github.com -s read:packages,write:packages` (polecenie interaktywne, uruchamia je człowiek); potem `export NODE_AUTH_TOKEN=$(gh auth token)`.
+
+## Release: Actions nie otwiera PR-a z wersjami
+Słowa: `changesets/action`, "Version packages", `workflow_dispatch`, 502, `pnpm changeset version`, `pnpm release`
+
+- **Objaw:** `changesets/action` nie może otworzyć PR-a „Version packages” (ustawienie organizacji blokuje tworzenie PR-ów przez Actions i zapis dla workflow, 409); po scaleniu PR-a raz nie powstał żaden przebieg release.
+- **Przyczyna:** ustawienie organizacji „Allow GitHub Actions to create and approve pull requests” jest wyłączone (zmienia je admin organizacji). Brak przebiegu po scaleniu: błąd 502 po stronie GitHuba przy merge (przyczyna nieustalona).
+- **Rozwiązanie:** obejście bez zmiany ustawienia: w gałęzi PR-a `pnpm changeset` i od razu `pnpm changeset version` (podbija wersję, pisze CHANGELOG, zużywa changeset), commit; po scaleniu `release.yml` nie znajduje changesetów i uruchamia `pnpm release` (publikacja). Workflow ma też `workflow_dispatch`, żeby dało się go uruchomić ręcznie. Publikację sprawdzaj w logu przebiegu (`gh run view <id> --log`).
