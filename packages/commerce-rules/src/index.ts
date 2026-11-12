@@ -1,3 +1,4 @@
+export * from './cache-tags'
 export * from './discounts'
 export * from './format-price'
 export * from './nip'
