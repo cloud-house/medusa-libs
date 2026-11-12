@@ -18,3 +18,6 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+/** A valid handle: lower-case letters and digits in words joined by single hyphens. */
+export const HANDLE_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/

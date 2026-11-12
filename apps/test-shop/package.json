@@ -8,6 +8,7 @@
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=\"--experimental-vm-modules --max-old-space-size=8192\" jest --silent=false --maxWorkers=1 --workerIdleMemoryLimit=3GB --forceExit --passWithNoTests"
   },
   "dependencies": {
+    "@cloud-house/medusa-brands": "workspace:*",
     "@cloud-house/medusa-newsletter": "workspace:*",
     "@cloud-house/medusa-omnibus": "workspace:*",
     "@medusajs/admin-sdk": "catalog:medusa",

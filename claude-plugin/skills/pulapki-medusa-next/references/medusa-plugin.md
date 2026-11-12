@@ -85,3 +85,11 @@ Słowa: `resolveMessages`, `messages`, spread, `undefined`, słownik
 - **Objaw:** `messages: { alreadySubscribed: undefined }` (np. z niedokończonej konfiguracji) zostawia w odpowiedzi brak tekstu zamiast tekstu domyślnego.
 - **Przyczyna:** `{ ...słownik, ...nadpisania }` kopiuje też klucze o wartości `undefined`. Wystąpiło w `@cloud-house/medusa-newsletter@0.1.0`; w omnibusie poprawione (`withoutUndefined`).
 - **Rozwiązanie:** przed scaleniem odfiltruj klucze `undefined` i dodaj test „ignores undefined overrides” dla `resolveMessages` i `resolveOptions`.
+
+## Trasa sklepu w tej samej ścieżce co trasa pluginu
+Słowa: `src/api/store/.../route.ts`, plugin, ta sama ścieżka, nadpisanie trasy, `storeRoute`, `next()`
+
+- **Objaw:** plugin ma `GET /store/brands`, sklep ma własny `src/api/store/brands/route.ts`; niepewność, kto odpowiada (w `test-shop` odpowiedział sklep: `{"from":"project"}`, bez błędu przy starcie).
+- **Przyczyna:** `RoutesLoader.registerRoute` zapisuje trasy w mapie `ścieżka -> metoda`, a `ApiLoader` skanuje katalogi źródeł po kolei (pluginy, na końcu projekt), więc późniejsza trasa zastępuje wcześniejszą (źródło: `@medusajs/framework` 2.21.2, `dist/http/routes-loader.js` i `router.js`; sprawdzone w `test-shop` z trasą projektu obok pluginu).
+- **Rozwiązanie:** sklep nadpisuje trasę pluginu zwykłym plikiem trasy, bez opcji. Plugin, który ma być wyłączalny, wysyła plik trasy, a jego handler przy wyłączeniu wywołuje `next()` (handler trasy dostaje `next`; odpowiedź jest taka jak dla nieznanej ścieżki, 404). Samą logikę eksportuj osobno (`brandsStoreRoute`), żeby sklep mógł ją podpiąć w swoim pliku trasy bez bramki opcji. Nie można „nie rejestrować” trasy z pliku warunkowo: pliki `route.ts` ładuje skaner katalogów, bez pytania o opcje.
+

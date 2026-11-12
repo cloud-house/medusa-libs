@@ -17,7 +17,7 @@ Everything customer-facing is Polish by default and takes an options object as t
 - `lineDiscountLabel(parts, { locale = 'pl', messages })` – "Rabat zestawowy" / "Kod X" / "Rabat zestawowy + kod X"; `en` gives "Bundle discount" / "Code X"; `messages` overrides single keys (`bundle`, `code`, `bundleAndCode`, `{codes}` placeholder); dictionaries in `DISCOUNT_LABEL_MESSAGES`
 - `sellerLine(seller, { locale = 'pl', taxIdLabel })` – "…, NIP 5260250274"; `en` gives "VAT ID", `taxIdLabel` overrides the label
 - `isValidPostalCode(value, country = 'PL')` – only `PL` (00-000) is supported yet; other countries throw an `Error`
-- `slugify`, `isValidNip`, `normalizeNip`
+- `slugify`, `HANDLE_PATTERN`, `isValidNip`, `normalizeNip`
 - other seller helpers (`seller.ts`): `toSellerInfo`, `isSellerComplete`, `sellerAddress`, `returnAddressText`, `returnAddressLines`
 - `lowestPriceBeforeDiscount`, `OMNIBUS_WINDOW_DAYS` – Omnibus lowest price in the last 30 days
 - `splitLineDiscount` – cart line discounts split into bundle and typed codes
