@@ -14,6 +14,16 @@ describe('resolveMessages', () => {
     ])
   })
 
+  it('ignores undefined overrides', () => {
+    const resolved = resolveMessages('pl', {
+      alreadySubscribed: undefined,
+      sourceLabels: { footer: undefined, home: 'Start' },
+    })
+    expect(resolved.alreadySubscribed).toBe(messages.pl.alreadySubscribed)
+    expect(resolved.sourceLabels.footer).toBe('Stopka')
+    expect(resolved.sourceLabels.home).toBe('Start')
+  })
+
   it('keeps the Polish texts of the first shop', () => {
     expect(messages.pl.alreadySubscribed).toBe('Ten adres jest już zapisany.')
     expect(messages.pl.csvColumns).toEqual(['email', 'data_zgody', 'zrodlo', 'tresc_zgody'])
@@ -46,6 +56,26 @@ describe('resolveOptions', () => {
     })
     expect(options.sources).toEqual(['footer', 'home', 'register', 'checkout'])
     expect(options.messages).toEqual(messages.pl)
+  })
+
+  it('ignores undefined overrides', () => {
+    const options = resolveOptions({
+      locale: undefined,
+      messages: { alreadySubscribed: undefined },
+      sources: undefined,
+      storefrontSecret: { header: undefined, env: undefined },
+    })
+    expect(options.locale).toBe('pl')
+    expect(options.messages).toEqual(messages.pl)
+    expect(options.sources).toEqual(['footer', 'home', 'register', 'checkout'])
+    expect(options.storefrontSecret).toEqual({
+      header: 'x-storefront-secret',
+      env: 'STOREFRONT_API_SECRET',
+    })
+  })
+
+  it('rejects an empty sources list', () => {
+    expect(() => resolveOptions({ sources: [] })).toThrow(/sources must not be empty/)
   })
 
   it('uses the locale dictionary under the overrides', () => {

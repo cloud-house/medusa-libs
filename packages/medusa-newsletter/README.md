@@ -4,7 +4,7 @@ Medusa 2 plugin: newsletter sign-ups with proof of consent. Only the storefront'
 them (shared secret); the admin gets a list with search, a CSV export and a GDPR delete.
 
 ```sh
-pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.0
+pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.1
 ```
 
 Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc` (see the repo README).

@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-omnibus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Medusa plugin: price history for the Omnibus directive (lowest price in the 30 days before a reduction), recorded hourly.",
   "license": "MIT",
   "repository": {

@@ -3,6 +3,7 @@ import {
   type NewsletterLocale,
   type NewsletterMessages,
   resolveMessages,
+  withoutUndefined,
 } from './messages'
 
 /** The forms a sign-up can come from – the `source` enum of the model (and of its migration). */
@@ -39,13 +40,20 @@ const isSource = (value: string): value is NewsletterSource =>
   (NEWSLETTER_SOURCES as readonly string[]).includes(value)
 
 /** Options with the defaults filled in; throws on a locale or source the plugin does not know. */
-export function resolveOptions(options: NewsletterOptions = {}): ResolvedNewsletterOptions {
+export function resolveOptions(input: NewsletterOptions = {}): ResolvedNewsletterOptions {
+  // An explicit `undefined` means "not set", not "wipe the default".
+  const options = withoutUndefined(input)
+  const storefrontSecret = withoutUndefined(options.storefrontSecret)
   const locale = options.locale ?? 'pl'
   if (!NEWSLETTER_LOCALES.includes(locale))
     throw new Error(
       `@cloud-house/medusa-newsletter: unknown locale "${locale}" (use ${NEWSLETTER_LOCALES.join(', ')}).`,
     )
   const sources = options.sources ?? NEWSLETTER_SOURCES
+  if (!sources.length)
+    throw new Error(
+      `@cloud-house/medusa-newsletter: sources must not be empty (allowed: ${NEWSLETTER_SOURCES.join(', ')}).`,
+    )
   const unknown = sources.filter((source) => !isSource(source))
   if (unknown.length)
     throw new Error(
@@ -56,8 +64,8 @@ export function resolveOptions(options: NewsletterOptions = {}): ResolvedNewslet
     messages: resolveMessages(locale, options.messages),
     storefrontSecret: {
       // Node keeps incoming header names lower-case.
-      header: (options.storefrontSecret?.header ?? DEFAULT_STOREFRONT_SECRET_HEADER).toLowerCase(),
-      env: options.storefrontSecret?.env ?? DEFAULT_STOREFRONT_SECRET_ENV,
+      header: (storefrontSecret.header ?? DEFAULT_STOREFRONT_SECRET_HEADER).toLowerCase(),
+      env: storefrontSecret.env ?? DEFAULT_STOREFRONT_SECRET_ENV,
     },
     sources: sources.filter(isSource),
   }

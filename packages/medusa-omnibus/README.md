@@ -2,10 +2,10 @@
 
 Medusa 2 plugin: price history for the Omnibus directive (the lowest price in the 30 days before a
 reduction). An hourly job stores the current price of every published variant in every region
-whenever it changed; read the history with `@cloud-house/commerce-rules` (`omnibusPrice`).
+whenever it changed; read the history with `@cloud-house/commerce-rules` (`lowestPriceBeforeDiscount`, `OMNIBUS_WINDOW_DAYS`).
 
 ```sh
-pnpm add --save-exact @cloud-house/medusa-omnibus@0.1.0
+pnpm add --save-exact @cloud-house/medusa-omnibus@0.1.1
 ```
 
 Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc` (see the repo README).

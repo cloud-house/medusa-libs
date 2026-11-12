@@ -1,13 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import type { NewsletterLocale, NewsletterMessages } from '../../messages'
+import {
+  messages as dictionaries,
+  type NewsletterLocale,
+  type NewsletterMessages,
+} from '../../messages'
 import { sdk } from './sdk'
 
 /** react-query keys of the plugin. */
 export const newsletterKey = (...parts: string[]) => ['newsletter', ...parts]
 
-/** The page texts as the plugin options set them (`locale` + `messages`); `undefined` while loading. */
+/**
+ * The page texts as the plugin options set them (`locale` + `messages`); `undefined` while
+ * loading. When the request fails the bundled `pl` dictionary is used, so the page still renders.
+ */
 export function useNewsletterMessages(): NewsletterMessages | undefined {
-  const { data } = useQuery({
+  const { data, isError } = useQuery({
     queryKey: newsletterKey('messages'),
     queryFn: () =>
       sdk.client.fetch<{ locale: NewsletterLocale; messages: NewsletterMessages }>(
@@ -15,7 +22,7 @@ export function useNewsletterMessages(): NewsletterMessages | undefined {
       ),
     staleTime: Number.POSITIVE_INFINITY,
   })
-  return data?.messages
+  return isError ? dictionaries.pl : data?.messages
 }
 
 /** `{name}` placeholders of a text filled in. */

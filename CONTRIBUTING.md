@@ -13,10 +13,25 @@ for the changelog. Commit the generated `.changeset/*.md` with your PR.
 
 ## Release flow
 
-1. A PR with a changeset is merged into `main`.
-2. The release workflow opens (or updates) a "Version packages" PR that bumps versions and writes
-   changelogs.
-3. Merging that PR publishes the new versions to GitHub Packages.
+The organisation does not (yet) allow GitHub Actions to create pull requests, so the "Version
+packages" PR of `changesets/action` cannot be opened. Versions are bumped in the PR itself:
+
+1. In your PR branch run `pnpm changeset` (add the changeset) and then `pnpm changeset version`
+   (bumps versions, writes the changelogs, consumes the changeset). Commit the bumps and
+   `CHANGELOG.md` files with the change.
+2. Merge the PR into `main`. `release.yml` finds no pending changesets and runs `pnpm release`,
+   which publishes every version not yet in GitHub Packages.
+3. Verify: `gh run list -R cloud-house/medusa-libs --workflow release.yml`, then
+   `gh run view <id> --log` (look for the `New tag:` lines), and
+   `NODE_AUTH_TOKEN=$(gh auth token) npm view @cloud-house/<package> version --registry=https://npm.pkg.github.com`
+   (needs a token with `read:packages`).
+
+A release can be re-run by hand from `main` with `gh workflow run release.yml --ref main`; the job
+is skipped on any other ref.
+
+Once the organisation enables "Allow GitHub Actions to create and approve pull requests", the
+Version-PR flow works as well: merge PRs with a changeset and merge the "Version packages" PR that
+the workflow opens (then skip `pnpm changeset version` in your branch).
 
 ## Medusa version
 
