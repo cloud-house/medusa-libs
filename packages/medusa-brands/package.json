@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-brands",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Medusa plugin: product brands (module, product link, workflows with events, admin page and product widget, store brand list with product counts).",
   "license": "MIT",
   "repository": {
