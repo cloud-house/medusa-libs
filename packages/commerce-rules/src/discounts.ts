@@ -65,10 +65,50 @@ export function splitLineDiscount(
   return { bundle: round(discount - code), code, codes }
 }
 
-/** „Rabat zestawowy”, „Kod WIOSNA10” or both – how the shop and the e-mail name a line's discount. */
-export function lineDiscountLabel(parts: LineDiscountParts): string {
+/** Texts of a line discount label; `{codes}` is replaced with the typed codes joined by ", ". */
+export interface DiscountLabelMessages {
+  /** Automatic (bundle) discount only. */
+  bundle: string
+  /** Typed code(s) only. */
+  code: string
+  /** Both a bundle discount and typed code(s). */
+  bundleAndCode: string
+}
+
+export type DiscountLabelLocale = 'pl' | 'en'
+
+export const DISCOUNT_LABEL_MESSAGES: Record<DiscountLabelLocale, DiscountLabelMessages> = {
+  pl: {
+    bundle: 'Rabat zestawowy',
+    code: 'Kod {codes}',
+    bundleAndCode: 'Rabat zestawowy + kod {codes}',
+  },
+  en: {
+    bundle: 'Bundle discount',
+    code: 'Code {codes}',
+    bundleAndCode: 'Bundle discount + code {codes}',
+  },
+}
+
+export interface LineDiscountLabelOptions {
+  /** Dictionary to start from. Default `pl`. */
+  locale?: DiscountLabelLocale
+  /** Per-key overrides of the dictionary; `undefined` values are ignored. */
+  messages?: Partial<DiscountLabelMessages>
+}
+
+/** „Rabat zestawowy”, „Kod WIOSNA10” or both (Polish by default) – how the shop and the e-mail name a line's discount. */
+export function lineDiscountLabel(
+  parts: LineDiscountParts,
+  options: LineDiscountLabelOptions = {},
+): string {
+  const messages: DiscountLabelMessages = { ...DISCOUNT_LABEL_MESSAGES[options.locale ?? 'pl'] }
+  for (const [key, value] of Object.entries(options.messages ?? {})) {
+    if (value !== undefined) messages[key as keyof DiscountLabelMessages] = value
+  }
   const codes = parts.codes.join(', ')
-  if (parts.code > 0 && parts.bundle > 0) return `Rabat zestawowy + kod ${codes}`
-  if (parts.code > 0) return `Kod ${codes}`
-  return 'Rabat zestawowy'
+  const fill = (text: string) => text.replaceAll('{codes}', codes)
+  if (parts.code > 0 && parts.bundle > 0) return fill(messages.bundleAndCode)
+  if (parts.code > 0) return fill(messages.code)
+  return fill(messages.bundle)
 }

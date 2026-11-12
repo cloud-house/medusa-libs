@@ -11,11 +11,16 @@ export function pluralizePl(
   return many
 }
 
+export interface PluralizeOptions {
+  /** BCP 47 locale. Default `pl`. */
+  locale?: string
+}
+
 /** Noun form after a number, picked by `Intl.PluralRules` (default locale `pl`). */
 export function pluralize(
   count: number,
   forms: Partial<Record<Intl.LDMLPluralRule, string>> & { other: string },
-  locale = 'pl',
+  options: PluralizeOptions = {},
 ): string {
-  return forms[new Intl.PluralRules(locale).select(count)] ?? forms.other
+  return forms[new Intl.PluralRules(options.locale ?? 'pl').select(count)] ?? forms.other
 }

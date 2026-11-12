@@ -122,3 +122,41 @@ describe('toSellerInfo', () => {
     expect(toSellerInfo(undefined)).toEqual(EMPTY_SELLER)
   })
 })
+
+describe('sellerLine options', () => {
+  const seller = {
+    ...EMPTY_SELLER,
+    companyName: 'Acme sp. z o.o.',
+    street: 'ul. Morska 5',
+    postalCode: '80-001',
+    city: 'Gdańsk',
+    nip: '526-025-02-74',
+  }
+
+  it('defaults to the Polish NIP label', () => {
+    expect(sellerLine(seller)).toBe('Acme sp. z o.o., ul. Morska 5, 80-001 Gdańsk, NIP 5260250274')
+    expect(sellerLine(seller, { locale: 'pl' })).toBe(sellerLine(seller))
+  })
+
+  it('en uses "VAT ID"', () => {
+    expect(sellerLine(seller, { locale: 'en' })).toBe(
+      'Acme sp. z o.o., ul. Morska 5, 80-001 Gdańsk, VAT ID 5260250274',
+    )
+  })
+
+  it('taxIdLabel overrides the locale label; undefined does not', () => {
+    expect(sellerLine(seller, { taxIdLabel: 'USt-IdNr.' })).toContain(', USt-IdNr. 5260250274')
+    expect(sellerLine(seller, { locale: 'en', taxIdLabel: undefined })).toContain('VAT ID')
+  })
+})
+
+describe('isValidPostalCode country', () => {
+  it('defaults to PL and accepts an explicit PL', () => {
+    expect(isValidPostalCode('80-001', 'PL')).toBe(true)
+    expect(isValidPostalCode('80001', 'PL')).toBe(false)
+  })
+
+  it('throws for countries other than PL (no silent fake validation)', () => {
+    expect(() => isValidPostalCode('10115', 'DE')).toThrow(/only PL/i)
+  })
+})

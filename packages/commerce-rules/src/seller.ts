@@ -63,10 +63,27 @@ export function sellerAddress(seller: SellerInfo): string | null {
   return `${seller.street.trim()}, ${seller.postalCode.trim()} ${seller.city.trim()}`
 }
 
-/** „Acme sp. z o.o., ul. Morska 5, 80-001 Gdańsk, NIP 5260250274”; `null` when incomplete. */
-export function sellerLine(seller: SellerInfo | null | undefined): string | null {
+export interface SellerLineOptions {
+  /** Default label of the tax id: `pl` – "NIP", `en` – "VAT ID". Default `pl`. */
+  locale?: 'pl' | 'en'
+  /** Overrides the label of the locale. */
+  taxIdLabel?: string
+}
+
+const TAX_ID_LABELS = { pl: 'NIP', en: 'VAT ID' } as const
+
+/**
+ * One-line seller identification, e.g. "Acme sp. z o.o., ul. Morska 5, 80-001 Gdańsk, NIP 5260250274"
+ * (the tax id is normalized to digits, its label comes from `locale` or `taxIdLabel`); `null` when
+ * the seller data is incomplete.
+ */
+export function sellerLine(
+  seller: SellerInfo | null | undefined,
+  options: SellerLineOptions = {},
+): string | null {
   if (!isSellerComplete(seller)) return null
-  return `${seller.companyName?.trim()}, ${sellerAddress(seller)}, NIP ${normalizeNip(seller.nip ?? '')}`
+  const label = options.taxIdLabel ?? TAX_ID_LABELS[options.locale ?? 'pl']
+  return `${seller.companyName?.trim()}, ${sellerAddress(seller)}, ${label} ${normalizeNip(seller.nip ?? '')}`
 }
 
 /** Return address in one line – the separate one, else the company with its address. */
@@ -102,7 +119,15 @@ export function returnAddressLines(seller: SellerInfo | null | undefined): strin
   ]
 }
 
-/** Polish postal code: 00-000. */
-export function isValidPostalCode(value: string): boolean {
+/**
+ * Postal code check. Only `PL` (00-000) is supported yet; any other country throws instead of
+ * pretending to validate.
+ */
+export function isValidPostalCode(value: string, country = 'PL'): boolean {
+  if (country.toUpperCase() !== 'PL') {
+    throw new Error(
+      `isValidPostalCode: only PL postal codes are supported yet (got country "${country}")`,
+    )
+  }
   return /^\d{2}-\d{3}$/.test(value.trim())
 }

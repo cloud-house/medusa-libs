@@ -58,8 +58,8 @@ describe('pluralize (Intl.PluralRules)', () => {
   })
 
   it('supports other locales', () => {
-    expect(pluralize(1, { one: 'item', other: 'items' }, 'en')).toBe('item')
-    expect(pluralize(3, { one: 'item', other: 'items' }, 'en')).toBe('items')
+    expect(pluralize(1, { one: 'item', other: 'items' }, { locale: 'en' })).toBe('item')
+    expect(pluralize(3, { one: 'item', other: 'items' }, { locale: 'en' })).toBe('items')
   })
 
   it('falls back to other when a category is missing', () => {
