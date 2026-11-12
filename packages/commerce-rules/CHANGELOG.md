@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.3.0
+
+### Minor Changes
+
+- f0121b3: Add generic cache-tag rules: `tagFor`, `productTag`, `categoryTag`, `brandTag`, `KIT_TAGS`, `KIT_TAG_KINDS`, `MAX_TAG_LENGTH`, `createTagRules` and `isKitTagAllowed`.
+
 ## 0.2.0
 
 ### Minor Changes
