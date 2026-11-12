@@ -10,7 +10,7 @@ export interface FormatPriceOptions {
 
 /**
  * Formats an amount given in major units (Medusa v2 stores prices in major units, not minor).
- * PLN + pl keeps a hand-written path: the pl Intl locale does not group 4-digit numbers
+ * PLN + Polish (`pl`, `pl-PL`, any `pl-*`, case-insensitive) keeps a hand-written path: the pl Intl locale does not group 4-digit numbers
  * ("1899 zł"), while the design uses "1 899 zł". Every other pair goes through Intl.NumberFormat.
  */
 export function formatPrice(amount: number, options: FormatPriceOptions = {}): string {
@@ -18,7 +18,7 @@ export function formatPrice(amount: number, options: FormatPriceOptions = {}): s
   if (!Number.isFinite(amount)) {
     throw new RangeError(`Cannot format a non-finite price: ${amount}`)
   }
-  if (currency.toUpperCase() !== 'PLN' || locale.toLowerCase() !== 'pl') {
+  if (currency.toUpperCase() !== 'PLN' || !/^pl(-|$)/i.test(locale)) {
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
   }
 

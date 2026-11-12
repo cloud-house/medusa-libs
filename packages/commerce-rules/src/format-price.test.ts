@@ -54,4 +54,15 @@ describe('formatPrice', () => {
   it('throws RangeError on NaN for other currencies too', () => {
     expect(() => formatPrice(Number.NaN, { currency: 'EUR' })).toThrow(RangeError)
   })
+
+  it("treats 'pl-PL' (and any pl-* / case variant) like 'pl'", () => {
+    const expected = formatPrice(189900)
+    expect(formatPrice(189900, { locale: 'pl-PL' })).toBe(expected)
+    expect(formatPrice(189900, { locale: 'PL-pl' })).toBe(expected)
+    expect(formatPrice(189900, { locale: 'PL' })).toBe(expected)
+  })
+
+  it('throws a RangeError for an invalid currency code (Intl.NumberFormat)', () => {
+    expect(() => formatPrice(10, { currency: 'ZZ' })).toThrow(RangeError)
+  })
 })
