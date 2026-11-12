@@ -75,3 +75,35 @@ export async function createStore(container: MedusaContainer): Promise<TestStore
 }
 
 export { ContainerRegistrationKeys }
+
+export interface TestCustomer {
+  customerId: string
+  /** Publishable key + bearer token of the customer. */
+  authHeaders: Record<string, string>
+}
+
+/** A customer with a bearer token (like the one `/auth/customer/emailpass` returns), no sign-up route needed. */
+export async function createCustomerHeaders(
+  container: MedusaContainer,
+  publishableKey: string,
+): Promise<TestCustomer> {
+  const email = `customer-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.test`
+  const customer = await container.resolve(Modules.CUSTOMER).createCustomers({ email })
+  const authIdentity = await container.resolve(Modules.AUTH).createAuthIdentities({
+    provider_identities: [{ provider: 'emailpass', entity_id: email }],
+    app_metadata: { customer_id: customer.id },
+  })
+  const token = generateJwtToken(
+    {
+      actor_id: customer.id,
+      actor_type: 'customer',
+      auth_identity_id: authIdentity.id,
+      app_metadata: { customer_id: customer.id },
+    },
+    { secret: process.env.JWT_SECRET, expiresIn: '1d' },
+  )
+  return {
+    customerId: customer.id,
+    authHeaders: { 'x-publishable-api-key': publishableKey, authorization: `Bearer ${token}` },
+  }
+}
