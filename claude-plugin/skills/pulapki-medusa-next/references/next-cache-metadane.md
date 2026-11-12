@@ -69,3 +69,10 @@ Słowa: `priority`, `next/image`, `fetchPriority`, error boundary `retry`
 - `priority` na `next/image` jest przestarzałe i tylko dodaje link preload; dla LCP użyj `loading="eager"` i `fetchPriority="high"`.
 - Granice błędów dostają `retry`.
 - `content-visibility: auto` (leniwe sekcje): używaj `contain-intrinsic-block-size` (jedna wartość w `contain-intrinsic-size` ustawia też szerokość), szacunek wysokości musi być bliski prawdziwej (inaczej skoki układu fałszują testy kontrastu), a wypełnienie `contain: paint` przycina zewnętrzne obramowanie fokusu (użyj `ring-inset`).
+
+## `next build` pada po usunięciu tras
+Słowa: `.next/dev/types`, `validator.ts`, usunięte trasy, typecheck, build
+
+- **Objaw:** `next build` kończy się błędem typów w `.next/dev/types/validator.ts`, który odwołuje się do tras, których już nie ma w kodzie.
+- **Przyczyna:** gitignorowany, wygenerowany katalog `.next/dev/types` zostaje po poprzednim `next dev` i opisuje stare trasy (źródło: usunięcie tras CMS w pierwszym sklepie).
+- **Rozwiązanie:** usuń `apps/storefront/.next` i zbuduj od nowa.

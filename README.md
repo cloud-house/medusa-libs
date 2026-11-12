@@ -8,11 +8,44 @@ under the `@cloud-house` scope.
 
 - [`@cloud-house/commerce-rules`](packages/commerce-rules) – pure commerce rules
 - [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) – Medusa plugin: newsletter sign-ups
-- `@cloud-house/medusa-omnibus` (planned)
+- [`@cloud-house/medusa-omnibus`](packages/medusa-omnibus) – Medusa plugin: price history for the Omnibus directive
+
+| Package | Version | What it is | Options |
+|---|---|---|---|
+| `@cloud-house/commerce-rules` | 0.1.0 | Pure commerce rules (price format, plurals, tax id, seller, Omnibus, discounts, stock) | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, locale)` |
+| `@cloud-house/medusa-newsletter` | 0.1.0 | Sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
+| `@cloud-house/medusa-omnibus` | 0.1.0 | Hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
+
+Versions are independent per package; see each package's README and CHANGELOG.
+
+## Example `medusa-config.ts`
+
+```ts
+import { defineConfig } from '@medusajs/framework/utils'
+
+module.exports = defineConfig({
+  projectConfig: { /* database, secrets, CORS */ },
+  plugins: [
+    {
+      resolve: '@cloud-house/medusa-newsletter',
+      options: {
+        locale: 'pl',
+        storefrontSecret: { header: 'x-acme-storefront-secret', env: 'STOREFRONT_API_SECRET' },
+      },
+    },
+    { resolve: '@cloud-house/medusa-omnibus', options: { logPrefix: 'Acme' } },
+  ],
+})
+```
+
+Run `medusa db:migrate` after adding a plugin. Do not also list a plugin's module under `modules`:
+that entry replaces the plugin's module and its options.
 
 ## Installing in a shop
 
-The packages live in GitHub Packages, which requires a token even for public packages.
+The packages live in GitHub Packages, which requires a token even for public packages: without
+`NODE_AUTH_TOKEN` (or with an expired one) `pnpm install` fails with 401. CI, Docker builds and
+hosting need the same token with `read:packages`.
 
 1. Create a token with the `read:packages` scope (classic personal access token, or
    `gh auth refresh -h github.com -s read:packages`).
@@ -27,11 +60,17 @@ The packages live in GitHub Packages, which requires a token even for public pac
    `registry-url: https://npm.pkg.github.com` writes the same line), and export the token:
 
    ```sh
-   echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
+   grep -qF 'npm.pkg.github.com/:_authToken' ~/.npmrc 2>/dev/null \
+     || echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> ~/.npmrc
    export NODE_AUTH_TOKEN=...
    ```
 
 4. Install with an exact version, e.g. `pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.0`.
+
+## Claude Code plugin
+
+`/plugin marketplace add cloud-house/medusa-libs`, then install `kit-sklepow`: skills `pulapki-medusa-next`
+(collected pitfalls), `plugin-kitu` (how to add a package or plugin to this repo) and `nowy-sklep` (draft).
 
 ## Development
 
