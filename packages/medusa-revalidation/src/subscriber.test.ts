@@ -52,7 +52,6 @@ describe('createRevalidationSubscriber', () => {
     expect(warnings[0]).toMatch(/^Shop: /)
     expect(warnings[0]).toContain('STOREFRONT_URL')
     expect(warnings[0]).toContain('REVALIDATE_SECRET')
-    expect(warnings[0]).toMatch(/^Shop: /)
   })
 
   it('posts the tags built with the product lookup', async () => {

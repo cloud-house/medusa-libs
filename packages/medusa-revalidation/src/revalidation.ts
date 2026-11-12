@@ -67,8 +67,6 @@ export async function defaultTagsForEvent(
   lookup: TagLookup,
 ): Promise<string[] | null> {
   if (!DEFAULT_REVALIDATION_EVENTS.includes(name)) return null
-  // A deleted product drops out of accessories, upgrades and article blocks.
-  if (name === 'product.deleted') return [...(await withProduct(str(data.id), lookup)), 'cms']
   if (name === 'product-brand.updated' && data.brand_id === data.previous_brand_id) return []
   if (name.startsWith('promotion.')) return [KIT_TAGS.promotions]
   if (name.startsWith('product.')) return withProduct(str(data.id), lookup)
