@@ -20,6 +20,11 @@ module.exports = defineConfig({
       options: { messages: { adminTitle: 'Newsletter (test-shop)' } },
     },
     {
+      resolve: '@cloud-house/medusa-brands',
+      // The one non-default option: the HTTP test proves it reaches the module and the routes.
+      options: { messages: { adminTitle: 'Brands (test-shop)' } },
+    },
+    {
       resolve: '@cloud-house/medusa-omnibus',
       // The one non-default option: the HTTP test proves it reaches the module and the job's log.
       options: { logPrefix: 'Test' },

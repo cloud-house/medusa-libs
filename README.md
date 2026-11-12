@@ -7,12 +7,14 @@ under the `@cloud-house` scope.
 ## Packages
 
 - [`@cloud-house/commerce-rules`](packages/commerce-rules) – pure commerce rules
+- [`@cloud-house/medusa-brands`](packages/medusa-brands) – Medusa plugin: product brands (module, link, events, admin, store list)
 - [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) – Medusa plugin: newsletter sign-ups
 - [`@cloud-house/medusa-omnibus`](packages/medusa-omnibus) – Medusa plugin: price history for the Omnibus directive
 
 | Package | Version | What it is | Options |
 |---|---|---|---|
 | `@cloud-house/commerce-rules` | 0.2.0 | Pure commerce rules (price format, plurals, tax id, seller, Omnibus, discounts, stock) | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, { locale })`, `lineDiscountLabel(parts, { locale, messages })`, `sellerLine(seller, { locale, taxIdLabel })` |
+| `@cloud-house/medusa-brands` | 0.1.0 | Product brands: module, product link, workflows with `brand.*` events, admin page and product widget, `GET /store/brands` | `locale`, `messages`, `storeRoute` |
 | `@cloud-house/medusa-newsletter` | 0.1.1 | Sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
 | `@cloud-house/medusa-omnibus` | 0.1.2 | Hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
 
