@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@cloud-house/medusa-brands": "workspace:*",
+    "@cloud-house/medusa-favorites": "workspace:*",
     "@cloud-house/medusa-newsletter": "workspace:*",
     "@cloud-house/medusa-omnibus": "workspace:*",
     "@medusajs/admin-sdk": "catalog:medusa",
