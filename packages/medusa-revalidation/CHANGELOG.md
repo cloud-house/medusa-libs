@@ -1,5 +1,12 @@
 # @cloud-house/medusa-revalidation
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [ad45e92]
+  - @cloud-house/commerce-rules@0.4.0
+
 ## 0.1.1
 
 ### Patch Changes
