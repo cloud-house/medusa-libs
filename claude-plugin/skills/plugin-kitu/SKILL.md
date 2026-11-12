@@ -95,10 +95,10 @@ class XModuleService extends MedusaService({ Model }) {
 ## 7. Changeset, PR, publikacja
 
 1. Gałąź, commity małe (`feat(<pakiet>): …`, `docs: …`), `pnpm changeset` (wybierz pakiety i typ; wersje niezależne). Pierwsze wydanie to `0.1.0`.
-2. Dopóki organizacja blokuje Actions przed tworzeniem PR-ów: w tej samej gałęzi `pnpm changeset version` (podbija wersję i CHANGELOG, zużywa changeset), commit. Zmiany tylko w dokumentacji nie potrzebują changesetu.
+2. Changeset commitujesz z PR-em; wersje podbija PR „Version packages”, który `release.yml` otwiera po scaleniu (punkt 5). Skrót przy pilnym wydaniu: `pnpm changeset version` w tej samej gałęzi i commit – wtedy publikacja idzie od razu po scaleniu. Zmiany tylko w dokumentacji nie potrzebują changesetu.
 3. Sprawdzenie paczki: `pnpm pack --dry-run` w katalogu pakietu. Ma zawierać build (`.medusa/server` albo `dist`), `LICENSE`, `README.md`, `package.json` bez `catalog:` i `workspace:` (`grep` po spakowanym manifeście).
 4. `gh pr create` (opis kończy się linią o Claude Code), `gh pr checks --watch`, przy zielonym CI `gh pr merge --squash --delete-branch`.
-5. Po scaleniu `release.yml` publikuje do GitHub Packages. Sprawdź w logu: `gh run list --workflow release.yml`, `gh run view <id> --log` (ma być „packages published successfully”). `npm view` wymaga tokenu z `read:packages`. Przy 502 przy merge i braku przebiegu: `workflow_dispatch`.
+5. Po scaleniu `release.yml` otwiera albo aktualizuje PR „Version packages”; jego scalenie publikuje do GitHub Packages. `main` jest chroniony – scalenie wymaga zielonego `check`. Sprawdź w logu: `gh run list --workflow release.yml`, `gh run view <id> --log` (ma być „packages published successfully”). `npm view` wymaga tokenu z `read:packages`. Przy 502 przy merge i braku przebiegu: `workflow_dispatch`.
 6. Nowy pakiet jest po publikacji prywatny: przełącz na Public w GitHubie (Org Settings → Packages musi pozwalać na pakiety publiczne; nie da się tego zrobić API).
 
 ## 8. Podpięcie w sklepie i przejście sklepu
