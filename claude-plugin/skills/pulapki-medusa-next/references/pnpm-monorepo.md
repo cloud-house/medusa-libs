@@ -68,7 +68,7 @@ Słowa: `Failed to replace env`, `NODE_AUTH_TOKEN`, 401, `pnpm install`
 
 - **Objaw:** `pnpm install` (a nawet inne polecenia pnpm) wypisuje „Failed to replace env in config: ${NODE_AUTH_TOKEN}”; instalacja pakietu `@cloud-house/*` kończy się 401.
 - **Przyczyna:** `~/.npmrc` odwołuje się do `${NODE_AUTH_TOKEN}`, a zmienna nie jest ustawiona w tej powłoce albo token wygasł.
-- **Rozwiązanie:** `export NODE_AUTH_TOKEN=$(gh auth token)` (lokalnie), sekret w CI/Dockerze/hostingu. Ostrzeżenie przy poleceniach innych niż install jest nieszkodliwe.
+- **Rozwiązanie:** `export NODE_AUTH_TOKEN=$(gh auth token)` (lokalnie), sekret w CI/Dockerze/hostingu. Obserwacja: przy poleceniach innych niż install samo ostrzeżenie niczego nie zepsuło (nieszkodliwe w tych przypadkach).
 
 ## `gh` nie ma uprawnień `read:packages`
 Słowa: `gh auth refresh`, `write:packages`, `npm view`, 403

@@ -61,8 +61,8 @@ Słowa: multer, `variant.images`, handle, polskie litery, ES2021
 ## `medusa plugin:build` pada bez katalogu `src/admin`
 Słowa: `plugin:build`, `src/admin`, ENOENT, `.gitkeep`, plugin bez panelu
 
-- **Objaw:** `medusa plugin:build` kończy się błędem ENOENT w pluginie, który nie ma żadnego interfejsu admina. Kolejny drobiazg: puszczenie wyjścia buildu przez `| head` zawiesza proces (EPIPE).
-- **Przyczyna:** build zawsze uruchamia bundler panelu i oczekuje katalogu `src/admin` (źródło: raport z budowy `@cloud-house/medusa-omnibus`, krok 1 kitu; kod bundlera nie czytany).
+- **Objaw:** `medusa plugin:build` kończy się błędem ENOENT w pluginie, który nie ma żadnego interfejsu admina. Kolejny drobiazg: puszczenie wyjścia buildu przez `| head` zawiesza proces (EPIPE; zaobserwowane przy budowie newslettera).
+- **Przyczyna:** build zawsze uruchamia bundler panelu i oczekuje katalogu `src/admin` (źródło: praca nad `@cloud-house/medusa-newsletter` i `@cloud-house/medusa-omnibus`; kod bundlera nie czytany).
 - **Rozwiązanie:** pusty `src/admin/.gitkeep` wystarcza; w wyniku jest pusty `admin/index.js`, a wpis `./admin` w `exports` zostaje dla zgodności. Nie obcinaj wyjścia buildu.
 
 ## Sklep nie znajduje modułu pluginu (`exports`)
@@ -76,8 +76,8 @@ Słowa: `Cannot find module`, `.medusa/server/src/modules`, `exports`, `package.
 Słowa: `createdb -T`, `pg_dump`, "Skipped. Database is up-to-date", `.snapshot-<moduł>.json`, `db:generate`, `mikro_orm_migrations`
 
 - **Objaw:** niepewność, czy sklep z danymi po przejściu na plugin nie wykona migracji drugi raz ani niczego nie skasuje; tabela w bazie deweloperskiej bywa pusta, więc liczba wierszy niczego nie dowodzi.
-- **Przyczyna:** migracja jest rozpoznawana po nazwie klasy, a moduł po kluczu (zob. wpis o migracjach wyżej); plik `.snapshot-<moduł>.json` służy tylko `db:generate`, więc jego brak w paczce nie psuje `db:migrate`, ale zepsuje kolejną generację migracji (źródło: newsletter 0.1.0 wyszedł bez snapshotu).
-- **Rozwiązanie:** przenieś model, plik migracji, nazwy klas i klucz modułu bajt w bajt (`diff` pusty) razem ze `.snapshot-<moduł>.json`. Dowód: kopia bazy (`createdb -T baza kopia`, a gdy brak hasła: `create database kopia template baza` przez psql), `medusa db:migrate` na kopii, w wyniku dla modułu „Skipped. Database is up-to-date for module.”, liczba wierszy `mikro_orm_migrations` przed i po jednakowa, liczba wierszy tabeli modułu bez zmian. Kopię usuń; prawdziwej bazy nie migruj.
+- **Przyczyna:** migracja jest rozpoznawana po nazwie klasy, a moduł po kluczu (zob. wpis o migracjach wyżej); plik `.snapshot-<moduł>.json` służy tylko `db:generate`, więc jego brak w paczce nie psuje `db:migrate`, ale zepsuje kolejną generację migracji (źródło: `medusa plugin:build` nie kopiuje `migrations/.snapshot-*.json`, więc oba pakiety 0.1.0, newsletter i omnibus, wyszły bez snapshotu; konsumenci go nie potrzebują, liczy się tylko przy `db:generate` wewnątrz pluginu).
+- **Rozwiązanie:** przenieś model, plik migracji, nazwy klas i klucz modułu bajt w bajt (`diff` pusty) razem ze `.snapshot-<moduł>.json` (w repozytorium pluginu; build go nie dołączy do paczki, nie naprawiaj tego przy okazji). Dowód: kopia bazy (`createdb -T baza kopia`, a gdy brak hasła: `create database kopia template baza` przez psql), `medusa db:migrate` na kopii, w wyniku dla modułu „Skipped. Database is up-to-date for module.”, liczba wierszy `mikro_orm_migrations` przed i po jednakowa, liczba wierszy tabeli modułu bez zmian. Kopię usuń; prawdziwej bazy nie migruj.
 
 ## Pusty `undefined` w nadpisaniu tekstu kasuje domyślny tekst
 Słowa: `resolveMessages`, `messages`, spread, `undefined`, słownik

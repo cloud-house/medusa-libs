@@ -73,11 +73,12 @@ class XModuleService extends MedusaService({ Model }) {
 
 - `messages.ts`: obiekty `pl` i `en` o tych samych kluczach, `resolveMessages(locale, overrides)`. Teksty `pl` są **identyczne** z tymi, które sklep ma dziś (testy sklepu sprawdzają je dosłownie). Domyślne `locale: 'pl'`.
 - **Reguła:** `resolveMessages` i `resolveOptions` odfiltrowują klucze `undefined` z nadpisań przed scaleniem (`{...base, ...overrides}` skasuje tekst, gdy nadpisanie to `undefined`; błąd z newslettera 0.1.0). Test: „ignores undefined overrides”.
+- Konwencja słowników: teksty są stringami z `{placeholderami}`, gdy trzeba je serializować (np. wysłać na stronę admina przez HTTP, jak w newsletterze); funkcjami, gdy są używane tylko po stronie serwera (jak w omnibusie).
 - Błędy API: statusy HTTP jak w sklepie, plus stały `code` (stałe w `errors.ts`, eksportowane). `MedusaError` z trzecim argumentem działa dla `UNAUTHORIZED`, `NOT_FOUND`, `INVALID_DATA`, `NOT_ALLOWED`; dla `DUPLICATE_ERROR`, `CONFLICT` i `DB_ERROR` Medusa nadpisuje `code`, więc odpowiedz wprost z trasy: `res.status(422).json({ type: 'duplicate_error', code, message })`.
 
 ## 5. Wydzielanie istniejącego modułu ze sklepu
 
-- Model, plik migracji, nazwy klas, klucz modułu i nazwa tabeli **bez zmian** (`diff` pusty z kodem sklepu), razem z `migrations/.snapshot-<moduł>.json`. Wtedy baza sklepu pomija migrację.
+- Model, plik migracji, nazwy klas, klucz modułu i nazwa tabeli **bez zmian** (`diff` pusty z kodem sklepu), razem z `migrations/.snapshot-<moduł>.json` w repozytorium pluginu. `medusa plugin:build` nie kopiuje snapshotów do paczki, więc oba pakiety 0.1.0 (newsletter, omnibus) wyszły bez niego; konsumenci go nie potrzebują, liczy się tylko przy `db:generate` wewnątrz pluginu (nie naprawiaj builda przy okazji). Baza sklepu i tak pomija migrację.
 - Dowód na kopii bazy sklepu, zanim wydasz wersję: `createdb -T baza kopia` (albo `create database kopia template baza` przez psql), `medusa db:migrate` na kopii. Oczekiwane: „Skipped. Database is up-to-date for module.”, liczba wierszy `mikro_orm_migrations` bez zmian, żadnego `drop`. Pusta tabela w bazie deweloperskiej to słaby dowód; liczy się tabela migracji. Kopię usuń.
 - Zdarzenia: usuń prefiks sklepu z nazw (`price-history.recorded`), a w sklepie zaktualizuj subskrybentów.
 - Prefiks logów i tym podobne wstrzykuj opcją (`logPrefix`).

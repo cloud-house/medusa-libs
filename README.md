@@ -13,8 +13,8 @@ under the `@cloud-house` scope.
 | Package | Version | What it is | Options |
 |---|---|---|---|
 | `@cloud-house/commerce-rules` | 0.1.0 | Pure commerce rules (price format, plurals, tax id, seller, Omnibus, discounts, stock) | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, locale)` |
-| `@cloud-house/medusa-newsletter` | 0.1.0 | Sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
-| `@cloud-house/medusa-omnibus` | 0.1.0 | Hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
+| `@cloud-house/medusa-newsletter` | 0.1.1 | Sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
+| `@cloud-house/medusa-omnibus` | 0.1.1 | Hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
 
 Versions are independent per package; see each package's README and CHANGELOG.
 
@@ -65,7 +65,7 @@ hosting need the same token with `read:packages`.
    export NODE_AUTH_TOKEN=...
    ```
 
-4. Install with an exact version, e.g. `pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.0`.
+4. Install with an exact version, e.g. `pnpm add --save-exact @cloud-house/medusa-newsletter@0.1.1`.
 
 ## Claude Code plugin
 

@@ -1,5 +1,11 @@
 # @cloud-house/medusa-omnibus
 
+## 0.1.1
+
+### Patch Changes
+
+- README: name the real `@cloud-house/commerce-rules` exports (`lowestPriceBeforeDiscount`, `OMNIBUS_WINDOW_DAYS`).
+
 ## 0.1.0
 
 ### Minor Changes

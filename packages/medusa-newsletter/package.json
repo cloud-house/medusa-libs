@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-newsletter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Medusa plugin: newsletter sign-ups with proof of consent, a storefront-only store route, admin list, CSV export and GDPR delete.",
   "license": "MIT",
   "repository": {

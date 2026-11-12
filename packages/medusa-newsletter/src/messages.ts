@@ -103,15 +103,28 @@ export const messages: Record<NewsletterLocale, NewsletterMessages> = {
   },
 }
 
-/** The `locale` dictionary with `overrides` on top; `sourceLabels` are merged label by label. */
+/** `values` without the keys set to `undefined` (a spread would let them wipe a default). */
+export const withoutUndefined = <T extends object>(values: T | undefined): Partial<T> =>
+  Object.fromEntries(
+    Object.entries(values ?? {}).filter(([, value]) => value !== undefined),
+  ) as Partial<T>
+
+/**
+ * The `locale` dictionary with `overrides` on top (`undefined` ones ignored); `sourceLabels` are
+ * merged label by label.
+ */
 export function resolveMessages(
   locale: NewsletterLocale,
   overrides: Partial<NewsletterMessages> = {},
 ): NewsletterMessages {
   const base = messages[locale]
+  const { sourceLabels, ...texts } = withoutUndefined(overrides)
   return {
     ...base,
-    ...overrides,
-    sourceLabels: { ...base.sourceLabels, ...overrides.sourceLabels },
+    ...texts,
+    sourceLabels: {
+      ...base.sourceLabels,
+      ...(withoutUndefined(sourceLabels) as Record<string, string>),
+    },
   }
 }
