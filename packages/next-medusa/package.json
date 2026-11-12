@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/next-medusa",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Next.js storefront helpers for Medusa 2 shops: env check, JS SDK singleton, cached fetch init, revalidation route and cart cookie.",
   "license": "MIT",
   "repository": {
