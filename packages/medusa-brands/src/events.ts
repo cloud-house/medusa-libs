@@ -1,6 +1,6 @@
 /**
- * Events the workflows emit. Medusa's own generated `brand.*` events carry only the id; these
- * carry the handles:
+ * Events the workflows emit. Medusa's own events of the module are named `brand.brand.*` (so these
+ * `brand.*` do not clash) and carry only the id; these carry the handles:
  * - `created`: `{ id, handle }`
  * - `updated`: `{ id, handle, previous_handle? }` (`previous_handle` only when the handle changed)
  * - `deleted`: `{ id, handle }`

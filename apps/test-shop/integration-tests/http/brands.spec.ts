@@ -237,6 +237,7 @@ medusaIntegrationTestRunner({
         const { data } = await api.get('/admin/brands/messages', { headers })
 
         expect(data.locale).toBe('pl')
+        expect(data.settings).toEqual({ detailLinks: false })
         expect(data.messages.adminTitle).toBe('Brands (test-shop)')
         expect(data.messages.addBrand).toBe('Dodaj markę')
       })
