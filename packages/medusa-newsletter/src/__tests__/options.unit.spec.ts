@@ -17,7 +17,7 @@ describe('resolveMessages', () => {
   it('ignores undefined overrides', () => {
     const resolved = resolveMessages('pl', {
       alreadySubscribed: undefined,
-      sourceLabels: { footer: undefined, home: 'Start' },
+      sourceLabels: { footer: undefined, home: 'Start' } as unknown as Record<string, string>,
     })
     expect(resolved.alreadySubscribed).toBe(messages.pl.alreadySubscribed)
     expect(resolved.sourceLabels.footer).toBe('Stopka')
