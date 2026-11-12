@@ -38,7 +38,11 @@ describe('defaultTagsForEvent', () => {
       'catalog',
       'product:allround-wave',
     ])
-    expect(await tags('product.deleted', { id: 'prod_x' })).toEqual(['catalog', 'cms'])
+    expect(await tags('product.deleted', { id: 'prod_x' })).toEqual(['catalog'])
+    expect(await tags('product.deleted', { id: 'prod_1' })).toEqual([
+      'catalog',
+      'product:allround-wave',
+    ])
   })
 
   it('encodes handles outside ASCII', async () => {
@@ -57,6 +61,10 @@ describe('defaultTagsForEvent', () => {
       'catalog',
       'category:allround',
     ])
+  })
+
+  it('maps a category event with an unknown id to the catalog tag', async () => {
+    expect(await tags('product-category.updated', { id: 'pcat_unknown' })).toEqual(['catalog'])
   })
 
   it('maps brand events with the previous handle', async () => {
