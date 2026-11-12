@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.4.0
+
+### Minor Changes
+
+- ad45e92: Add `HANDLE_PATTERN`, the pattern of a valid handle (the form `slugify` produces).
+
 ## 0.3.0
 
 ### Minor Changes
