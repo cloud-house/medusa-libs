@@ -42,6 +42,24 @@ sellerLine(seller, { taxIdLabel: 'USt-IdNr.' })
 isValidPostalCode('80-001') // true; isValidPostalCode('10115', 'DE') throws
 ```
 
+## Cache tags
+
+```ts
+import { brandTag, createTagRules, isKitTagAllowed, KIT_TAG_KINDS, KIT_TAGS, productTag } from '@cloud-house/commerce-rules'
+
+productTag('wiosło') // 'product:wios%C5%82o'
+isKitTagAllowed('catalog') // true; isKitTagAllowed('quiz') // false
+
+// a shop extends the allowlist with its own tags and kinds
+const rules = createTagRules({
+  tags: [...Object.values(KIT_TAGS), 'quiz'],
+  kinds: [...KIT_TAG_KINDS, 'page'],
+})
+rules.isAllowedTag('page:o-nas') // true
+```
+
+Tags longer than `MAX_TAG_LENGTH` (256, the Next.js limit) are rejected.
+
 ## Upgrading from 0.1
 
 `pluralize(count, forms, 'en')` became `pluralize(count, forms, { locale: 'en' })`. The rest is
