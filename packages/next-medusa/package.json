@@ -1,0 +1,76 @@
+{
+  "name": "@cloud-house/next-medusa",
+  "version": "0.0.0",
+  "description": "Next.js storefront helpers for Medusa 2 shops: env check, JS SDK singleton, cached fetch init, revalidation route and cart cookie.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloud-house/medusa-libs.git",
+    "directory": "packages/next-medusa"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "medusa",
+    "medusa-v2",
+    "nextjs",
+    "storefront",
+    "revalidation"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./server": {
+      "import": {
+        "types": "./dist/server.d.ts",
+        "default": "./dist/server.js"
+      },
+      "require": {
+        "types": "./dist/server.d.cts",
+        "default": "./dist/server.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cloud-house/commerce-rules": "workspace:^"
+  },
+  "peerDependencies": {
+    "@medusajs/js-sdk": "catalog:medusa-peer",
+    "next": "^16.3.3",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@medusajs/js-sdk": "catalog:medusa",
+    "@types/node": "^24.0.0",
+    "next": "catalog:next",
+    "server-only": "^0.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "~5.9.3",
+    "vitest": "4.0.18"
+  }
+}
