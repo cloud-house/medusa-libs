@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-revalidation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Storefront cache revalidation for Medusa 2 shops: default event-to-tag mapping, webhook sender and a subscriber helper.",
   "license": "MIT",
   "repository": {
