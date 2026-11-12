@@ -25,7 +25,8 @@ describe('resolveMessages', () => {
       handleTaken: 'Marka o adresie „{handle}” już istnieje.',
       productNotFound: 'Nie znaleziono produktu {id}.',
       adminTitle: 'Marki',
-      adminDescription: 'Marki desek i akcesoriów. Markę produktu ustawisz na stronie produktu.',
+      adminDescription: 'Marki produktów. Markę produktu ustawisz na stronie produktu.',
+      handleHint: 'Używany w adresach marki: {handle}',
       addBrand: 'Dodaj markę',
       newBrand: 'Nowa marka',
       editBrand: 'Edytuj markę',
@@ -54,6 +55,7 @@ describe('resolveOptions', () => {
     const options = resolveOptions()
     expect(options.locale).toBe('pl')
     expect(options.storeRoute).toBe(true)
+    expect(options.adminDetailLinks).toBe(false)
     expect(options.messages).toEqual(messages.pl)
   })
 
@@ -61,11 +63,17 @@ describe('resolveOptions', () => {
     const options = resolveOptions({
       locale: undefined,
       storeRoute: undefined,
+      adminDetailLinks: undefined,
       messages: { saved: undefined },
     })
     expect(options.locale).toBe('pl')
     expect(options.storeRoute).toBe(true)
+    expect(options.adminDetailLinks).toBe(false)
     expect(options.messages).toEqual(messages.pl)
+  })
+
+  it('takes adminDetailLinks: true', () => {
+    expect(resolveOptions({ adminDetailLinks: true }).adminDetailLinks).toBe(true)
   })
 
   it('takes storeRoute: false', () => {

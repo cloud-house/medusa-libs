@@ -16,7 +16,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { BrandMessages } from '../../../messages'
-import { type BrandWithCount, brandKey, failure, fill, useBrandMessages } from '../../lib/messages'
+import { type BrandWithCount, brandKey, failure, fill, useBrandAdmin } from '../../lib/messages'
 import { sdk } from '../../lib/sdk'
 
 function BrandDrawer({
@@ -94,7 +94,8 @@ const BrandsPage = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const prompt = usePrompt()
-  const messages = useBrandMessages()
+  const admin = useBrandAdmin()
+  const messages = admin?.messages
   const [editing, setEditing] = useState<BrandWithCount | 'new' | null>(null)
   const { data, isLoading } = useQuery({
     queryKey: brandKey('list'),
@@ -155,13 +156,15 @@ const BrandsPage = () => {
               <Table.Cell className="text-right">{brand.product_count}</Table.Cell>
               <Table.Cell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button
-                    size="small"
-                    variant="transparent"
-                    onClick={() => navigate(`/brands/${brand.id}`)}
-                  >
-                    {messages.details}
-                  </Button>
+                  {admin?.detailLinks && (
+                    <Button
+                      size="small"
+                      variant="transparent"
+                      onClick={() => navigate(`/brands/${brand.id}`)}
+                    >
+                      {messages.details}
+                    </Button>
+                  )}
                   <Button size="small" variant="transparent" onClick={() => setEditing(brand)}>
                     {messages.edit}
                   </Button>

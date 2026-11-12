@@ -10,13 +10,19 @@ moduleIntegrationTestRunner<BrandModuleService>({
   moduleName: BRAND_MODULE,
   moduleModels: [Brand],
   resolve: './src/modules/brand',
-  moduleOptions: { locale: 'en', storeRoute: false, messages: { saved: 'Done' } },
+  moduleOptions: {
+    locale: 'en',
+    storeRoute: false,
+    adminDetailLinks: true,
+    messages: { saved: 'Done' },
+  },
   testSuite: ({ service }) => {
     describe('BrandModuleService', () => {
       it('gets the module options, defaults filled in', () => {
         const options = service.getOptions()
         expect(options.locale).toBe('en')
         expect(options.storeRoute).toBe(false)
+        expect(options.adminDetailLinks).toBe(true)
         expect(options.messages.saved).toBe('Done')
         expect(options.messages.edit).toBe('Edit')
       })
@@ -47,6 +53,7 @@ moduleIntegrationTestRunner<BrandModuleService>({
         const options = service.getOptions()
         expect(options.locale).toBe('pl')
         expect(options.storeRoute).toBe(true)
+        expect(options.adminDetailLinks).toBe(false)
         expect(options.messages.saved).toBe('Zapisano markę')
       })
     })

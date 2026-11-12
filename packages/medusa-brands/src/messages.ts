@@ -31,6 +31,7 @@ export interface BrandMessages {
   handlePlaceholder: string
   /** Under the handle input; `{handle}` – what is typed, `…` when empty. */
   handleHint: string
+  /** Button in the list that opens `/brands/:id` (only with the option `adminDetailLinks`). */
   details: string
   edit: string
   delete: string
@@ -70,7 +71,7 @@ export const messages: Record<BrandLocale, BrandMessages> = {
     productNotFound: 'Nie znaleziono produktu {id}.',
     sortLocale: 'pl',
     adminTitle: 'Marki',
-    adminDescription: 'Marki desek i akcesoriów. Markę produktu ustawisz na stronie produktu.',
+    adminDescription: 'Marki produktów. Markę produktu ustawisz na stronie produktu.',
     addBrand: 'Dodaj markę',
     newBrand: 'Nowa marka',
     editBrand: 'Edytuj markę',
@@ -80,7 +81,7 @@ export const messages: Record<BrandLocale, BrandMessages> = {
     fieldName: 'Nazwa',
     fieldHandle: 'Adres (handle)',
     handlePlaceholder: 'np. aqua-marina – puste: z nazwy',
-    handleHint: 'Używany w adresie strony marki: /marki/{handle}',
+    handleHint: 'Używany w adresach marki: {handle}',
     details: 'Szczegóły',
     edit: 'Edytuj',
     delete: 'Usuń',
@@ -119,7 +120,7 @@ export const messages: Record<BrandLocale, BrandMessages> = {
     fieldName: 'Name',
     fieldHandle: 'Handle',
     handlePlaceholder: 'e.g. aqua-marina – empty: from the name',
-    handleHint: 'Used in the address of the brand page: /brands/{handle}',
+    handleHint: 'Used in the brand’s addresses: {handle}',
     details: 'Details',
     edit: 'Edit',
     delete: 'Delete',

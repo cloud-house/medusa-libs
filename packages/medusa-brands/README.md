@@ -21,6 +21,7 @@ plugins: [
       locale: 'pl', // 'pl' | 'en', default 'pl'
       messages: { saved: '…' }, // single texts over the dictionary
       storeRoute: true, // default; false: GET /store/brands answers 404
+      adminDetailLinks: false, // true: "details" button in the list, linking to your /brands/:id page
     },
   },
 ],
@@ -42,7 +43,7 @@ and is not an option.
 | `DELETE /admin/brands/:id` | `{ id, object: 'brand', deleted: true }`; clears the brand from its products |
 | `GET /admin/products/:id/brand` | `{ brand: { id, name, handle } \| null }` |
 | `POST /admin/products/:id/brand` | `{ brand_id: string \| null }` → `{ brand }` |
-| `GET /admin/brands/messages` | `{ locale, messages }` for the admin pages |
+| `GET /admin/brands/messages` | `{ locale, messages, settings: { detailLinks } }` for the admin pages |
 | `GET /store/brands` | `{ brands: [{ id, handle, name, product_count }] }`; see below |
 
 Error codes (`code` in the body, `BRAND_ERROR_CODES`): `brand_handle_taken` (422),
@@ -57,7 +58,7 @@ the request's publishable key. That is a plain count; a shop that counts only bu
 
 A route file of the shop at `src/api/store/brands/route.ts` **replaces** the plugin's route (the
 shop's routes are loaded after the plugin's), so no option is needed. `storeRoute: false` is for a
-shop that has no such route and wants none: the plugin's route hands the request on and the answer
+shop that has no such route and wants none: the plugin's route stays registered, hands the request on and the answer
 is the 404 of an unknown path. To reuse the handler in your own route:
 
 ```ts
