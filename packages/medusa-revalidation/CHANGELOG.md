@@ -1,5 +1,13 @@
 # @cloud-house/medusa-revalidation
 
+## 0.2.0
+
+### Minor Changes
+
+- 1e20d04: `postRevalidate` and `createRevalidationSubscriber` take `locale` (`'pl' | 'en'`, default `'en'`,
+  as before) and `messages` (single log lines over the dictionary). Exports `revalidationMessages`,
+  `resolveRevalidationMessages` and `RevalidationMessages`.
+
 ## 0.1.2
 
 ### Patch Changes
