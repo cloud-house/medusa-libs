@@ -1,5 +1,11 @@
 # @cloud-house/next-medusa
 
+## 0.1.2
+
+### Patch Changes
+
+- 2eb000a: The built `dist/server.*` now imports `next/headers.js` and `next/cache.js`. `next` has no `exports` map, so plain Node ESM (Vitest externalizing the package) could not resolve the extensionless specifiers. A CI test checks the specifiers in `dist` resolve.
+
 ## 0.1.1
 
 ### Patch Changes
