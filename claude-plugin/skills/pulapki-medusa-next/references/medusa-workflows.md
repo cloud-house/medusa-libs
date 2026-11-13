@@ -55,3 +55,17 @@ Słowa: fulfillment, labels, `tracking_url`, shipment, manual provider
 - **Objaw:** po oznaczeniu paczki jako wysłanej znikają wcześniejsze etykiety; link śledzenia to `#`.
 - **Przyczyna:** `createOrderShipmentWorkflow` ZASTĘPUJE etykiety przekazanymi; dashboard Medusy przy ręcznej wysyłce wysyła `tracking_url: '#'`. Dostawca `manual` etykiety zachowuje.
 - **Rozwiązanie:** przy tworzeniu przesyłki podaj wszystkie etykiety jeszcze raz; adres śledzenia waliduj jako http(s) i wyświetlaj tylko prawdziwy. Zrealizowane zamówienia w Medusie zostają `pending` na zawsze, więc nie opieraj na statusie listy "do wysyłki".
+
+## Błąd z kroku workflow dociera do trasy jako zwykły obiekt
+Słowa: `instanceof MedusaError`, `__isMedusaError`, `type`, `code`, `StepResponse`, `invalid_request_error`
+
+- **Objaw:** trasa łapie błąd rzucony w kroku workflow i sprawdza `err instanceof MedusaError`; sprawdzenie jest fałszywe, odpowiedź HTTP ma `code: 'invalid_request_error'` zamiast własnego kodu (test HTTP pokazał to przy duplikacie handle marki).
+- **Przyczyna:** błąd przechodzi przez serializację silnika workflow i wraca jako zwykły `Error` z polami `__isMedusaError`, `type`, `code`, `message`, nie jako instancja klasy (źródło: obserwacja w `medusa-brands`, Task 5 kroku 2; mechanizm w silniku nie badany).
+- **Rozwiązanie:** rozpoznawaj błąd po `type` i `code` (np. `err.type === 'duplicate_error' && err.code === BRAND_ERROR_CODES.handleTaken`), a nie po `instanceof`; test HTTP na kod w odpowiedzi.
+
+## Zdarzenia pluginu a zdarzenia modułów Medusy: nazwa `brand.*` nie koliduje
+Słowa: `brand.created`, `product-brand.updated`, `{moduł}.{model}.{akcja}`, `eventBusModuleService`
+
+- **Objaw:** obawa, że neutralna nazwa zdarzenia pluginu (`brand.updated`) zderzy się ze zdarzeniami generowanymi przez Medusę dla modułu `brand`.
+- **Przyczyna:** zdarzenia generowane przez serwis modułu mają nazwę `<serwis>.<model>.<akcja>` (dla modułu `brand` i modelu `brand`: `brand.brand.created`), więc dwuczłonowa nazwa `brand.created` jest wolna (źródło: konwencja `MedusaService` w 2.21, sprawdzona przy `medusa-brands`).
+- **Rozwiązanie:** zdarzenia pluginu emituj w workflow (`emitEventStep`) pod nazwami bez prefiksu sklepu (`brand.created|updated|deleted`, `product-brand.updated`), eksportuj je jako stałe (`BRAND_EVENTS`); sklep przy przejściu na plugin zmienia nazwy w subskrybentach (stare nazwy z prefiksem sklepu → `brand.*`). Same nazwy generowane przez Medusę ignoruj.

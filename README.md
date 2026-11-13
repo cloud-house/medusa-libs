@@ -6,19 +6,21 @@ under the `@cloud-house` scope.
 
 ## Packages
 
-- [`@cloud-house/commerce-rules`](packages/commerce-rules) – pure commerce rules
-- [`@cloud-house/medusa-brands`](packages/medusa-brands) – Medusa plugin: product brands (module, link, events, admin, store list)
-- [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) – Medusa plugin: newsletter sign-ups
-- [`@cloud-house/medusa-omnibus`](packages/medusa-omnibus) – Medusa plugin: price history for the Omnibus directive
-
-| Package | Version | What it is | Options |
-|---|---|---|---|
-| `@cloud-house/commerce-rules` | 0.2.0 | Pure commerce rules (price format, plurals, tax id, seller, Omnibus, discounts, stock) | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, { locale })`, `lineDiscountLabel(parts, { locale, messages })`, `sellerLine(seller, { locale, taxIdLabel })` |
-| `@cloud-house/medusa-brands` | 0.1.0 | Product brands: module, product link, workflows with `brand.*` events, admin page and product widget, `GET /store/brands` | `locale`, `messages`, `storeRoute` |
-| `@cloud-house/medusa-newsletter` | 0.1.1 | Sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
-| `@cloud-house/medusa-omnibus` | 0.1.2 | Hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
-
 Versions are independent per package; see each package's README and CHANGELOG.
+
+| Package | Version | What it is | Key options |
+|---|---|---|---|
+| [`@cloud-house/commerce-rules`](packages/commerce-rules) | 0.4.0 | Pure commerce rules: price format, plurals, tax id, seller line, Omnibus, discounts, stock, handle slugs, cache-tag rules | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, { locale })`, `lineDiscountLabel(parts, { locale, messages })`, `sellerLine(seller, { locale, taxIdLabel })`, `createTagRules(...)` |
+| [`@cloud-house/medusa-brands`](packages/medusa-brands) | 0.1.1 | Medusa plugin: product brands (module, product link, workflows with `brand.*` events, admin list and product widget, `GET /store/brands`) | `locale`, `messages`, `storeRoute`, `adminDetailLinks` |
+| [`@cloud-house/medusa-favorites`](packages/medusa-favorites) | 0.1.0 | Medusa plugin: customer favourites (module, `/store/account/favorites` routes, guest-list merge, visibility filter); no admin | `limit`, `locale`, `messages` |
+| [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) | 0.1.1 | Medusa plugin: sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
+| [`@cloud-house/medusa-omnibus`](packages/medusa-omnibus) | 0.1.4 | Medusa plugin: hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
+| [`@cloud-house/medusa-revalidation`](packages/medusa-revalidation) | 0.1.2 | Library for the Medusa backend (not a plugin): maps Medusa events to cache tags and POSTs them to the storefront | `createRevalidationSubscriber({ events, tagsForEvent, urlEnv, secretEnv, header, isAllowedTag, logPrefix })` |
+| [`@cloud-house/next-medusa`](packages/next-medusa) | 0.1.1 | Library for a Next.js 16 storefront: Medusa SDK getter, env check, cached fetch init with a version header, `/api/revalidate` route, cart cookie | `medusaEnv`, `cachedInit`, `createRevalidateRoute({ secretEnv, header, isAllowedTag, locale, messages, logPrefix })`, `createCartCookie({ name, maxAgeDays })` |
+
+Plugins (`medusa-brands`, `medusa-favorites`, `medusa-newsletter`, `medusa-omnibus`) go into `plugins`
+of `medusa-config.ts`; libraries (`commerce-rules`, `medusa-revalidation`, `next-medusa`) are plain
+dependencies you import.
 
 ## Example `medusa-config.ts`
 
@@ -36,12 +38,83 @@ module.exports = defineConfig({
       },
     },
     { resolve: '@cloud-house/medusa-omnibus', options: { logPrefix: 'Acme' } },
+    {
+      resolve: '@cloud-house/medusa-brands',
+      options: {
+        locale: 'en',
+        // true: the list shows a "details" button linking to /brands/:id, a page your shop provides
+        adminDetailLinks: false,
+        // false: GET /store/brands answers 404 (a route file of your own replaces it either way)
+        storeRoute: true,
+      },
+    },
+    {
+      resolve: '@cloud-house/medusa-favorites',
+      options: { locale: 'en', limit: 50 },
+    },
   ],
 })
 ```
 
-Run `medusa db:migrate` after adding a plugin. Do not also list a plugin's module under `modules`:
-that entry replaces the plugin's module and its options.
+Run `medusa db:migrate` (and `medusa db:sync-links` for the brand link) after adding a plugin. Do not
+also list a plugin's module under `modules`: that entry replaces the plugin's module and its options.
+
+## Storefront revalidation
+
+Backend: a subscriber built with `@cloud-house/medusa-revalidation` sends cache tags to the storefront
+after Medusa events (products, categories, stock, prices, promotions and `brand.*` out of the box).
+
+```ts
+// src/subscribers/revalidate-storefront.ts
+import {
+  createRevalidationSubscriber,
+  DEFAULT_REVALIDATION_EVENTS,
+  defaultTagsForEvent,
+} from '@cloud-house/medusa-revalidation'
+
+const { handler, config: subscriberConfig } = createRevalidationSubscriber({
+  events: [...DEFAULT_REVALIDATION_EVENTS, 'acme.page.changed'],
+  tagsForEvent: async (name, data, lookup) =>
+    (await defaultTagsForEvent(name, data, lookup)) ?? ['pages'],
+  logPrefix: 'Acme',
+})
+
+export default handler
+export const config = subscriberConfig
+```
+
+It reads `STOREFRONT_URL` and `REVALIDATE_SECRET` (names are options) and POSTs `{ tags }` to
+`<STOREFRONT_URL>/api/revalidate` with the secret in `x-revalidate-secret`.
+
+Storefront: `@cloud-house/next-medusa` (`pnpm add @cloud-house/next-medusa @medusajs/js-sdk server-only`;
+peer `next` 16). It has two entries: `@cloud-house/next-medusa` is safe in client code,
+`@cloud-house/next-medusa/server` imports `server-only`.
+
+```ts
+// app/api/revalidate/route.ts
+import { createRevalidateRoute } from '@cloud-house/next-medusa/server'
+
+export const { POST } = createRevalidateRoute({ logPrefix: 'Acme' })
+```
+
+```ts
+// lib/medusa.ts
+import { cachedInit } from '@cloud-house/next-medusa'
+import { createCartCookie, createSdkGetter, medusaEnv } from '@cloud-house/next-medusa/server'
+
+export const env = medusaEnv({ defaultBackendUrl: 'http://localhost:9000' })
+export const getSdk = createSdkGetter(env)
+export const cartCookie = createCartCookie({ name: 'acme_cart' })
+
+// fetch init: force-cache, tags, revalidate seconds, and a version header; bump `version`
+// whenever the shape of a cached response changes
+export const productInit = (handle: string) =>
+  cachedInit({ tags: ['catalog', `product:${handle}`], revalidate: 300, versionHeader: 'x-acme-api-version', version: 1 })
+```
+
+Both sides use the tag rules from `commerce-rules` (`catalog`, `promotions`, `product:*`,
+`category:*`, `brand:*` by default; `createTagRules` adds your own), so the backend never sends a
+tag the storefront rejects.
 
 ## Installing in a shop
 

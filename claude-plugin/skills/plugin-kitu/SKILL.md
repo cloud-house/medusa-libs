@@ -5,12 +5,13 @@ description: Use when adding a new package or Medusa plugin to the medusa-libs k
 
 # Plugin kitu
 
-Przepis oparty na tym, jak zrobiono `commerce-rules`, `medusa-newsletter` i `medusa-omnibus` (kroki 0-1 kitu). Zanim zaczniesz, przejrzyj skill `pulapki-medusa-next` (`medusa-plugin.md`, `medusa-testy.md`, `pnpm-monorepo.md`).
+Przepis oparty na tym, jak zrobiono `commerce-rules`, `medusa-newsletter`, `medusa-omnibus` (kroki 0-1 kitu) oraz `medusa-brands`, `medusa-favorites`, `medusa-revalidation` i `next-medusa` (krok 2). Zanim zaczniesz, przejrzyj skill `pulapki-medusa-next` (`medusa-plugin.md`, `medusa-testy.md`, `pnpm-monorepo.md`).
 
 ## 1. Czy to powinien być pakiet i jaki
 
 - **Czysta logika** (bez Medusy, bez tekstów dla klienta, bez wiedzy o jednym sklepie): `packages/commerce-rules` (vitest, tsup, ESM + CJS). Nie dodawaj tam niczego specyficznego dla marki (nazwy tagów cache, polskie formy słów konkretnego asortymentu); to zostaje w sklepie.
 - **Moduł, trasy, job, panel admina**: osobny plugin Medusy `packages/medusa-<nazwa>`.
+- **Biblioteka zamiast pluginu** (zwykły pakiet npm, bez `plugins[]` i bez modułu), gdy kod nie ma własnych tabel, tras ani panelu i sklep ma go po prostu zaimportować: `medusa-revalidation` (kod w backendzie: wysyłka tagów, fabryka subscribera; sklep pisze własny plik subscribera, bo Medusa ładuje subscribery tylko z `src/subscribers` projektu) i `next-medusa` (kod w storefroncie Next). Test: czy to ma migracje, trasę albo stronę panelu? Tak = plugin; nie = biblioteka. Biblioteka: tsup, ESM + CJS, `peerDependencies` tylko na to, co kod faktycznie importuje.
 - Zasada przy przenoszeniu: to samo kod ze sklepu, zmiany tylko konieczne do uogólnienia (opcje, słowniki, nazwy). Nie pisz od nowa.
 - W kodzie, testach i dokumentacji kitu nie ma nazwy żadnego sklepu, sekretów ani adresów (`grep -rni <sklep> packages apps claude-plugin` pusty). Przykłady: „Acme”, „Shop”.
 
@@ -110,3 +111,35 @@ class XModuleService extends MedusaService({ Model }) {
 5. Weryfikacja: migracja na kopii bazy (pkt 5 wyżej), `pnpm build && pnpm typecheck && pnpm lint && pnpm test`, E2E sklepu, ręczne sprawdzenie panelu pluginu i joba.
 6. Po usuwaniu tras: skasuj `apps/storefront/.next` (zob. `next-cache-metadane.md`).
 7. Dokumentacja sklepu: wpis w dzienniku decyzji, a CI, Docker i hosting potrzebują `NODE_AUTH_TOKEN` z `read:packages` przy `pnpm install`.
+
+## 9. Pakiet dla Next.js (`next-medusa`)
+
+- **Dwa wejścia** w `exports`: `.` (bezpieczne w kodzie klienckim: błędy, `cachedInit`) i `./server` (importuje `server-only`, czyta `process.env`, `next/headers`, `next/cache`). Nie mieszaj ich: import wejścia `./server` z komponentu klienta ma paść przy buildzie.
+- `server-only` i `@medusajs/js-sdk` są peerami (sklep je ma), `next` też (`^16.3.3`). Nie bundluj Next do `dist` (tsup `external`).
+- Importy `next/headers` i `next/cache` w `dist` muszą mieć rozszerzenie (`next/headers.js`), inaczej zwykły Node ESM i Vitest ich nie rozwiążą (zob. `pulapki-medusa-next`, `vitest.md`). Do czasu poprawki sklep w `vitest.config` dodaje `server.deps.inline: ['@cloud-house/next-medusa']` i `vi.mock('server-only')`.
+- Wszystko, co sklep chciałby zmienić, jest opcją fabryki (`createCartCookie({ name })`, `createRevalidateRoute({ header, secretEnv, locale, messages, logPrefix })`), a nie stałą w pakiecie. Pakiet nie zna nazw ciasteczek, nagłówków ani tagów sklepu.
+
+## 10. Wzorce: trasa sklepu nad trasą pluginu, strony admina dostarczane przez sklep
+
+- **Trasa sklepu wygrywa z trasą pluginu** o tej samej ścieżce (pliki `route.ts` ładowane po kolei: pluginy, na końcu projekt). Sklep, który ma własną wersję (np. `/store/brands` liczone przez swój katalog), po prostu ma własny plik trasy i nie potrzebuje opcji; opcja `storeRoute: false` służy sklepowi, który nie chce tej trasy wcale (handler woła `next()`, odpowiedź jak dla nieznanej ścieżki). Logikę trasy eksportuj osobno (`brandsStoreRoute`), żeby sklep mógł ją podpiąć w swoim pliku. Zob. `pulapki-medusa-next/references/medusa-plugin.md`.
+- **Strona admina, którą ma dostarczyć sklep** (`adminDetailLinks`): plugin nie wysyła strony `/brands/:id`, bo kolidowałaby ze stroną sklepu (dwie strony pod jedną ścieżką). Zamiast tego opcja `adminDetailLinks` (domyślnie `false`) jest wystawiona przez `GET /admin/<plugin>/messages` w polu `settings`; lista w panelu pluginu pokazuje przycisk „Szczegóły” z linkiem tylko, gdy sklep ją włączył i sam dostarcza stronę pod tą ścieżką. Ta sama zasada dla każdego pluginu: plugin daje listę i stałe ścieżki, szczegóły i edycję bogatszą niż minimum robi sklep.
+- Teksty domyślne pluginu są neutralne (bez ścieżek i nazw jednego sklepu); sklep nadpisuje je opcją `messages`, żeby zachować własne brzmienie.
+
+## 11. Wydania: PR „Version packages”
+
+Od 2026-11-12 organizacja pozwala Actions otwierać PR-y, więc obowiązuje droga z punktu 7 (changeset w PR-ze funkcji, wersje podbija bot):
+
+1. PR funkcji z changesetem → zielony `check` → `gh pr merge --squash --delete-branch`.
+2. `release.yml` otwiera (albo aktualizuje) PR „Version packages”.
+3. **CI tego PR-a kończy się `action_required`**: PR otwarty przez bota (`GITHUB_TOKEN`) wymaga zatwierdzenia przebiegu przez człowieka, a wymagany `check` nie ruszy sam. Zatwierdź przebieg przez API (bez omijania ochrony `main`):
+
+   ```sh
+   gh run list -R cloud-house/medusa-libs --branch changeset-release/main -L 3   # id przebiegu
+   gh api -X POST repos/cloud-house/medusa-libs/actions/runs/<id>/approve
+   gh pr checks <nr> -R cloud-house/medusa-libs --watch
+   gh pr merge <nr> -R cloud-house/medusa-libs --squash
+   ```
+
+4. Po scaleniu `release.yml` publikuje; sprawdź `gh run view <id> --log` („New tag:”) i `npm view @cloud-house/<pakiet> version --registry=https://npm.pkg.github.com`.
+5. Zależności wewnętrzne: gdy pakiet dostaje minor, changesets podbija patch u jego dependentów w tym samym PR-ze „Version packages” (np. nowy minor `commerce-rules` daje patch `medusa-omnibus`). To oczekiwane; sklep aktualizuje też te wersje i dopisuje je do `minimumReleaseAgeExclude` w `pnpm-workspace.yaml`.
+6. Zmiany tylko w dokumentacji i w `claude-plugin/` nie potrzebują changesetu.
