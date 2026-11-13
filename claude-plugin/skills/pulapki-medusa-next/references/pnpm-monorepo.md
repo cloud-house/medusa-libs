@@ -83,3 +83,17 @@ Słowa: `changesets/action`, "Version packages", `workflow_dispatch`, 502, `pnpm
 - **Objaw:** `changesets/action` nie może otworzyć PR-a „Version packages” (ustawienie organizacji blokuje tworzenie PR-ów przez Actions i zapis dla workflow, 409); po scaleniu PR-a raz nie powstał żaden przebieg release.
 - **Przyczyna:** ustawienie organizacji „Allow GitHub Actions to create and approve pull requests” jest wyłączone (zmienia je admin organizacji). Brak przebiegu po scaleniu: błąd 502 po stronie GitHuba przy merge (przyczyna nieustalona).
 - **Rozwiązanie:** obejście bez zmiany ustawienia: w gałęzi PR-a `pnpm changeset` i od razu `pnpm changeset version` (podbija wersję, pisze CHANGELOG, zużywa changeset), commit; po scaleniu `release.yml` nie znajduje changesetów i uruchamia `pnpm release` (publikacja). Workflow ma też `workflow_dispatch`, żeby dało się go uruchomić ręcznie. Publikację sprawdzaj w logu przebiegu (`gh run view <id> --log`). Docelowo: admin organizacji włącza „Allow GitHub Actions to create and approve pull requests” (Org Settings → Actions → General → Workflow permissions), a potem to samo w repo (`gh api -X PUT repos/ORG/REPO/actions/permissions/workflow -f default_workflow_permissions=read -F can_approve_pull_request_reviews=true`); w repo pole jest wyszarzone, dopóki organizacja go nie odblokuje. W kicie włączone 2026-11-12.
+
+## PR „Version packages” od bota kończy CI jako `action_required`
+Słowa: `action_required`, `changesets/action`, `GITHUB_TOKEN`, `check`, "Version packages", `approve`
+
+- **Objaw:** PR „Version packages” otwarty przez `release.yml` nie ma zielonego `check`; przebieg CI ma status `action_required` i nic się nie dzieje, a `main` bez zielonego `check` nie pozwala scalić.
+- **Przyczyna:** przebiegi wywołane przez PR od bota (`GITHUB_TOKEN`) wymagają ręcznego zatwierdzenia (ustawienie repozytorium dla przebiegów z PR-ów spoza zaufanych; źródło: obserwacja w `cloud-house/medusa-libs` przy PR-ach #13 i kolejnych po włączeniu Actions-PR 2026-11-12; dokładny mechanizm GitHuba nieustalony).
+- **Rozwiązanie:** człowiek (nie bot) zatwierdza przebieg: `gh api -X POST repos/<owner>/<repo>/actions/runs/<id>/approve` (id z `gh run list --branch changeset-release/main`), potem `gh pr checks --watch` i zwykłe scalenie. Bez `--admin` i bez zmiany ochrony `main`.
+
+## Changesets podbija patch dependentów przy minorze zależności
+Słowa: `changeset version`, `dependents`, `updateInternalDependencies`, patch, "Version packages"
+
+- **Objaw:** po zmianie `commerce-rules` na minor PR „Version packages” podbija też `medusa-omnibus`, `medusa-brands` i inne pakiety, którym nikt nie dopisał changesetu.
+- **Przyczyna:** pakiety zależą od `commerce-rules` zakresem `^` / dokładną wersją, a changesets aktualizuje wewnętrzne zależności i podnosi patch dependentów (zachowanie oczekiwane; źródło: PR-y „Version packages” #13, #21 kroku 2).
+- **Rozwiązanie:** nic nie poprawiaj; sklep po wydaniu aktualizuje wersje tych pakietów razem i dopisuje je do `minimumReleaseAgeExclude`.

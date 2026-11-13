@@ -1,7 +1,7 @@
 {
   "name": "kit-sklepow",
   "description": "Kit sklepów na Medusie 2 i Next.js: pułapki z pierwszego wdrożenia, standard dodawania pluginów kitu, lista kroków nowego sklepu.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "author": { "name": "cloud-house" },
   "repository": "https://github.com/cloud-house/medusa-libs"

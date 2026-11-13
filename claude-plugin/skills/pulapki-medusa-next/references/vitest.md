@@ -34,3 +34,10 @@ Słowa: React, "Encountered a script tag", canary
 - **Objaw:** ostrzeżenie o tagu `<script>` w komponencie widać w Next, ale nie w Vitest.
 - **Przyczyna:** stabilny React w Vitest nie ma tego ostrzeżenia (jest w canary dołączanym do Next).
 - **Rozwiązanie:** sprawdzaj to w E2E, nie w teście jednostkowym.
+
+## Pakiet z `next/headers` bez rozszerzenia nie ładuje się w Vitest
+Słowa: `next/headers`, `next/cache`, `server.deps.inline`, `@cloud-house/next-medusa`, `server-only`, `ERR_MODULE_NOT_FOUND`
+
+- **Objaw:** test jednostkowy storefrontu, który importuje `@cloud-house/next-medusa/server`, pada na rozwiązaniu `next/headers` albo `next/cache`; w Next (bundler) działa.
+- **Przyczyna:** `dist/server.js` pakietu (wersje 0.1.0 i 0.1.1) importuje `next/headers` i `next/cache` bez `.js`; Vitest zostawia pakiety z `node_modules` jako zewnętrzne i ładuje je zwykłym Node ESM, który nie dopisuje rozszerzeń (źródło: pierwsze przejście sklepu na pakiet, krok 2 kitu). Poprawka w kicie jest zaplanowana.
+- **Rozwiązanie:** w `vitest.config` projektu jednostkowego `test.server.deps.inline: ['@cloud-house/next-medusa']` (pakiet przechodzi przez transformer Vite), a w testach modułów, które importują wejście `/server`, `vi.mock('server-only')`.
