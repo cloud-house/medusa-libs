@@ -56,7 +56,7 @@ module.exports = defineConfig({
 })
 ```
 
-Run `medusa db:migrate` (and `medusa db:sync-links` for the brand link) after adding a plugin. Do not
+Run `medusa db:migrate` after adding a plugin (it also syncs links unless you pass `--skip-links`). Do not
 also list a plugin's module under `modules`: that entry replaces the plugin's module and its options.
 
 ## Storefront revalidation
@@ -66,16 +66,25 @@ after Medusa events (products, categories, stock, prices, promotions and `brand.
 
 ```ts
 // src/subscribers/revalidate-storefront.ts
+import { createTagRules, KIT_TAG_KINDS, KIT_TAGS } from '@cloud-house/commerce-rules'
 import {
   createRevalidationSubscriber,
   DEFAULT_REVALIDATION_EVENTS,
   defaultTagsForEvent,
 } from '@cloud-house/medusa-revalidation'
 
+// A shop tag such as 'pages' is outside the kit allowlist: build the rules once and pass the
+// SAME `isAllowedTag` to the subscriber and to the storefront route.
+const { isAllowedTag } = createTagRules({
+  tags: [...Object.values(KIT_TAGS), 'pages'],
+  kinds: [...KIT_TAG_KINDS],
+})
+
 const { handler, config: subscriberConfig } = createRevalidationSubscriber({
   events: [...DEFAULT_REVALIDATION_EVENTS, 'acme.page.changed'],
   tagsForEvent: async (name, data, lookup) =>
     (await defaultTagsForEvent(name, data, lookup)) ?? ['pages'],
+  isAllowedTag,
   logPrefix: 'Acme',
 })
 
@@ -92,24 +101,33 @@ peer `next` 16). It has two entries: `@cloud-house/next-medusa` is safe in clien
 
 ```ts
 // app/api/revalidate/route.ts
+import { createTagRules, KIT_TAG_KINDS, KIT_TAGS } from '@cloud-house/commerce-rules'
 import { createRevalidateRoute } from '@cloud-house/next-medusa/server'
 
-export const { POST } = createRevalidateRoute({ logPrefix: 'Acme' })
+// Same rules as in the backend subscriber, otherwise 'pages' is rejected with 400.
+const { isAllowedTag } = createTagRules({
+  tags: [...Object.values(KIT_TAGS), 'pages'],
+  kinds: [...KIT_TAG_KINDS],
+})
+
+export const { POST } = createRevalidateRoute({ isAllowedTag, logPrefix: 'Acme' })
 ```
 
 ```ts
 // lib/medusa.ts
+import { KIT_TAGS, productTag } from '@cloud-house/commerce-rules'
 import { cachedInit } from '@cloud-house/next-medusa'
 import { createCartCookie, createSdkGetter, medusaEnv } from '@cloud-house/next-medusa/server'
 
-export const env = medusaEnv({ defaultBackendUrl: 'http://localhost:9000' })
+// lazy: a missing variable fails on the first fetch, not when the module is imported
+export const env = () => medusaEnv({ defaultBackendUrl: 'http://localhost:9000' })
 export const getSdk = createSdkGetter(env)
 export const cartCookie = createCartCookie({ name: 'acme_cart' })
 
 // fetch init: force-cache, tags, revalidate seconds, and a version header; bump `version`
 // whenever the shape of a cached response changes
 export const productInit = (handle: string) =>
-  cachedInit({ tags: ['catalog', `product:${handle}`], revalidate: 300, versionHeader: 'x-acme-api-version', version: 1 })
+  cachedInit({ tags: [KIT_TAGS.catalog, productTag(handle)], revalidate: 300, versionHeader: 'x-acme-api-version', version: 1 })
 ```
 
 Both sides use the tag rules from `commerce-rules` (`catalog`, `promotions`, `product:*`,

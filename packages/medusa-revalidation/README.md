@@ -21,16 +21,25 @@ Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc`. Peer: `
 
 ```ts
 // src/subscribers/revalidate-storefront.ts
+import { createTagRules, KIT_TAG_KINDS, KIT_TAGS } from '@cloud-house/commerce-rules'
 import {
   createRevalidationSubscriber,
   DEFAULT_REVALIDATION_EVENTS,
   defaultTagsForEvent,
 } from '@cloud-house/medusa-revalidation'
 
+// 'pages' is outside the kit allowlist. Build the rules once and pass the SAME `isAllowedTag`
+// here and to `createRevalidateRoute` in the storefront, or the tag is dropped / rejected.
+const { isAllowedTag } = createTagRules({
+  tags: [...Object.values(KIT_TAGS), 'pages'],
+  kinds: [...KIT_TAG_KINDS],
+})
+
 const { handler, config: subscriberConfig } = createRevalidationSubscriber({
   events: [...DEFAULT_REVALIDATION_EVENTS, 'shop.page.changed'],
   tagsForEvent: async (name, data, lookup) =>
     (await defaultTagsForEvent(name, data, lookup)) ?? ['pages'],
+  isAllowedTag,
   logPrefix: 'MyShop',
 })
 

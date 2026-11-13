@@ -131,7 +131,7 @@ Od 2026-11-12 organizacja pozwala Actions otwierać PR-y, więc obowiązuje drog
 
 1. PR funkcji z changesetem → zielony `check` → `gh pr merge --squash --delete-branch`.
 2. `release.yml` otwiera (albo aktualizuje) PR „Version packages”.
-3. **CI tego PR-a kończy się `action_required`**: PR otwarty przez bota (`GITHUB_TOKEN`) wymaga zatwierdzenia przebiegu przez człowieka, a wymagany `check` nie ruszy sam. Zatwierdź przebieg przez API (bez omijania ochrony `main`):
+3. **CI tego PR-a kończy się `action_required`**: PR otwarty przez bota (`GITHUB_TOKEN`) wymaga zatwierdzenia przebiegu przez człowieka, a wymagany `check` nie ruszy sam. **Przed zatwierdzeniem sprawdź PR**: autor to `github-actions[bot]`, gałąź `changeset-release/main`, a diff zawiera wyłącznie podbicia wersji (`package.json`), `CHANGELOG.md` i usunięte `.changeset/*.md` (`gh pr view <nr> -R cloud-house/medusa-libs --json author,headRefName,files`, `gh pr diff <nr>`). Zatwierdzenie uruchamia kod z gałęzi PR-a z dostępem do sekretów, więc cokolwiek innego w diffie zatrzymuje wydanie. Dopiero wtedy zatwierdź przebieg przez API (bez omijania ochrony `main`):
 
    ```sh
    gh run list -R cloud-house/medusa-libs --branch changeset-release/main -L 3   # id przebiegu
