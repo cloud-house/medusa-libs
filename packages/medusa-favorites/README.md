@@ -46,15 +46,18 @@ Merge: one entry per product, the newer date wins, dates from the future become 
 the oldest entries above `limit` are dropped (`trimmed: true`), products the shop does not show are
 ignored. The limit counts only visible products; at the limit, hidden rows make room for a new one.
 
-Error codes (`code` in the body, `FAVORITES_ERROR_CODES`):
+Error codes (`code` in the body, `FAVORITES_ERROR_CODES`; `<domain>_<reason>`, prefix `favorites_`; invalid input gets Medusa's default 400 body). **Breaking in 0.2.0:** `product_not_found` is now `favorites_product_not_found`.
 
 | Code | Status | `type` | Default text (`pl`) |
 |---|---|---|---|
-| `product_not_found` | 404 | `not_found` | `Nie znaleziono produktu.` |
-| `favorites_limit_reached` | 400 | `invalid_data` | `Masz już {limit} ulubionych – usuń któryś, żeby dodać nowy.` |
+| `favorites_product_not_found` | 404 | `not_found` | `Nie znaleziono produktu.` |
+| `favorites_limit_reached` | 400 | `invalid_data` | `Masz już {limit} {favorites} – usuń któryś, żeby dodać nowy.` |
 
-`{limit}` is replaced with the `limit` option. The Polish text for 100 is the one many shops
-already compare word for word.
+`{limit}` is replaced with the `limit` option and `{favorites}` with the noun in the form that
+number needs: Polish `ulubiony` (1), `ulubione` (2-4, not 12-14), `ulubionych` (the rest); English
+`favourite` (1) or `favourites`. So the default reads "Masz już 3 ulubione – ..." for `limit: 3` and
+stays "Masz już 100 ulubionych – ..." for 100. A text you set in `messages.limitReached` is used as
+it is (`{limit}` still replaced; `{favorites}` optional).
 
 ## Exports
 

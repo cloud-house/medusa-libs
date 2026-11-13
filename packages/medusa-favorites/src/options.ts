@@ -1,5 +1,7 @@
+import { pluralize, pluralizePl } from '@cloud-house/commerce-rules'
 import {
   FAVORITES_LOCALES,
+  FAVORITES_NOUNS,
   type FavoritesLocale,
   type FavoritesMessages,
   resolveMessages,
@@ -39,6 +41,14 @@ export function resolveOptions(options: FavoritesOptions = {}): ResolvedFavorite
   return { limit, locale, messages: resolveMessages(locale, messages) }
 }
 
-/** The "list is full" text with the `limit` option put in. */
+/** The noun after a number of favourites, in the form the locale needs. */
+export const favoritesNoun = (count: number, locale: FavoritesLocale): string =>
+  locale === 'pl'
+    ? pluralizePl(count, FAVORITES_NOUNS.pl)
+    : pluralize(count, { one: FAVORITES_NOUNS.en[0], other: FAVORITES_NOUNS.en[1] }, { locale })
+
+/** The "list is full" text with the `limit` option and its noun put in. */
 export const formatLimitMessage = (options: ResolvedFavoritesOptions): string =>
-  options.messages.limitReached.replaceAll('{limit}', String(options.limit))
+  options.messages.limitReached
+    .replaceAll('{limit}', String(options.limit))
+    .replaceAll('{favorites}', favoritesNoun(options.limit, options.locale))

@@ -14,8 +14,9 @@ Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc`. Peer: `
 - `DEFAULT_REVALIDATION_EVENTS` – product, variant, category, inventory, reservation, pricing, promotion events plus `brand.created|updated|deleted` and `product-brand.updated` (matched by name only)
 - `defaultTagsForEvent(name, data, lookup)` – tags for a default event (`catalog`, `product:<handle>`, `category:<handle>`, `brand:<handle>` and `brand:<previous_handle>`, `promotions`); `null` for any other event, `[]` for `product-brand.updated` without a brand change
 - `TagLookup` – `{ productHandle(id), categoryHandle(id) }`
-- `postRevalidate(tags, { url, secret, header = 'x-revalidate-secret', isAllowedTag = isKitTagAllowed, fetch, logger, logPrefix })` – POSTs `{ tags }` to `<url>/api/revalidate`; drops tags the allowlist rejects (logged), times out, never throws, returns `false` on failure
-- `createRevalidationSubscriber({ events, tagsForEvent, urlEnv = 'STOREFRONT_URL', secretEnv = 'REVALIDATE_SECRET', header, isAllowedTag, logPrefix })` – returns `{ handler, config }`; warns once when the URL or secret is missing
+- `postRevalidate(tags, { url, secret, header = 'x-revalidate-secret', isAllowedTag = isKitTagAllowed, fetch, logger, logPrefix, locale = 'en', messages })` – POSTs `{ tags }` to `<url>/api/revalidate`; drops tags the allowlist rejects (logged), times out, never throws, returns `false` on failure
+- `createRevalidationSubscriber({ events, tagsForEvent, urlEnv = 'STOREFRONT_URL', secretEnv = 'REVALIDATE_SECRET', header, isAllowedTag, logPrefix, locale = 'en', messages })` – returns `{ handler, config }`; warns once when the URL or secret is missing
+- `revalidationMessages` (`pl`, `en`), `resolveRevalidationMessages(locale, overrides)`, `RevalidationMessages` – the log lines; `locale: 'pl' | 'en'` (default `'en'`) picks the dictionary, `messages` replaces single lines (functions, `undefined` ones ignored). Every line starts with `<logPrefix>: `.
 
 ## Subscriber
 

@@ -204,4 +204,54 @@ describe('postRevalidate', () => {
     await postRevalidate(['catalog'], { url: 'http://shop.test', secret: 's', fetch, logger })
     expect(calls[0]?.init.signal).toBeInstanceOf(AbortSignal)
   })
+
+  describe('log language', () => {
+    const run = async (extra: Record<string, unknown>, status = 200, failing = false) => {
+      const c = capture(status)
+      const fetch = failing
+        ? ((async () => {
+            throw new Error('ECONNREFUSED')
+          }) as unknown as typeof globalThis.fetch)
+        : c.fetch
+      await postRevalidate(['catalog', 'nope'], {
+        url: 'http://shop.test',
+        secret: 's',
+        isAllowedTag: (t) => t === 'catalog',
+        fetch,
+        logger: c.logger,
+        logPrefix: 'Acme',
+        ...extra,
+      })
+      return c.warnings
+    }
+
+    it('defaults to English', async () => {
+      expect(await run({}, 401)).toEqual([
+        'Acme: skipped tags outside the storefront allowlist: nope.',
+        'Acme: storefront revalidation rejected (401) for catalog.',
+      ])
+    })
+
+    it('Polish lines are the texts of a shop that logged in Polish before the kit', async () => {
+      expect(await run({ locale: 'pl' }, 401)).toEqual([
+        'Acme: pominięto tagi spoza białej listy sklepu: nope.',
+        'Acme: rewalidacja sklepu odrzucona (401) dla catalog.',
+      ])
+      expect((await run({ locale: 'pl' }, 200, true))[1]).toBe(
+        'Acme: rewalidacja sklepu nie powiodła się dla catalog: Error: ECONNREFUSED',
+      )
+    })
+
+    it('single texts override the dictionary, undefined ones are ignored', async () => {
+      expect(
+        await run(
+          {
+            locale: 'pl',
+            messages: { skippedTags: (r: string[]) => `drop ${r.length}`, rejected: undefined },
+          },
+          500,
+        ),
+      ).toEqual(['Acme: drop 1', 'Acme: rewalidacja sklepu odrzucona (500) dla catalog.'])
+    })
+  })
 })

@@ -42,7 +42,10 @@ Without the env variable set, every sign-up is rejected with 401.
 | `GET /admin/newsletter-subscribers/export` | CSV with BOM, header from `messages.csvColumns` |
 | `GET /admin/newsletter/messages` | `{ locale, messages }` for the admin page |
 
-Error codes (`code` in the body): `already_subscribed` (422), `storefront_secret_invalid` (401).
+Error codes (`code` in the body, `NEWSLETTER_ERROR_CODES`): `newsletter_already_subscribed` (422),
+`newsletter_storefront_secret_invalid` (401). Codes follow `<domain>_<reason>` (prefix `newsletter_`).
+Invalid input gets Medusa's default 400 body. **Breaking in 0.2.0:** the codes used to be
+`already_subscribed` and `storefront_secret_invalid`; update any storefront code comparing them.
 
 Admin: the page `/app/newsletter` with its own menu entry.
 

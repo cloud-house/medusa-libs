@@ -1,26 +1,34 @@
 /**
- * Every text the plugin returns in API errors. `{limit}` is filled in with the `limit` option
- * where the text is used (see `formatLimitMessage`).
+ * Every text the plugin returns in API errors. In `limitReached`, `{limit}` is filled in with the
+ * `limit` option and `{favorites}` with the noun in the right form for it (ulubiony / ulubione /
+ * ulubionych; favourite / favourites). A text of your own may use both, one or none (see
+ * `formatLimitMessage`).
  */
 export interface FavoritesMessages {
-  /** 404 `product_not_found`. */
+  /** 404 `favorites_product_not_found`. */
   productNotFound: string
-  /** 400 `favorites_limit_reached`; `{limit}`. */
+  /** 400 `favorites_limit_reached`; `{limit}`, `{favorites}`. */
   limitReached: string
 }
 
 export type FavoritesLocale = 'pl' | 'en'
+
+/** The noun counted by `limit`: [1, 2–4 (not 12–14), the rest] in Polish, [1, the rest] in English. */
+export const FAVORITES_NOUNS = {
+  pl: ['ulubiony', 'ulubione', 'ulubionych'],
+  en: ['favourite', 'favourites'],
+} as const
 
 export const FAVORITES_LOCALES: readonly FavoritesLocale[] = ['pl', 'en']
 
 export const messages: Record<FavoritesLocale, FavoritesMessages> = {
   pl: {
     productNotFound: 'Nie znaleziono produktu.',
-    limitReached: 'Masz już {limit} ulubionych – usuń któryś, żeby dodać nowy.',
+    limitReached: 'Masz już {limit} {favorites} – usuń któryś, żeby dodać nowy.',
   },
   en: {
     productNotFound: 'Product not found.',
-    limitReached: 'You already have {limit} favourites – remove one to add a new one.',
+    limitReached: 'You already have {limit} {favorites} – remove one to add a new one.',
   },
 }
 

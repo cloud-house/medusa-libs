@@ -5,6 +5,11 @@ import {
   KIT_TAGS,
   productTag,
 } from '@cloud-house/commerce-rules'
+import {
+  type RevalidationLocale,
+  type RevalidationMessages,
+  resolveRevalidationMessages,
+} from './messages'
 
 /** A hanging storefront must not park the subscriber for undici's default five minutes. */
 export const REVALIDATE_TIMEOUT_MS = 10_000
@@ -96,6 +101,10 @@ export interface PostRevalidateOptions {
   logger: { warn(message: string): void }
   /** Prefix of log lines. Default `Revalidation`. */
   logPrefix?: string
+  /** Language of the log lines. Default `'en'`. */
+  locale?: RevalidationLocale
+  /** Single log texts over the `locale` dictionary. */
+  messages?: Partial<RevalidationMessages>
 }
 
 /** POSTs the tags to the storefront webhook. Never throws – a failed purge only logs a warning. */
@@ -105,13 +114,12 @@ export async function postRevalidate(
 ): Promise<boolean> {
   const isAllowed = options.isAllowedTag ?? isKitTagAllowed
   const prefix = options.logPrefix ?? 'Revalidation'
+  const texts = resolveRevalidationMessages(options.locale, options.messages)
   // The webhook rejects a whole batch with one bad tag – drop it here so the rest still purges.
   const allowed = tags.filter(isAllowed)
   if (allowed.length < tags.length) {
     const rejected = tags.filter((tag) => !isAllowed(tag))
-    options.logger.warn(
-      `${prefix}: skipped tags outside the storefront allowlist: ${rejected.join(', ')}.`,
-    )
+    options.logger.warn(`${prefix}: ${texts.skippedTags(rejected)}`)
   }
   if (allowed.length === 0) return true
   const doFetch = options.fetch ?? globalThis.fetch
@@ -126,13 +134,9 @@ export async function postRevalidate(
       signal: AbortSignal.timeout(REVALIDATE_TIMEOUT_MS),
     })
     if (response.ok) return true
-    options.logger.warn(
-      `${prefix}: storefront revalidation rejected (${response.status}) for ${allowed.join(', ')}.`,
-    )
+    options.logger.warn(`${prefix}: ${texts.rejected(response.status, allowed)}`)
   } catch (error) {
-    options.logger.warn(
-      `${prefix}: storefront revalidation failed for ${allowed.join(', ')}: ${error}`,
-    )
+    options.logger.warn(`${prefix}: ${texts.failed(allowed, error)}`)
   }
   return false
 }

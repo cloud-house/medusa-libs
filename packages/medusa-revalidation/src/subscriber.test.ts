@@ -78,4 +78,46 @@ describe('createRevalidationSubscriber', () => {
     expect(fetchMock).not.toHaveBeenCalled()
     expect(warnings[0]).toContain('boom')
   })
+
+  it('logs in English by default and in Polish with locale pl, as the Polish shop did before the kit', async () => {
+    await make({ logPrefix: 'Acme' }).handler(args('product.updated'))
+    await make({ logPrefix: 'Acme', locale: 'pl' }).handler(args('product.updated'))
+    expect(warnings).toEqual([
+      'Acme: STOREFRONT_URL or REVALIDATE_SECRET is not set – the storefront refreshes Medusa data only when its cache expires.',
+      'Acme: brak STOREFRONT_URL lub REVALIDATE_SECRET – sklep odświeży dane Medusy dopiero po 5 minutach.',
+    ])
+
+    vi.stubEnv('STOREFRONT_URL', 'http://shop.test')
+    vi.stubEnv('REVALIDATE_SECRET', 'sec')
+    warnings.length = 0
+    const boom = async () => {
+      throw new Error('boom')
+    }
+    await make({ logPrefix: 'Acme', locale: 'pl', tagsForEvent: boom }).handler(
+      args('product.updated'),
+    )
+    await make({ logPrefix: 'Acme', tagsForEvent: boom }).handler(args('product.updated'))
+    expect(warnings).toEqual([
+      'Acme: nie udało się ustalić tagów rewalidacji dla product.updated: Error: boom',
+      'Acme: could not work out revalidation tags for product.updated: Error: boom',
+    ])
+  })
+
+  it('passes locale and message overrides on to the POST log', async () => {
+    vi.stubEnv('STOREFRONT_URL', 'http://shop.test')
+    vi.stubEnv('REVALIDATE_SECRET', 'sec')
+    fetchMock.mockResolvedValueOnce(new Response('{}', { status: 403 }))
+    await make({ locale: 'pl', messages: { failed: undefined } }).handler(
+      args('product.updated', { id: 'p1' }),
+    )
+    expect(warnings).toEqual([
+      'Shop: rewalidacja sklepu odrzucona (403) dla catalog, product:deska.',
+    ])
+    warnings.length = 0
+    fetchMock.mockResolvedValueOnce(new Response('{}', { status: 403 }))
+    await make({ messages: { rejected: (s: number) => `nope ${s}` } }).handler(
+      args('product.updated', { id: 'p1' }),
+    )
+    expect(warnings).toEqual(['Shop: nope 403'])
+  })
 })
