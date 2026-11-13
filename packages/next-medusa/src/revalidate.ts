@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTag } from 'next/cache.js'
 
 const OUTSIDE_NEXT = 'static generation store missing'
 

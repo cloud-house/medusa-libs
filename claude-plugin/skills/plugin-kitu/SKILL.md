@@ -116,7 +116,7 @@ class XModuleService extends MedusaService({ Model }) {
 
 - **Dwa wejścia** w `exports`: `.` (bezpieczne w kodzie klienckim: błędy, `cachedInit`) i `./server` (importuje `server-only`, czyta `process.env`, `next/headers`, `next/cache`). Nie mieszaj ich: import wejścia `./server` z komponentu klienta ma paść przy buildzie.
 - `server-only` i `@medusajs/js-sdk` są peerami (sklep je ma), `next` też (`^16.3.3`). Nie bundluj Next do `dist` (tsup `external`).
-- Importy `next/headers` i `next/cache` w `dist` muszą mieć rozszerzenie (`next/headers.js`), inaczej zwykły Node ESM i Vitest ich nie rozwiążą (zob. `pulapki-medusa-next`, `vitest.md`). Do czasu poprawki sklep w `vitest.config` dodaje `server.deps.inline: ['@cloud-house/next-medusa']` i `vi.mock('server-only')`.
+- Importy `next/headers` i `next/cache` w `dist` muszą mieć rozszerzenie (`next/headers.js`), inaczej zwykły Node ESM i Vitest ich nie rozwiążą (zob. `pulapki-medusa-next`, `vitest.md`). Naprawione w 0.1.2 (test `dist-resolution` w CI); dla 0.1.0–0.1.1 sklep w `vitest.config` dodaje `server.deps.inline: ['@cloud-house/next-medusa']`; `vi.mock('server-only')` jest potrzebne zawsze.
 - Wszystko, co sklep chciałby zmienić, jest opcją fabryki (`createCartCookie({ name })`, `createRevalidateRoute({ header, secretEnv, locale, messages, logPrefix })`), a nie stałą w pakiecie. Pakiet nie zna nazw ciasteczek, nagłówków ani tagów sklepu.
 
 ## 10. Wzorce: trasa sklepu nad trasą pluginu, strony admina dostarczane przez sklep
