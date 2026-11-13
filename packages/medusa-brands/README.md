@@ -27,7 +27,7 @@ plugins: [
 ],
 ```
 
-Then `medusa db:migrate` (module `brand`, table `brand`) and `medusa db:sync-links` (link table
+Then `medusa db:migrate` (module `brand`, table `brand`) (it also syncs links unless you pass `--skip-links`; link table
 `product_product_brand_brand`). Do not also list the module under `modules`: an entry there replaces
 the plugin's module and its options. The admin menu label ("Marki") is fixed when the panel is built
 and is not an option.
