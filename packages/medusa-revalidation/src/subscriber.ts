@@ -1,5 +1,10 @@
 import type { SubscriberArgs, SubscriberConfig } from '@medusajs/framework'
 import { ContainerRegistrationKeys, Modules } from '@medusajs/framework/utils'
+import {
+  type RevalidationLocale,
+  type RevalidationMessages,
+  resolveRevalidationMessages,
+} from './messages'
 import { type PostRevalidateOptions, postRevalidate, type TagLookup } from './revalidation'
 
 export interface RevalidationSubscriberOptions {
@@ -15,6 +20,10 @@ export interface RevalidationSubscriberOptions {
   isAllowedTag?: PostRevalidateOptions['isAllowedTag']
   /** Prefix of log lines. Default `Revalidation`. */
   logPrefix?: string
+  /** Language of the log lines. Default `'en'`. */
+  locale?: RevalidationLocale
+  /** Single log texts over the `locale` dictionary. */
+  messages?: Partial<RevalidationMessages>
 }
 
 /**
@@ -28,6 +37,7 @@ export function createRevalidationSubscriber(options: RevalidationSubscriberOpti
   const urlEnv = options.urlEnv ?? 'STOREFRONT_URL'
   const secretEnv = options.secretEnv ?? 'REVALIDATE_SECRET'
   const logPrefix = options.logPrefix ?? 'Revalidation'
+  const texts = resolveRevalidationMessages(options.locale, options.messages)
   let warned = false
 
   async function handler({ event, container }: SubscriberArgs<Record<string, unknown>>) {
@@ -37,9 +47,7 @@ export function createRevalidationSubscriber(options: RevalidationSubscriberOpti
     if (!url || !secret) {
       if (!warned) {
         warned = true
-        logger.warn(
-          `${logPrefix}: ${urlEnv} or ${secretEnv} is not set – the storefront refreshes Medusa data only when its cache expires.`,
-        )
+        logger.warn(`${logPrefix}: ${texts.notConfigured(urlEnv, secretEnv)}`)
       }
       return
     }
@@ -62,9 +70,11 @@ export function createRevalidationSubscriber(options: RevalidationSubscriberOpti
         isAllowedTag: options.isAllowedTag,
         logger,
         logPrefix,
+        locale: options.locale,
+        messages: options.messages,
       })
     } catch (error) {
-      logger.warn(`${logPrefix}: could not work out revalidation tags for ${event.name}: ${error}`)
+      logger.warn(`${logPrefix}: ${texts.tagsFailed(event.name, error)}`)
     }
   }
 

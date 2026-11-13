@@ -40,7 +40,7 @@ medusaIntegrationTestRunner({
         })
         expect(stranger.status).toBe(401)
         expect(stranger.data).toEqual({
-          code: 'storefront_secret_invalid',
+          code: 'newsletter_storefront_secret_invalid',
           message: 'Brak dostępu.',
         })
 
@@ -48,7 +48,7 @@ medusaIntegrationTestRunner({
         const again = await signUp('ola@example.pl')
         expect(again.status).toBe(422)
         expect(again.data.message).toBe('Ten adres jest już zapisany.')
-        expect(again.data.code).toBe('already_subscribed')
+        expect(again.data.code).toBe('newsletter_already_subscribed')
         const exists = await api.get('/store/newsletter-subscribers?email=ola@example.pl', {
           headers: shop,
         })
@@ -61,7 +61,7 @@ medusaIntegrationTestRunner({
         try {
           const withHeader = await signUp('ola@example.pl')
           expect(withHeader.status).toBe(401)
-          expect(withHeader.data.code).toBe('storefront_secret_invalid')
+          expect(withHeader.data.code).toBe('newsletter_storefront_secret_invalid')
           const emptyHeader = await signUp('ola@example.pl', {
             'x-publishable-api-key': publishableKey,
             'x-storefront-secret': '',

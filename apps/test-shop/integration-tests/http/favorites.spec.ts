@@ -57,12 +57,12 @@ medusaIntegrationTestRunner({
         expect((await remove(a as string)).data).toEqual({ product_ids: [b] })
       })
 
-      it('unknown product: 404 with the Polish text and the code product_not_found', async () => {
+      it('unknown product: 404 with the Polish text and the code favorites_product_not_found', async () => {
         const refused = await add('prod_missing')
         expect(refused.status).toBe(404)
         expect(refused.data).toEqual({
           type: 'not_found',
-          code: 'product_not_found',
+          code: 'favorites_product_not_found',
           message: 'Nie znaleziono produktu.',
         })
       })
@@ -118,7 +118,7 @@ medusaIntegrationTestRunner({
         expect(refused.data).toEqual({
           type: 'invalid_data',
           code: 'favorites_limit_reached',
-          message: `Masz już ${LIMIT} ulubionych – usuń któryś, żeby dodać nowy.`,
+          message: `Masz już ${LIMIT} ulubione – usuń któryś, żeby dodać nowy.`,
         })
       })
 

@@ -30,6 +30,21 @@ the bumps and changelogs; after the merge `release.yml` publishes directly, with
 A release can be re-run by hand from `main` with `gh workflow run release.yml --ref main`; the job
 is skipped on any other ref.
 
+## GitHub Actions are pinned
+
+Every `uses:` in `.github/workflows/*.yml` points to a full commit SHA with the release in a
+comment (`actions/checkout@<sha> # v4.4.0`), so a moved tag cannot change what CI runs. To bump one:
+find the new release tag, resolve it with
+`gh api repos/<owner>/<repo>/git/ref/tags/<tag> --jq .object` (for an annotated tag, call
+`git/tags/<sha>` and take its `object.sha`), put the commit SHA and the tag in the comment, and open
+a PR; `check` must stay green.
+
+## Error codes
+
+Domain error codes are `<domain>_<reason>` in snake_case, with the plugin's prefix (`newsletter_`,
+`brand_`, `favorites_`) and exported in its `*_ERROR_CODES` constant. Renaming one is a breaking
+change in 0.x: minor bump, noted in the README and the changeset. See the `plugin-kitu` skill.
+
 ## Medusa version
 
 The Medusa version is set only in the `catalogs` section of `pnpm-workspace.yaml`:

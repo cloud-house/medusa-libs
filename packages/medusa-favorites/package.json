@@ -28,7 +28,6 @@
       "default": "./.medusa/server/src/index.js"
     },
     "./package.json": "./package.json",
-    "./workflows": "./.medusa/server/src/workflows/index.js",
     "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
     "./modules/*": "./.medusa/server/src/modules/*/index.js",
     "./providers/*": "./.medusa/server/src/providers/*/index.js",
@@ -67,5 +66,8 @@
   },
   "engines": {
     "node": ">=22.22.0 <25"
+  },
+  "dependencies": {
+    "@cloud-house/commerce-rules": "workspace:^"
   }
 }

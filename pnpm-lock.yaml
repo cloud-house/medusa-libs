@@ -192,6 +192,10 @@ importers:
         version: 7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1)
 
   packages/medusa-favorites:
+    dependencies:
+      '@cloud-house/commerce-rules':
+        specifier: workspace:^
+        version: link:../commerce-rules
     devDependencies:
       '@medusajs/cli':
         specifier: catalog:medusa

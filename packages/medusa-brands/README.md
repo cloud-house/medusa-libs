@@ -48,7 +48,7 @@ and is not an option.
 
 Error codes (`code` in the body, `BRAND_ERROR_CODES`): `brand_handle_taken` (422),
 `brand_handle_invalid` (400), `brand_handle_underivable` (400), `brand_name_invalid` (400),
-`brand_product_not_found` (404). An unknown brand id is Medusa's own 404.
+`brand_product_not_found` (404). An unknown brand id is Medusa's own 404. Codes follow `<domain>_<reason>` (prefix `brand_`); brands also return codes for invalid input (the other plugins use Medusa's default 400 body).
 
 ### `GET /store/brands`
 

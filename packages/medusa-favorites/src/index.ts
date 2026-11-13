@@ -4,6 +4,7 @@ export type { FavoritesResponse } from './lib/types'
 export { visibleProductIds } from './lib/visible-products'
 export {
   FAVORITES_LOCALES,
+  FAVORITES_NOUNS,
   type FavoritesLocale,
   type FavoritesMessages,
   messages,
@@ -14,6 +15,7 @@ export type { default as FavoriteModuleService } from './modules/favorite/servic
 export {
   DEFAULT_FAVORITES_LIMIT,
   type FavoritesOptions,
+  favoritesNoun,
   formatLimitMessage,
   type ResolvedFavoritesOptions,
   resolveOptions,

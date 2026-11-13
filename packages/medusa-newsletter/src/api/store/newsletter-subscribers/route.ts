@@ -18,7 +18,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 }
 
 /**
- * 422 `already_subscribed`. Sent directly: Medusa's error handler replaces the `code` of a
+ * 422 `newsletter_already_subscribed`. Sent directly: Medusa's error handler replaces the `code` of a
  * `DUPLICATE_ERROR` with `invalid_request_error`.
  */
 function alreadySubscribed(res: MedusaResponse, message: string) {
@@ -29,7 +29,7 @@ function alreadySubscribed(res: MedusaResponse, message: string) {
   })
 }
 
-/** A new sign-up; an address already on the list – 422 (`already_subscribed`). */
+/** A new sign-up; an address already on the list – 422 (`newsletter_already_subscribed`). */
 export async function POST(req: MedusaRequest<StoreNewsletterSubscribeType>, res: MedusaResponse) {
   const newsletter: NewsletterModuleService = req.scope.resolve(NEWSLETTER_MODULE)
   const { messages } = newsletter.getOptions()

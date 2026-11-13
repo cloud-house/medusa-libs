@@ -3,9 +3,9 @@
  * `{email}` are filled in by the admin page. Plain data, so the admin page can get it over HTTP.
  */
 export interface NewsletterMessages {
-  /** 422 `already_subscribed`. */
+  /** 422 `newsletter_already_subscribed`. */
   alreadySubscribed: string
-  /** 401 `storefront_secret_invalid`. */
+  /** 401 `newsletter_storefront_secret_invalid`. */
   unauthorized: string
   /** CSV header: e-mail, consent date, source, consent text. */
   csvColumns: [string, string, string, string]

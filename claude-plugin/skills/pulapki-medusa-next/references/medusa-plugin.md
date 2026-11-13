@@ -24,7 +24,7 @@ Słowa: `plugins[].options`, `moduleOptions`, `getOptions`, `configModule.plugin
 ## `code` w `MedusaError` znika dla części typów
 Słowa: `DUPLICATE_ERROR`, `invalid_request_error`, `CONFLICT`, `DB_ERROR`, kod błędu, 422
 
-- **Objaw:** `throw new MedusaError(MedusaError.Types.DUPLICATE_ERROR, msg, 'already_subscribed')` daje 422, ale w odpowiedzi `code: 'invalid_request_error'`.
+- **Objaw:** `throw new MedusaError(MedusaError.Types.DUPLICATE_ERROR, msg, 'newsletter_already_subscribed')` daje 422, ale w odpowiedzi `code: 'invalid_request_error'`.
 - **Przyczyna:** handler błędów Medusy (`getHttpResponseFromError` w `@medusajs/framework/http`) nadpisuje `code` dla `DUPLICATE_ERROR`, `CONFLICT` i `DB_ERROR`; dla `UNAUTHORIZED`, `NOT_FOUND`, `INVALID_DATA`, `NOT_ALLOWED` zostawia trzeci argument.
 - **Rozwiązanie:** dla tych typów odpowiedz wprost: `res.status(422).json({ type: 'duplicate_error', code, message })`. Asercja na `code` w teście HTTP.
 
