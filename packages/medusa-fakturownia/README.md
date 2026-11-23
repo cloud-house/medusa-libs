@@ -70,9 +70,17 @@ entry would win over the plugin's `options`. Run `medusa db:migrate` – the mod
 - `order.placed` and `payment.captured` create the invoice row; a paid shop order gets its invoice,
   then KSeF (when the mode asks for it), then the e-mail with the PDF. A job (`process-invoices`,
   every 15 minutes) retries what failed and alerts the shop's contact address once per problem.
-- `order.return_received` creates the credit note of the return (`resolveReturn*`).
+- `order.return_received` creates the credit note of the return (`resolveReturn*`) – only for an order whose `resolveOrder` result has `shopOrder: true`, the same rule as for its invoice.
 - Admin: `GET /admin/orders/:id/invoice` (the card), `POST …/issue`, `…/recheck`, `…/email`,
   `GET …/pdf`. Customer: `GET /store/account/orders/:id/invoice` (PDF of the own order).
 - The shop reads the account's invoice state with `accountInvoice(row)` / `invoiceEnabled(env)`.
 - The invoice texts (e-mails, admin card, Fakturownia positions) are Polish; there is no
   dictionary option yet.
+
+## Advanced API
+
+For the shop's own integration tests and scripts the package root also exports one pass of each
+pipeline: `processInvoice`, `ensureInvoiceRow`, `recheckInvoice`, `resendInvoiceEmail`,
+`invoicePdf`, `sweepInvoices`, `ensureCorrectionRow`, `processCorrection`, `sweepCorrections`,
+`payloadTotalCents`, `correctionTotalCents`, and the in-process fake (`fakeFakturownia`,
+`createFakeClient`). They may change in a minor release.

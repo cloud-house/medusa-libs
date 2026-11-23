@@ -117,4 +117,37 @@ describe('sendInvoiceEmail', () => {
       reply_to: 'shop@shop.example',
     })
   })
+
+  it('still sends the e-mail, without contact data, when the contact resolver fails', async () => {
+    const createNotifications = jest.fn().mockResolvedValue([])
+    const logger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
+    const services: Record<string, unknown> = {
+      logger,
+      notification: { createNotifications },
+      fakturownia: {
+        getOptions: () => ({
+          ...OPTIONS,
+          resolveContact: async () => {
+            throw new Error('settings down')
+          },
+        }),
+      },
+    }
+
+    await sendInvoiceEmail(
+      { resolve: (key: string) => services[key] } as never,
+      { number: 'FV 1' } as never,
+      ORDER_WITH_ACCOUNT as never,
+      Buffer.from('x'),
+      'key-3',
+      {},
+    )
+
+    expect(createNotifications).toHaveBeenCalledTimes(1)
+    expect(createNotifications.mock.calls[0][0].data.contact).toMatchObject({
+      email: null,
+      canReply: false,
+    })
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('settings down'))
+  })
 })

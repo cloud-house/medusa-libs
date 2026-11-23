@@ -21,8 +21,22 @@ const storefrontUrl = (env: Env) =>
 const replyToFor = (env: Env, contact: InvoiceContact | null) =>
   env.EMAIL_REPLY_TO || contact?.replyTo || contact?.email || null
 
-const contactOf = (container: MedusaContainer) =>
-  pluginOptions(container).resolveContact?.(container) ?? Promise.resolve(null)
+/** The shop's contact data; a failing resolver is logged and the e-mail goes out without contact data. */
+async function contactOf(container: MedusaContainer): Promise<InvoiceContact | null> {
+  try {
+    return (await pluginOptions(container).resolveContact?.(container)) ?? null
+  } catch (error) {
+    container
+      .resolve(ContainerRegistrationKeys.LOGGER)
+      .warn(`${logPrefix(container)} Dane kontaktowe sklepu nie wczytały się: ${errorText(error)}`)
+    return null
+  }
+}
+
+const errorText = (error: unknown) =>
+  error instanceof Error
+    ? error.message
+    : String((error as { message?: unknown } | null)?.message ?? error)
 
 /** `Faktura-FV-12-11-2026.pdf` – the invoice number with `/` and spaces made file-safe. */
 export function invoiceFilename(number: string): string {

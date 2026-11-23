@@ -463,15 +463,16 @@ export async function ensureCorrectionRow(
     return null
   }
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const [{ data: links }, { data: returns }] = await Promise.all([
-    query.graph({ entity: 'order_cart', fields: ['cart_id'], filters: { order_id: orderId } }),
+  const [order, { data: returns }] = await Promise.all([
+    pluginOptions(container).resolveOrder(container, orderId),
     query.graph({
       entity: 'return',
       fields: ['claim_id', 'exchange_id'],
       filters: { id: returnId },
     }),
   ])
-  if (!links.length) return null
+  // Only an order placed in the shop gets credit notes – the same rule as for its invoice.
+  if (!order?.shopOrder) return null
   // A claim or an exchange in the Medusa admin is not a withdrawal: the sale stands (a replacement
   // goes out), so no credit note is made for it automatically.
   const found = returns[0] as unknown as { claim_id?: string | null; exchange_id?: string | null }

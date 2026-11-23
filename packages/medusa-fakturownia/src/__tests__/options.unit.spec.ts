@@ -47,6 +47,10 @@ describe('resolveOptions', () => {
     },
   )
 
+  it('refuses an account order path without :id', () => {
+    expect(() => resolveOptions(base({ accountOrderPath: '/account/orders' }))).toThrow(/:id/)
+  })
+
   it('treats undefined optional values as unset', () => {
     const resolved = resolveOptions(
       base({ oidPrefix: undefined, logPrefix: undefined, paymentTypes: undefined }),

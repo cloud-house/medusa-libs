@@ -58,6 +58,11 @@ export function resolveOptions(options: FakturowniaOptions): ResolvedFakturownia
     logPrefix = '[Fakturownia]',
     accountOrderPath = '/account/orders/:id',
   } = given
+  if (!accountOrderPath.includes(':id')) {
+    throw new Error(
+      `@cloud-house/medusa-fakturownia: option "accountOrderPath" must contain ":id" (got "${accountOrderPath}").`,
+    )
+  }
   return {
     resolveOrder: given.resolveOrder as FakturowniaOptions['resolveOrder'],
     resolveReturnOrder: given.resolveReturnOrder as FakturowniaOptions['resolveReturnOrder'],

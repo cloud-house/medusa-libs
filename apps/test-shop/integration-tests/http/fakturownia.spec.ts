@@ -65,6 +65,8 @@ medusaIntegrationTestRunner({
 
         expect(invoice).toMatchObject({ status: 'issued', ready: true, lastError: null })
         expect(invoice?.number).toEqual(expect.any(String))
+        // The plugin's `oidPrefix` option reached the Fakturownia order number.
+        expect(fakeFakturownia().invoices[0]?.payload.oid).toBe('TEST-1')
       })
 
       it('mails the invoice with the PDF through the e-mail provider', async () => {

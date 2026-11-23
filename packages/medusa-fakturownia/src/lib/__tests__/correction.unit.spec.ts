@@ -20,15 +20,15 @@ const CLAIM_LINE =
   '[Fakturownia] Zwrot ret_1 należy do wymiany albo reklamacji w Medusie – korekta faktury nie powstaje automatycznie.'
 
 /** A container whose Query answers by entity; the fakturownia module only records calls. */
-function container(returns: Record<string, unknown>[], links = [{ cart_id: 'cart_1' }]) {
+function container(returns: Record<string, unknown>[], shopOrder = true) {
   const logger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
   const graph = jest.fn(async ({ entity }: { entity: string }) => ({
-    data: entity === 'order_cart' ? links : returns,
+    data: returns,
   }))
   const fakturownia = {
     ensureCorrectionForReturn: jest.fn().mockResolvedValue({ id: 'invcor_1', status: 'waiting' }),
     listInvoiceCorrections: jest.fn().mockResolvedValue([]),
-    getOptions: () => OPTIONS,
+    getOptions: () => ({ ...OPTIONS, resolveOrder: async () => ({ shopOrder }) }),
   }
   const locking = { execute: jest.fn() }
   const services: Record<string, unknown> = { logger, query: { graph }, fakturownia, locking }
@@ -60,6 +60,14 @@ describe('credit notes only for the returns of the shop', () => {
 
     expect(c.fakturownia.ensureCorrectionForReturn).not.toHaveBeenCalled()
     expect(c.logger.info).toHaveBeenCalledWith(CLAIM_LINE)
+  })
+
+  it('the return of an order that was not placed in the shop gets no row', async () => {
+    const c = container([{ claim_id: null, exchange_id: null }], false)
+
+    expect(await ensureCorrectionRow(c.container, 'order_1', 'ret_1')).toBeNull()
+
+    expect(c.fakturownia.ensureCorrectionForReturn).not.toHaveBeenCalled()
   })
 
   it('a return of the shop gets its row', async () => {
