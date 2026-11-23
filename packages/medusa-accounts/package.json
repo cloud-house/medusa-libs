@@ -1,0 +1,72 @@
+{
+  "name": "@cloud-house/medusa-accounts",
+  "version": "0.0.0",
+  "description": "Medusa plugin: customer accounts – registration, e-mail confirmation, password reset, checkout sign-up, account deletion.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloud-house/medusa-libs.git",
+    "directory": "packages/medusa-accounts"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "medusa",
+    "medusa-plugin",
+    "medusa-v2",
+    "account",
+    "customer"
+  ],
+  "files": [
+    ".medusa/server"
+  ],
+  "exports": {
+    ".": {
+      "types": "./.medusa/server/src/index.d.ts",
+      "default": "./.medusa/server/src/index.js"
+    },
+    "./package.json": "./package.json",
+    "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./*": "./.medusa/server/src/*.js"
+  },
+  "scripts": {
+    "build": "medusa plugin:build",
+    "dev": "medusa plugin:develop",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "test": "pnpm run test:unit && pnpm run test:integration:modules",
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit --passWithNoTests",
+    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --passWithNoTests"
+  },
+  "dependencies": {
+    "@cloud-house/medusa-emails": "workspace:^",
+    "@react-email/components": "1.0.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "peerDependencies": {
+    "@medusajs/framework": "catalog:medusa-peer",
+    "@medusajs/medusa": "catalog:medusa-peer"
+  },
+  "devDependencies": {
+    "@medusajs/cli": "catalog:medusa",
+    "@medusajs/framework": "catalog:medusa",
+    "@medusajs/medusa": "catalog:medusa",
+    "@medusajs/test-utils": "catalog:medusa",
+    "@swc/core": "^1.7.28",
+    "@swc/jest": "^0.2.36",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^24.0.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22.22.0 <25"
+  }
+}
