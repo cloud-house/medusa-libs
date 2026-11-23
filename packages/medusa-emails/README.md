@@ -153,6 +153,11 @@ await previewEmails({ ...emails, previewDir: '.emails' }, [
 ])
 ```
 
+## Languages
+
+The layout and the shared phrases (customer-facing) follow `locale`. Provider error messages and log
+lines are English operator text; callers should branch on the error `code`.
+
 ## Error codes
 
 `EMAIL_ERROR_CODES`: `emails_unknown_template`, `emails_not_sent`. Renaming one is a breaking change

@@ -1,5 +1,5 @@
 import { render } from '@react-email/components'
-import { Card, ContactCard, contactSentence, EmailLayout } from '../layout'
+import { Button, Card, ContactCard, contactSentence, EmailLayout } from '../layout'
 import { resolved } from './fixtures'
 
 const html = (node: React.ReactElement) => render(node)
@@ -146,5 +146,81 @@ describe('contact sentence', () => {
         />,
       ),
     ).not.toContain('Masz pytania?')
+  })
+})
+
+describe('layout parity guard (a shop theme with its own colours and fonts)', () => {
+  const ctx = resolved({
+    theme: {
+      shopName: 'Acme',
+      colors: {
+        navy: '#0e1b2c',
+        sand: '#f5f4f0',
+        muted: '#56606e',
+        subtle: '#8a8f98',
+        line: '#dcdad3',
+        success: '#2f7a46',
+        yellow: '#f2d14a',
+      },
+      fonts: {
+        sans: 'Manrope, Arial, Helvetica, sans-serif',
+        display: 'Syne, Arial, Helvetica, sans-serif',
+        stylesheet: 'https://fonts.example.com/css?family=Manrope|Syne',
+      },
+      footerLinks: [
+        { label: 'Terms', url: 'https://shop.example.com/terms' },
+        { label: 'Privacy', url: 'https://shop.example.com/privacy' },
+      ],
+    },
+  })
+  const contact = { canReply: true, email: 'a@example.com', phone: '600 100 200', hours: 'Mon-Fri' }
+
+  it('keeps the markup and inline styles of the full layout', async () => {
+    const out = await html(
+      <EmailLayout
+        ctx={ctx}
+        preview="Preview"
+        shopUrl="https://shop.example.com/"
+        seller="Acme Ltd"
+        reason="Because."
+      >
+        <Card ctx={ctx} title="Title">
+          <Button ctx={ctx} href="https://shop.example.com/go">
+            Go
+          </Button>
+        </Card>
+        <ContactCard ctx={ctx} contact={contact} />
+      </EmailLayout>,
+    )
+    expect(out).toMatchSnapshot()
+    // The points the snapshot exists for, stated explicitly:
+    expect(out).toContain('color:#56606e;margin-top:0')
+    expect(out).toContain('color:#56606e;text-decoration-line:none')
+    expect(out).toContain('background-color:#f2d14a')
+    expect(out).toContain('border-radius:16px')
+    expect(out).toContain('padding:22px')
+    expect(out).toContain('@media (max-width: 620px) { .stack {')
+  })
+
+  it('omits the seller and reason blocks when they are null', async () => {
+    const out = await html(
+      <EmailLayout ctx={ctx} preview="Preview" seller={null} reason={null}>
+        x
+      </EmailLayout>,
+    )
+    expect(out).not.toContain('Sprzedawca')
+    expect(out.match(/<p /g)).toHaveLength(2) // header text and the footer line only
+    expect(out).toMatchSnapshot()
+  })
+
+  it('colours a Button with theme.colors.yellow and navy text', async () => {
+    const out = await html(
+      <Button ctx={ctx} href="https://x.example.com">
+        Go
+      </Button>,
+    )
+    expect(out).toContain('background-color:#f2d14a')
+    expect(out).toContain('color:#0e1b2c')
+    expect(out).toContain('border-radius:999px')
   })
 })
