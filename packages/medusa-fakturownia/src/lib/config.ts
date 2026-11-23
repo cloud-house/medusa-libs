@@ -68,3 +68,6 @@ export function fakturowniaWarnings(env: Env, logPrefix = '[Fakturownia]'): stri
   }
   return warnings
 }
+
+/** Whether the shop issues invoices at all (Fakturownia or the in-process fake is set up). */
+export const invoiceEnabled = (env: Env): boolean => fakturowniaConfig(env) !== null

@@ -71,6 +71,9 @@ importers:
       '@cloud-house/medusa-emails':
         specifier: workspace:*
         version: link:../../packages/medusa-emails
+      '@cloud-house/medusa-fakturownia':
+        specifier: workspace:*
+        version: link:../../packages/medusa-fakturownia
       '@cloud-house/medusa-favorites':
         specifier: workspace:*
         version: link:../../packages/medusa-favorites
