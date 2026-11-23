@@ -17,18 +17,33 @@ Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc` (see the
 ```ts
 // medusa-config.ts
 import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
+import { emailEnv, type EmailsOptions } from '@cloud-house/medusa-emails'
+
+// medusa-emails is a Notification provider (not a plugin): the three account e-mails go into its
+// `templates` next to the shop's own.
+const emails: EmailsOptions = {
+  channels: ['email'],
+  ...emailEnv(process.env),
+  theme: { shopName: 'Acme' },
+  templates: [...accountEmailTemplates /*, the shop's templates */],
+}
 
 plugins: [
   {
     resolve: '@cloud-house/medusa-accounts',
     options: { paths: { confirmEmail: '/…', passwordReset: '/…', setPassword: '/…' } /* see below */ },
   },
+],
+modules: [
   {
-    resolve: '@cloud-house/medusa-emails',
-    // the provider needs the three account e-mails next to the shop's own
-    options: { /* theme… */ templates: [...accountEmailTemplates /*, the shop's templates */] },
+    resolve: '@medusajs/medusa/notification',
+    options: {
+      providers: [
+        { resolve: '@cloud-house/medusa-emails/providers/resend', id: 'resend', options: emails },
+      ],
+    },
   },
-]
+],
 ```
 
 Do not list the `accounts` module in `modules` yourself: the plugin registers it, and a shop entry
