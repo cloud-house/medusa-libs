@@ -4,13 +4,14 @@ module.exports = {
       '@swc/jest',
       {
         jsc: {
-          parser: { syntax: 'typescript', decorators: true },
+          parser: { syntax: 'typescript', tsx: true, decorators: true },
+          transform: { react: { runtime: 'automatic' } },
         },
       },
     ],
   },
   testEnvironment: 'node',
-  moduleFileExtensions: ['js', 'ts', 'json'],
+  moduleFileExtensions: ['js', 'ts', 'tsx', 'json'],
   modulePathIgnorePatterns: ['dist/', '<rootDir>/.medusa/'],
   setupFiles: ['./jest.setup.js'],
 }
