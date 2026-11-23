@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-accounts",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Medusa plugin: customer accounts – registration, e-mail confirmation, password reset, checkout sign-up, account deletion.",
   "license": "MIT",
   "repository": {
