@@ -1,3 +1,7 @@
+export { closedRoutes, routedPath } from './api/guards/body-guards'
+export { isStaleToken, SESSIONS_VALID_FROM } from './api/guards/session-guard'
+export { ownOrder } from './api/store/account/own-order'
+export { PASSWORD_MIN_LENGTH } from './api/store/account/validators'
 export { accountEmailData, DEFAULT_STOREFRONT_URL, replyToFor } from './emails/account-email-data'
 export { accountEmailTemplates } from './emails/templates'
 export type { AccountEmailData } from './emails/types'

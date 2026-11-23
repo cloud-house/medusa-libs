@@ -14,6 +14,9 @@ describe('messages', () => {
       orderNotFound: 'Nie znaleziono zamówienia.',
       cartNotFound: 'Nie znaleziono koszyka.',
       invoiceNotFound: 'Nie znaleziono faktury.',
+      sessionExpired: 'Sesja wygasła. Zaloguj się ponownie.',
+      notFound: 'Nie znaleziono.',
+      metadataUnavailable: 'Pole metadata jest niedostępne.',
     })
   })
 

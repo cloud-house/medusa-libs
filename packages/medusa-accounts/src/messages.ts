@@ -20,6 +20,12 @@ export interface AccountsMessages {
   cartNotFound: string
   /** Invoice not found. */
   invoiceNotFound: string
+  /** The session token is older than the account's „sessions valid from” (password changed, other sessions ended). */
+  sessionExpired: string
+  /** Route closed on purpose (Medusa's own registration, verification routes). */
+  notFound: string
+  /** A customer tried to write the account's `metadata` through the Store API. */
+  metadataUnavailable: string
 }
 
 export const ACCOUNT_LOCALES = ['pl', 'en'] as const
@@ -37,6 +43,9 @@ export const messages: Record<AccountLocale, AccountsMessages> = {
     orderNotFound: 'Nie znaleziono zamówienia.',
     cartNotFound: 'Nie znaleziono koszyka.',
     invoiceNotFound: 'Nie znaleziono faktury.',
+    sessionExpired: 'Sesja wygasła. Zaloguj się ponownie.',
+    notFound: 'Nie znaleziono.',
+    metadataUnavailable: 'Pole metadata jest niedostępne.',
   },
   en: {
     duplicateAccount: 'An account with this e-mail address already exists.',
@@ -49,6 +58,9 @@ export const messages: Record<AccountLocale, AccountsMessages> = {
     orderNotFound: 'Order not found.',
     cartNotFound: 'Cart not found.',
     invoiceNotFound: 'Invoice not found.',
+    sessionExpired: 'Your session has expired. Please sign in again.',
+    notFound: 'Not found.',
+    metadataUnavailable: 'The metadata field is not available.',
   },
 }
 

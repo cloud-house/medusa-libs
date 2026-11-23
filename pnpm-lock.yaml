@@ -62,9 +62,15 @@ importers:
 
   apps/test-shop:
     dependencies:
+      '@cloud-house/medusa-accounts':
+        specifier: workspace:*
+        version: link:../../packages/medusa-accounts
       '@cloud-house/medusa-brands':
         specifier: workspace:*
         version: link:../../packages/medusa-brands
+      '@cloud-house/medusa-emails':
+        specifier: workspace:*
+        version: link:../../packages/medusa-emails
       '@cloud-house/medusa-favorites':
         specifier: workspace:*
         version: link:../../packages/medusa-favorites
