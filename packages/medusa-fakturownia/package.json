@@ -48,6 +48,7 @@
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --passWithNoTests"
   },
   "dependencies": {
+    "@cloud-house/commerce-rules": "workspace:^",
     "@react-email/components": "1.0.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
