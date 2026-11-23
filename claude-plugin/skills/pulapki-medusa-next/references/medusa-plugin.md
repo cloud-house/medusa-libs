@@ -121,3 +121,9 @@ Słowa: `.superpowers`, briefy, raporty, `git status`, lint
 - **Przyczyna:** to robocze notatki przepływu pracy z agentami, nie część kodu.
 - **Rozwiązanie:** `.superpowers` w `.gitignore` (lub w `.git/info/exclude`) i poza zakresem Biome; nie dodawaj ich przez `git add -A` bez sprawdzenia `git status`.
 
+## Wydanie nieodwracalne: sprawdź sklep na tarballu, zanim wydasz
+Słowa: `pnpm pack`, tarball, `file:`, parytet, wydanie, rejestr
+
+- **Objaw:** błąd przeniesienia (inny payload, inny mail, inna trasa) wychodzi dopiero po wydaniu, gdy wersji nie da się wycofać.
+- **Przyczyna:** testy sklepu na pakiecie z rejestru są możliwe dopiero po publikacji.
+- **Rozwiązanie:** `pnpm build && pnpm pack` w pakiecie, w sklepie `"@cloud-house/<pakiet>": "file:<ścieżka>.tgz"`, pełne testy (snapshoty maili i payloadów bez zmian, HTTP, `db:migrate` na kopii bazy), dopiero potem wydanie i przypięcie wersji z rejestru (wpis w `minimumReleaseAgeExclude`, odświeżony lockfile).
