@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-emails",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Medusa plugin: transactional e-mail notification provider (Resend) with a themed, localised layout and a list of templates the shop supplies.",
   "license": "MIT",
   "repository": {
