@@ -92,6 +92,19 @@ describe('resolveOptions', () => {
     expect(resolved.emailThrottle).toEqual({ max: 5, windowMs: 1000 })
   })
 
+  it('deletedEmail defaults to the neutral form and passes a custom function through', () => {
+    expect(resolveOptions(base()).deletedEmail('cus_1')).toBe(
+      'deleted+cus_1@account-deleted.invalid',
+    )
+    const custom = (id: string) => `gone+${id}@example.invalid`
+    expect(resolveOptions(base({ deletedEmail: custom })).deletedEmail).toBe(custom)
+    expect(resolveOptions(base({ deletedEmail: undefined })).deletedEmail('x')).toContain('x')
+  })
+
+  it('rejects a deletedEmail that is not a function', () => {
+    expect(() => resolveOptions(base({ deletedEmail: 'x@y.pl' as never }))).toThrow(/deletedEmail/)
+  })
+
   it('rejects an invalid emailThrottle', () => {
     expect(() => resolveOptions(base({ emailThrottle: { max: 0, windowMs: 1000 } }))).toThrow(
       /emailThrottle/,

@@ -50,8 +50,13 @@ const options: AccountsOptions = {
   resolveContact: async (container) => null, // ContactResolver from medusa-emails
   onAccountDeleted: [async (container, customerId) => {}],
   emailThrottle: { max: 3, windowMs: 15 * 60 * 1000 }, // the defaults
+  deletedEmail: (customerId) => `deleted+${customerId}@account-deleted.invalid`, // the default
 }
 ```
+
+`deletedEmail` is the e-mail stored over an erased account (the row stays after Medusa's soft delete).
+A shop that already has erased accounts in its own format passes that format here, so old and new
+rows stay identical (e.g. `(id) => \`usuniete+${id}@shop.invalid\``).
 
 `resolveOptions` treats `undefined` values as unset and throws when a `paths` entry is missing or
 `locale` is unknown.

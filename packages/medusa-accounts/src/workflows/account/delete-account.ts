@@ -30,7 +30,7 @@ export const eraseCustomerDataStep = createStep(
       last_name: null,
       phone: null,
       company_name: null,
-      email: `deleted+${customerId}@account-deleted.invalid`,
+      email: accountsOptions(container).deletedEmail(customerId),
       // The marker stays: if a later step fails, the old tokens are refused anyway.
       metadata: { sessions_valid_from: Math.floor(Date.now() / 1000) },
     })

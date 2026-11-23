@@ -35,6 +35,8 @@ export interface AccountsOptions {
   onAccountDeleted?: ((container: MedusaContainer, customerId: string) => Promise<void>)[]
   /** At most `max` e-mails of one kind to one address per `windowMs`; default 3 per 15 minutes. */
   emailThrottle?: EmailThrottle
+  /** E-mail written over an erased account (keeps the address unique and unusable); default `deleted+<id>@account-deleted.invalid`. */
+  deletedEmail?: (customerId: string) => string
 }
 
 export interface ResolvedAccountsOptions {
@@ -45,7 +47,12 @@ export interface ResolvedAccountsOptions {
   resolveContact: ContactResolver | null
   onAccountDeleted: ((container: MedusaContainer, customerId: string) => Promise<void>)[]
   emailThrottle: EmailThrottle
+  deletedEmail: (customerId: string) => string
 }
+
+/** Default e-mail of an erased account. */
+export const defaultDeletedEmail = (customerId: string) =>
+  `deleted+${customerId}@account-deleted.invalid`
 
 const fail = (message: string): never => {
   throw new Error(`@cloud-house/medusa-accounts: ${message}`)
@@ -62,6 +69,7 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
     resolveContact = null,
     onAccountDeleted = [],
     emailThrottle = { ...ACCOUNT_EMAIL_LIMIT },
+    deletedEmail = defaultDeletedEmail,
   } = withoutUndefined(options)
 
   if (!ACCOUNT_LOCALES.includes(locale))
@@ -72,6 +80,9 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
   for (const key of PATH_KEYS) {
     if (!paths?.[key]) fail(`paths.${key} is required.`)
   }
+
+  if (typeof deletedEmail !== 'function')
+    fail('deletedEmail must be a function (customerId) => string.')
 
   if (!(emailThrottle.max >= 1) || !(emailThrottle.windowMs > 0))
     fail('emailThrottle needs max >= 1 and windowMs > 0.')
@@ -84,5 +95,6 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
     resolveContact,
     onAccountDeleted,
     emailThrottle,
+    deletedEmail,
   }
 }
