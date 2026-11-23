@@ -92,6 +92,24 @@ describe('resolveOptions', () => {
     expect(resolved.emailThrottle).toEqual({ max: 5, windowMs: 1000 })
   })
 
+  it('createAccountFlag defaults to a neutral entry, takes a custom one and rejects empty values', () => {
+    expect(resolveOptions(base()).createAccountFlag).toEqual({
+      key: 'create_account',
+      value: 'true',
+    })
+    expect(resolveOptions(base({ createAccountFlag: undefined })).createAccountFlag.key).toBe(
+      'create_account',
+    )
+    const flag = { key: 'signup', value: 'yes' }
+    expect(resolveOptions(base({ createAccountFlag: flag })).createAccountFlag).toEqual(flag)
+    expect(() => resolveOptions(base({ createAccountFlag: { key: '', value: 'x' } }))).toThrow(
+      /createAccountFlag/,
+    )
+    expect(() => resolveOptions(base({ createAccountFlag: { key: 'k', value: '' } }))).toThrow(
+      /createAccountFlag/,
+    )
+  })
+
   it('deletedEmail defaults to the neutral form and passes a custom function through', () => {
     expect(resolveOptions(base()).deletedEmail('cus_1')).toBe(
       'deleted+cus_1@account-deleted.invalid',

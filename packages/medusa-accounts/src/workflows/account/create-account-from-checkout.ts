@@ -31,7 +31,8 @@ export const decideCheckoutAccountStep = createStep(
         { id: orderId },
         { select: ['id', 'email', 'metadata'], relations: ['shipping_address'] },
       )
-    if (!order?.email || order.metadata?.create_account !== 'tak') {
+    const flag = accountsOptions(container).createAccountFlag
+    if (!order?.email || order.metadata?.[flag.key] !== flag.value) {
       return new StepResponse({ kind: 'skip' } as Decision)
     }
     const email = order.email.trim().toLowerCase()

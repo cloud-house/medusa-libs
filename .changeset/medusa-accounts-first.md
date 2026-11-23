@@ -22,3 +22,6 @@ Also: the store account routes (`/store/account/register`, `register-from-order`
 routes, no refresh of customer tokens, protected customer `metadata`) and the exported `ownOrder`
 for a shop's own order routes; the dictionary has `sessionExpired`, `notFound` and
 `metadataUnavailable` for the guards.
+
+New option `createAccountFlag` (`{ key, value }`, default `{ key: 'create_account', value: 'true' }`):
+the order metadata entry of the checkout's „create an account” box.

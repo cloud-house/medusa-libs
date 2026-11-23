@@ -7,7 +7,7 @@ export interface PlaceOrderOptions {
   regionId: string
   /** The signed-in customer the cart belonged to (the order then has this `customer_id`); a guest otherwise. */
   customerId?: string
-  /** Order metadata, e.g. `{ create_account: 'tak' }`. */
+  /** Order metadata, e.g. `{ create_account: 'true' }`. */
   metadata?: Record<string, unknown>
   /** Metadata of the cart that placed the order, e.g. the account flag. */
   cartMetadata?: Record<string, unknown>

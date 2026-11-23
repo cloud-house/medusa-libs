@@ -50,7 +50,7 @@ medusaIntegrationTestRunner({
         placeOrder(container, {
           email,
           regionId: store.regionId,
-          metadata: createAccount ? { create_account: 'tak' } : {},
+          metadata: createAccount ? { create_account: 'true' } : {},
         })
 
       const account = async (email: string) =>

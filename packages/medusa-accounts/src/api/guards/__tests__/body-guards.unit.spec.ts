@@ -37,7 +37,7 @@ function buildApp(guarded: boolean): ExpressApp {
     next()
   })
   if (guarded) {
-    app.use('/store/returns', closedRoutes(['/store/returns']))
+    app.use('/store/widgets', closedRoutes(['/store/widgets']))
     app.use(
       '/auth/customer/emailpass/register',
       closedRoutes(['/auth/customer/emailpass/register']),
@@ -45,10 +45,10 @@ function buildApp(guarded: boolean): ExpressApp {
     app.use('/store/customers', rejectCustomerMetadata)
   }
   for (const path of [
-    '/store/returns',
-    '/store/returns/claim',
-    '/store/returns/lookup',
-    '/store/return-reasons',
+    '/store/widgets',
+    '/store/widgets/claim',
+    '/store/widgets/lookup',
+    '/store/widget-kinds',
     '/auth/customer/emailpass/register',
     '/store/customers',
     '/store/customers/me',
@@ -184,7 +184,7 @@ describe('the route guards decide by the path Express routes by', () => {
 
   describe('closedRoutes', () => {
     it('the canonical request, a query and a trailing slash: 404', async () => {
-      for (const target of ['/store/returns', '/store/returns/', '/store/returns?x=1']) {
+      for (const target of ['/store/widgets', '/store/widgets/', '/store/widgets?x=1']) {
         const answer = await send(guarded, target)
         expect([target, answer.status, answer.body]).toEqual([target, 404, CLOSED])
       }
@@ -192,33 +192,33 @@ describe('the route guards decide by the path Express routes by', () => {
 
     it('the neighbours are other routes and are left alone', async () => {
       for (const target of [
-        '/store/returns/claim',
-        '/store/returns/claim/',
-        '/store/returns/claim?x=1',
-        '/STORE/RETURNS/CLAIM',
-        '/store/returns/lookup',
-        '/store/returns/lookup#x',
-        '/store/return-reasons',
+        '/store/widgets/claim',
+        '/store/widgets/claim/',
+        '/store/widgets/claim?x=1',
+        '/STORE/WIDGETS/CLAIM',
+        '/store/widgets/lookup',
+        '/store/widgets/lookup#x',
+        '/store/widget-kinds',
       ]) {
         expect([target, (await send(guarded, target)).reached]).toEqual([target, true])
       }
-      expect((await send(guarded, '/store/returnsx')).reached).toBe(false)
+      expect((await send(guarded, '/store/widgetsx')).reached).toBe(false)
     })
 
     it('the spellings that reached Medusa through the first fix are closed (absolute-form targets)', async () => {
       for (const target of [
-        'http:///store/returns',
-        'http://h:99999999/store/returns',
-        'http://h:65536/store/returns',
-        'http://h@/store/returns',
-        'http://:@/store/returns',
-        'http://h:80@/store/returns',
-        'http://user:pa:ss@h:99999/store/returns',
-        'http://localhost:9000/store/returns',
-        '/store/RETURNS',
-        '/Store/Returns/',
-        '/store/returns#x',
-        '/store/returns/#x',
+        'http:///store/widgets',
+        'http://h:99999999/store/widgets',
+        'http://h:65536/store/widgets',
+        'http://h@/store/widgets',
+        'http://:@/store/widgets',
+        'http://h:80@/store/widgets',
+        'http://user:pa:ss@h:99999/store/widgets',
+        'http://localhost:9000/store/widgets',
+        '/store/WIDGETS',
+        '/Store/Widgets/',
+        '/store/widgets#x',
+        '/store/widgets/#x',
       ]) {
         const answer = await send(guarded, target)
         expect([target, answer.reached]).toEqual([target, false])
@@ -226,7 +226,7 @@ describe('the route guards decide by the path Express routes by', () => {
       }
     })
 
-    it.each(['/store/returns', '/auth/customer/emailpass/register'])(
+    it.each(['/store/widgets', '/auth/customer/emailpass/register'])(
       'no spelling of %s that Express routes to the handler gets past the guard',
       async (path) => {
         const targets = spellings(path)
@@ -241,7 +241,7 @@ describe('the route guards decide by the path Express routes by', () => {
     )
 
     it("a guard on another path leaves the closed path's neighbours reachable under every spelling", async () => {
-      const targets = spellings('/store/returns/claim')
+      const targets = spellings('/store/widgets/claim')
       const [without, withGuard] = [await sendAll(open, targets), await sendAll(guarded, targets)]
 
       const lost = targets.filter((_, i) => without[i]?.reached && !withGuard[i]?.reached)
