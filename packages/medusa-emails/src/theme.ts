@@ -21,6 +21,8 @@ export interface EmailFonts {
   sans: string
   /** Headings font stack. */
   display: string
+  /** Stylesheet (e.g. Google Fonts URL) linked in the `<head>` so web fonts load where clients allow it; none by default. */
+  stylesheet?: string | null
 }
 
 export interface EmailFooterLink {

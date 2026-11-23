@@ -1,10 +1,8 @@
 # @cloud-house/medusa-emails
 
 Medusa 2 plugin: transactional e-mails for a shop. The shop supplies the templates and the theme;
-the plugin brings the options, the localised layout texts and (in the next release) the Resend
-notification provider, renderer and layout components.
-
-This release contains the options, the theme, the PL/EN dictionaries, the types and the error codes.
+the plugin brings the options, the localised layout texts, the themed layout components, the
+renderer, the Resend notification provider, a send workflow and a preview helper.
 
 ```sh
 pnpm add --save-exact @cloud-house/medusa-emails
@@ -63,6 +61,97 @@ seller line, footer links). `{shopName}` and `{shopNameLocative}` are filled in 
 
 An `EmailTemplate` is `{ name, render(data, ctx) }`; `render` returns `{ subject, html, text, name }`
 and gets the resolved theme, messages and locale in `ctx`.
+
+## Provider
+
+Register the provider in the Notification module (`medusa-config.ts`). It keeps the id `resend` and
+serves the channels in `channels`; `emailEnv` reads `RESEND_API_KEY`, `EMAIL_FROM`,
+`EMAIL_REPLY_TO`, `EMAIL_PREVIEW_DIR` and `NODE_ENV`.
+
+```ts
+import { emailEnv, type EmailsOptions } from '@cloud-house/medusa-emails'
+
+const emails: EmailsOptions = {
+  channels: ['email'],
+  ...emailEnv(process.env),
+  theme: { shopName: 'Acme' },
+  templates: [welcomeTemplate],
+}
+
+modules: [
+  {
+    resolve: '@medusajs/medusa/notification',
+    options: {
+      providers: [
+        { resolve: '@cloud-house/medusa-emails/providers/resend', id: 'resend', options: emails },
+      ],
+    },
+  },
+]
+```
+
+Mails go out through Resend only with a key and a sender. Otherwise the HTML (and attachments) is
+written to `previewDir` and logged; without `previewDir` (production) the notification fails with
+`emails_not_sent`. A notification's `idempotency_key` is passed to Resend and `provider_data.reply_to`
+overrides the default Reply-To. `emailWarnings(process.env, 'Acme')` returns startup warnings for a
+missing key or sender.
+
+## Sending
+
+`@cloud-house/medusa-emails/workflows/send-email` exports `sendEmailWorkflow` (`send-email`); input:
+`{ template, to, data, replyTo, idempotencyKey, resourceType, resourceId, trigger }`.
+
+## Custom template
+
+```tsx
+import { render, Text } from '@react-email/components'
+import { Button, Card, EmailLayout, type EmailTemplate } from '@cloud-house/medusa-emails'
+
+export const welcome: EmailTemplate = {
+  name: 'welcome',
+  async render(data, ctx) {
+    const element = (
+      <EmailLayout
+        ctx={ctx}
+        preview="Welcome"
+        shopUrl="https://shop.example.com"
+        reason="You got this e-mail because you created an account."
+      >
+        <Card ctx={ctx} title="Welcome">
+          <Text>Hello {String(data.firstName)}</Text>
+          <Button ctx={ctx} href="https://shop.example.com">Visit the shop</Button>
+        </Card>
+      </EmailLayout>
+    )
+    return {
+      subject: 'Welcome',
+      html: await render(element),
+      text: await render(element, { plainText: true }),
+      name: `welcome-${data.email}`, // preview file name
+    }
+  },
+}
+```
+
+`EmailLayout` takes `ctx`, `preview`, optional `shopUrl` (linked after the shop name in the footer),
+`seller` (filled into `messages.sellerLine`) and `reason` (last footer line). The header shows
+`theme.logoUrl` or the shop name; the footer links come from `theme.footerLinks`. `ContactCard`
+and `contactSentence` build the "Questions?" card from the dictionary; `layoutStyles(theme)` gives
+the shared inline styles (`text`, `small`, `card`, `cardTitle`, `pageTitle`); `Row` and `Column`
+are re-exported from React Email. `theme.fonts.stylesheet` links a web-font stylesheet in the `<head>`.
+
+## Preview
+
+`previewEmails(options, fixtures)` renders `{ template, data }` fixtures to `options.previewDir`
+and returns the file paths. The plugin ships no demo data – call it from a `medusa exec` script:
+
+```ts
+import { previewEmails } from '@cloud-house/medusa-emails'
+
+await previewEmails({ ...emails, previewDir: '.emails' }, [
+  { template: 'welcome', data: { firstName: 'Ola', email: 'ola@example.com' } },
+])
+```
 
 ## Error codes
 

@@ -2,7 +2,12 @@ module.exports = {
   transform: {
     '^.+\\.[jt]sx?$': [
       '@swc/jest',
-      { jsc: { parser: { syntax: 'typescript', tsx: true, decorators: true } } },
+      {
+        jsc: {
+          parser: { syntax: 'typescript', tsx: true, decorators: true },
+          transform: { react: { runtime: 'automatic' } },
+        },
+      },
     ],
   },
   testEnvironment: 'node',
