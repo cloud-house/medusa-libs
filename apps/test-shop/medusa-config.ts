@@ -1,7 +1,9 @@
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
+import { invoiceEmailTemplates } from '@cloud-house/medusa-fakturownia'
 import { defineConfig } from '@medusajs/framework/utils'
+import { resolveOrder, resolveReturn, resolveReturnOrder } from './src/lib/fakturownia'
 
 module.exports = defineConfig({
   admin: { disable: true },
@@ -29,7 +31,7 @@ module.exports = defineConfig({
               mode: 'preview',
               previewDir: join(tmpdir(), 'test-shop-emails'),
               theme: { shopName: 'Test Shop', shopNameLocative: 'Test Shop' },
-              templates: [...accountEmailTemplates],
+              templates: [...accountEmailTemplates, ...invoiceEmailTemplates],
             },
           },
         ],
@@ -58,6 +60,11 @@ module.exports = defineConfig({
           },
         ],
       },
+    },
+    {
+      resolve: '@cloud-house/medusa-fakturownia',
+      // `FAKTUROWNIA_URL=atrapa` (set by the HTTP test) selects the in-process fake of Fakturownia.
+      options: { resolveOrder, resolveReturnOrder, resolveReturn, oidPrefix: 'TEST-' },
     },
     {
       resolve: '@cloud-house/medusa-newsletter',
