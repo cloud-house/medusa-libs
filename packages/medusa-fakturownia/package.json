@@ -56,18 +56,26 @@
   "peerDependencies": {
     "@cloud-house/medusa-accounts": "^0.2.0",
     "@cloud-house/medusa-emails": "^0.1.0",
+    "@medusajs/admin-sdk": "catalog:medusa-peer",
     "@medusajs/framework": "catalog:medusa-peer",
-    "@medusajs/medusa": "catalog:medusa-peer"
+    "@medusajs/js-sdk": "catalog:medusa-peer",
+    "@medusajs/medusa": "catalog:medusa-peer",
+    "@medusajs/ui": "catalog:medusa-peer",
+    "@tanstack/react-query": "catalog:medusa-peer"
   },
   "devDependencies": {
     "@cloud-house/medusa-accounts": "workspace:^",
     "@cloud-house/medusa-emails": "workspace:^",
+    "@medusajs/admin-sdk": "catalog:medusa",
     "@medusajs/cli": "catalog:medusa",
     "@medusajs/framework": "catalog:medusa",
+    "@medusajs/js-sdk": "catalog:medusa",
     "@medusajs/medusa": "catalog:medusa",
     "@medusajs/test-utils": "catalog:medusa",
+    "@medusajs/ui": "catalog:medusa",
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
+    "@tanstack/react-query": "catalog:medusa",
     "@types/jest": "^29.5.13",
     "@types/node": "^24.0.0",
     "@types/react": "^18.3.31",
