@@ -93,3 +93,31 @@ Słowa: `src/api/store/.../route.ts`, plugin, ta sama ścieżka, nadpisanie tras
 - **Przyczyna:** `RoutesLoader.registerRoute` zapisuje trasy w mapie `ścieżka -> metoda`, a `ApiLoader` skanuje katalogi źródeł po kolei (pluginy, na końcu projekt), więc późniejsza trasa zastępuje wcześniejszą (źródło: `@medusajs/framework` 2.21.2, `dist/http/routes-loader.js` i `router.js`; sprawdzone w `test-shop` z trasą projektu obok pluginu).
 - **Rozwiązanie:** sklep nadpisuje trasę pluginu zwykłym plikiem trasy, bez opcji. Plugin, który ma być wyłączalny, wysyła plik trasy, a jego handler przy wyłączeniu wywołuje `next()` (handler trasy dostaje `next`; odpowiedź jest taka jak dla nieznanej ścieżki, 404). Samą logikę eksportuj osobno (`brandsStoreRoute`), żeby sklep mógł ją podpiąć w swoim pliku trasy bez bramki opcji. Nie można „nie rejestrować” trasy z pliku warunkowo: pliki `route.ts` ładuje skaner katalogów, bez pytania o opcje.
 
+## Opcje pluginu nie docierają do subskrybentów, workflow i tras
+Słowa: `plugins[].options`, subscriber, workflow, `req.scope`, moduł-trzymacz, `getOptions`
+
+- **Objaw:** plugin ma opcje (`paths`, `locale`, haki), ale kod spoza modułu widzi tylko domyślne albo nic.
+- **Przyczyna:** Medusa 2.21 przekazuje `options` tylko modułom pluginu; subskrybent dostaje surowe `pluginOptions`, a workflow, kroki i trasy nie dostają nic.
+- **Rozwiązanie:** plugin bez tabel rejestruje mały moduł bez modeli (`MedusaService({})`, `resolveOptions` w konstruktorze, `getOptions()`) i jeden helper `xOptions(container)`; migracji i tabel nie przybywa (dowód: `db:migrate` na kopii bazy „Skipped”, w buildzie brak `migrations/` i `models/`). Sklep nie wpisuje tego modułu w `modules`. Haki sklepu (`resolveContact`, `onAccountDeleted`) to funkcje w opcjach; błąd haka usuwania przerywa usuwanie, a dotychczas wymazane dane nie wracają.
+
+## Layout maila z React Email: zgodność ze sklepem sprawdź snapshotem
+Słowa: `react-email`, `<!-- -->`, snapshot HTML, `NBSP`, layout
+
+- **Objaw:** po przeniesieniu layoutu do kitu HTML maili różni się od dotychczasowego (inne odstępy, komentarze, link w stopce).
+- **Przyczyna:** `react-dom` wstawia `<!-- -->` między sąsiednimi węzłami tekstowymi i React Email je zostawia, więc zmiana `{a} {b}` na szablon `` {`${a} ${b}`} `` zmienia bajty; do tego twarda spacja w telefonie (U+00A0) i style budowane z motywu.
+- **Rozwiązanie:** zanim ruszysz sklep, dodaj w nim test parytetu z snapshotami HTML wszystkich maili (znormalizowanymi), przenieś layout, uruchom ten sam test bez zmiany snapshotów. Zachowaj podział węzłów tekstu jak w oryginalnym JSX.
+
+## Implementer w subagencie zostaje na gałęzi
+Słowa: `detached HEAD`, `git checkout`, subagent, wydanie, `npm view`, `.medusa/server/src`
+
+- **Objaw:** pakiet wyszedł do rejestru bez części plików (0.1.0 `medusa-accounts` bez tras i middleware).
+- **Przyczyna:** implementer pracował na odłączonym HEAD (albo nie na gałęzi zadania), commity nie trafiły do gałęzi, która została scalona i wydana.
+- **Rozwiązanie:** przed każdym commitem `git branch --show-current` (ma być gałąź zadania); w poleceniu dla implementera podaj gałąź i zakaz `git checkout <sha>`. Przed uznaniem wydania za dobre: `npm view @cloud-house/<pakiet>@<wersja> --registry=https://npm.pkg.github.com`, a po instalacji w sklepie sprawdź zawartość `node_modules/@cloud-house/<pakiet>/.medusa/server/src` (trasy, middleware, opcje). Niepełną wersję zastąp nową; nie nadpisuj opublikowanej.
+
+## Katalogi `.superpowers` w repozytorium
+Słowa: `.superpowers`, briefy, raporty, `git status`, lint
+
+- **Objaw:** briefy i raporty zadań (`.superpowers/sdd/...`) trafiają do commitów albo do lintu.
+- **Przyczyna:** to robocze notatki przepływu pracy z agentami, nie część kodu.
+- **Rozwiązanie:** `.superpowers` w `.gitignore` (lub w `.git/info/exclude`) i poza zakresem Biome; nie dodawaj ich przez `git add -A` bez sprawdzenia `git status`.
+
