@@ -5,7 +5,7 @@ description: Use when adding a new package or Medusa plugin to the medusa-libs k
 
 # Plugin kitu
 
-Przepis oparty na tym, jak zrobiono `commerce-rules`, `medusa-newsletter`, `medusa-omnibus` (kroki 0-1 kitu) oraz `medusa-brands`, `medusa-favorites`, `medusa-revalidation` i `next-medusa` (krok 2). Zanim zaczniesz, przejrzyj skill `pulapki-medusa-next` (`medusa-plugin.md`, `medusa-testy.md`, `pnpm-monorepo.md`).
+Przepis oparty na tym, jak zrobiono `commerce-rules`, `medusa-newsletter`, `medusa-omnibus` (kroki 0-1 kitu) oraz `medusa-brands`, `medusa-favorites`, `medusa-revalidation` i `next-medusa` (krok 2) oraz `medusa-emails` i `medusa-accounts` (krok 3). Zanim zaczniesz, przejrzyj skill `pulapki-medusa-next` (`medusa-plugin.md`, `medusa-testy.md`, `pnpm-monorepo.md`).
 
 ## 1. Czy to powinien być pakiet i jaki
 
@@ -66,9 +66,19 @@ class XModuleService extends MedusaService({ Model }) {
 
 3. Trasy i middleware: `req.scope.resolve<XModuleService>(X_MODULE).getOptions()` (jeden helper w `lib/plugin-options.ts`). Walidator zależny od opcji buduj wewnątrz funkcji middleware (`validateAndTransformBody(schema)(req, res, next)`, memoizowany), bo `defineMiddlewares` jest statyczne.
 4. Panel: własna trasa `GET /admin/<plugin>/messages` zwracająca `{ locale, messages }`; strona czyta ją przez react-query. Etykieta menu jest statyczna.
+4a. **Plugin bez tabel, który potrzebuje opcji w subskrybentach, workflow i trasach** (`medusa-accounts`): zarejestruj mały moduł-„trzymacz” opcji (`ACCOUNTS_MODULE`): `MedusaService({})` bez modeli, konstruktor robi `resolveOptions(options)`, `getOptions()`. Nie ma migracji ani katalogu `models/`, więc plugin nie dodaje tabeli do bazy sklepu (sprawdź: `db:migrate` na kopii bazy mówi „Skipped”, a w `.medusa/server/src` nie ma `migrations/` ani `models/`). Jeden helper `accountsOptions(container)` czyta opcje wszędzie; subskrybent dostaje w 2.21 surowe `pluginOptions`, ale workflow, kroki i trasy nie, więc czytaj zawsze przez moduł (opcje są wtedy rozwiązane i ze słownikiem).
+4b. **Haki sklepu jako funkcje w opcjach**: logika, którą zna tylko sklep, wchodzi opcją-funkcją `(container, ...) => ...`, nie importem. `resolveContact` (blok kontaktowy maili, typ `ContactResolver` z `medusa-emails`; leży w opcjach pluginów, które go używają, nie w `medusa-emails`), `onAccountDeleted: [async (container, customerId) => ...]` (sprzątanie przy usunięciu konta, np. ulubione; wołane po kolei, rzucenie przerywa usuwanie, brak kompensacji dla już wymazanych danych). Wartości zgodne z umową istniejącego sklepu (format e-maila skasowanego konta `deletedEmail`, flaga w metadanych zamówienia `createAccountFlag`) też są opcjami z neutralnym domyślnym, żeby sklep z danymi zachował swój format.
 5. Sklep **nie** wpisuje tego samego modułu w `modules` (jego wpis wygrywa i opcje pluginu przepadają).
 6. Zasada dla publicznych tras, które zapisują dane: sekret storefrontu z env (nazwa nagłówka i zmiennej jako opcje, domyślnie `x-storefront-secret` i `STOREFRONT_API_SECRET`), pusty sekret odrzuca każde żądanie kodem 401, porównanie stałoczasowe (`timingSafeEqual`). Test „rejects every sign-up when the secret env is empty” jest obowiązkowy.
 7. Rzeczy statyczne (harmonogram joba, nazwa menu) nie są opcjami; powiedz to w README pakietu.
+
+## 3a. Provider powiadomień (`medusa-emails`) i szablony
+
+- Provider (`@cloud-house/medusa-emails/providers/resend`) rejestruje się w module Notification sklepu (`id: 'resend'`), nie w `plugins`; jego opcje (`theme`, `templates`, `apiKey`...) są opcjami providera.
+- **Lista szablonów w opcjach zamiast globalnego rejestru:** `templates: [...]`, nazwy unikalne (`resolveOptions` rzuca przy duplikacie). Plugin, który wysyła maile, eksportuje swoje szablony (`accountEmailTemplates`), a sklep dokłada je do listy obok własnych. Szablony innych domen (zamówienie, faktura, zwrot) jadą z pluginem tej domeny, nie z `medusa-emails`; dopóki takiego pluginu nie ma, zostają w sklepie.
+- Szablon to `{ name, render(data, ctx) }`, `ctx` niesie rozwiązany motyw, słowniki i `locale`. Nazwy marki bierz z `ctx.theme`, nie ze stałych.
+- Wysyłka przez `sendEmailWorkflow` (`@cloud-house/medusa-emails/workflows/send-email`, wejście poza głównym eksportem, żeby `index` nie ładował workflow). Teksty błędów i logi providera są po angielsku, z kodami `emails_*`; klient (sklep) rozgałęzia się po `code`.
+- Przenosząc layout ze sklepu sprawdź zgodność bajt w bajt snapshotem HTML (zob. `pulapki-medusa-next/references/medusa-plugin.md`).
 
 ## 4. Słowniki PL i EN, kody błędów
 
@@ -84,6 +94,8 @@ class XModuleService extends MedusaService({ Model }) {
 - Dowód na kopii bazy sklepu, zanim wydasz wersję: `createdb -T baza kopia` (albo `create database kopia template baza` przez psql), `medusa db:migrate` na kopii. Oczekiwane: „Skipped. Database is up-to-date for module.”, liczba wierszy `mikro_orm_migrations` bez zmian, żadnego `drop`. Pusta tabela w bazie deweloperskiej to słaby dowód; liczy się tabela migracji. Kopię usuń.
 - Zdarzenia: usuń prefiks sklepu z nazw (`price-history.recorded`), a w sklepie zaktualizuj subskrybentów.
 - Prefiks logów i tym podobne wstrzykuj opcją (`logPrefix`).
+- **Middleware pluginu i sklepu się scalają**: Medusa łączy `src/api/middlewares.ts` wszystkich pluginów z plikiem sklepu i sortuje wpisy po specyficzności ścieżki, nie po pliku. Strażnik pluginu na `/store/account*` obejmuje więc także trasy, które sklep dokłada pod tą ścieżką (np. `orders`); sklep dalej wpisuje własne `authenticate(...)` i walidatory. Przy wydzielaniu usuń ze sklepu dokładnie przeniesione wpisy (te same matchery i metody), resztę zostaw.
+- Trasy domeny, które zależą od innej domeny (np. `orders*` od zamówień/faktur), zostają w sklepie do kroku, który wydziela tę domenę; wspólne helpery eksportuj z pluginu (`ownOrder`, `closedRoutes`).
 
 ## 6. Testy
 

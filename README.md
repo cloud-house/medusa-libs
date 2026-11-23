@@ -12,13 +12,16 @@ Versions are independent per package; see each package's README and CHANGELOG.
 |---|---|---|---|
 | [`@cloud-house/commerce-rules`](packages/commerce-rules) | 0.4.0 | Pure commerce rules: price format, plurals, tax id, seller line, Omnibus, discounts, stock, handle slugs, cache-tag rules | `formatPrice(amount, { currency, locale })`, `pluralize(count, forms, { locale })`, `lineDiscountLabel(parts, { locale, messages })`, `sellerLine(seller, { locale, taxIdLabel })`, `createTagRules(...)` |
 | [`@cloud-house/medusa-brands`](packages/medusa-brands) | 0.1.1 | Medusa plugin: product brands (module, product link, workflows with `brand.*` events, admin list and product widget, `GET /store/brands`) | `locale`, `messages`, `storeRoute`, `adminDetailLinks` |
+| [`@cloud-house/medusa-accounts`](packages/medusa-accounts) | 0.2.0 | Medusa plugin: customer accounts (registration, e-mail confirmation, password reset, checkout sign-up, account deletion): workflows, subscribers, three account e-mails, `/store/account/*` routes and their middlewares | `paths`, `storefrontUrl`, `locale`, `messages`, `resolveContact`, `onAccountDeleted`, `emailThrottle`, `deletedEmail`, `createAccountFlag` |
+| [`@cloud-house/medusa-emails`](packages/medusa-emails) | 0.1.0 | Medusa plugin: transactional e-mails (Resend notification provider, themed React Email layout, renderer, send workflow, preview helper); the shop brings the templates | `theme`, `templates`, `locale`, `messages`, `apiKey`, `from`, `replyTo`, `mode`, `previewDir`, `channels` |
 | [`@cloud-house/medusa-favorites`](packages/medusa-favorites) | 0.2.0 | Medusa plugin: customer favourites (module, `/store/account/favorites` routes, guest-list merge, visibility filter); no admin | `limit`, `locale`, `messages` |
 | [`@cloud-house/medusa-newsletter`](packages/medusa-newsletter) | 0.2.0 | Medusa plugin: sign-ups with proof of consent, admin page `/app/newsletter`, CSV, GDPR delete | `locale`, `messages`, `storefrontSecret: { header, env }`, `sources` |
 | [`@cloud-house/medusa-omnibus`](packages/medusa-omnibus) | 0.1.4 | Medusa plugin: hourly price snapshots and the `priceHistory` module | `locale`, `messages`, `logPrefix` |
 | [`@cloud-house/medusa-revalidation`](packages/medusa-revalidation) | 0.2.0 | Library for the Medusa backend (not a plugin): maps Medusa events to cache tags and POSTs them to the storefront | `createRevalidationSubscriber({ events, tagsForEvent, urlEnv, secretEnv, header, isAllowedTag, logPrefix, locale, messages })` |
 | [`@cloud-house/next-medusa`](packages/next-medusa) | 0.1.2 | Library for a Next.js 16 storefront: Medusa SDK getter, env check, cached fetch init with a version header, `/api/revalidate` route, cart cookie | `medusaEnv`, `cachedInit`, `createRevalidateRoute({ secretEnv, header, isAllowedTag, locale, messages, logPrefix })`, `createCartCookie({ name, maxAgeDays })` |
 
-Plugins (`medusa-brands`, `medusa-favorites`, `medusa-newsletter`, `medusa-omnibus`) go into `plugins`
+Plugins (`medusa-accounts`, `medusa-brands`, `medusa-emails`, `medusa-favorites`, `medusa-newsletter`, `medusa-omnibus`) go into `plugins`
+(`medusa-emails` also registers its provider in the Notification module, see below)
 of `medusa-config.ts`; libraries (`commerce-rules`, `medusa-revalidation`, `next-medusa`) are plain
 dependencies you import.
 
@@ -58,6 +61,61 @@ module.exports = defineConfig({
 
 Run `medusa db:migrate` after adding a plugin (it also syncs links unless you pass `--skip-links`). Do not
 also list a plugin's module under `modules`: that entry replaces the plugin's module and its options.
+
+## E-mails and accounts
+
+`medusa-emails` is a Notification provider: the theme (shop name, colours, footer links) and the
+**list of templates** go into the provider options, there is no global template registry. A plugin
+that sends e-mails (here `medusa-accounts`) exports its templates, and the shop adds them to the list
+next to its own.
+
+```ts
+import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
+import { emailEnv, type EmailsOptions } from '@cloud-house/medusa-emails'
+
+const emails: EmailsOptions = {
+  channels: ['email'],
+  ...emailEnv(process.env), // RESEND_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO, EMAIL_PREVIEW_DIR
+  theme: {
+    shopName: 'Acme',
+    colors: { yellow: '#f0c93a' },
+    footerLinks: [{ label: 'Terms', url: 'https://shop.example.com/terms' }], // absolute URLs
+  },
+  templates: [...accountEmailTemplates, welcomeTemplate], // the shop's own templates after the kit's
+}
+
+// medusa-config.ts
+modules: [
+  {
+    resolve: '@medusajs/medusa/notification',
+    options: {
+      providers: [{ resolve: '@cloud-house/medusa-emails/providers/resend', id: 'resend', options: emails }],
+    },
+  },
+],
+plugins: [
+  {
+    resolve: '@cloud-house/medusa-accounts',
+    options: {
+      paths: { confirmEmail: '/confirm-email', setPassword: '/set-password', passwordReset: '/reset-password' },
+      storefrontUrl: process.env.STOREFRONT_URL,
+      // contact block of the account e-mails (and Reply-To); none by default
+      resolveContact: async (container) => ({ email: 'shop@example.com', phone: null, hours: null }),
+      // cleanup hooks run while an account is erased; a throwing hook aborts the deletion
+      onAccountDeleted: [async (container, customerId) => { /* e.g. remove the customer's favourites */ }],
+      // e-mail left on an erased account row (default `deleted+<id>@account-deleted.invalid`)
+      deletedEmail: (customerId) => `deleted+${customerId}@shop.invalid`,
+      // order metadata entry set by the checkout's "create an account" checkbox (default `create_account` = `true`)
+      createAccountFlag: { key: 'create_account', value: 'true' },
+    },
+  },
+],
+```
+
+Plugin options reach subscribers, workflows and routes through a tiny module the plugin registers
+(no tables, no migrations: nothing is added to your database). The plugin's middlewares are merged
+with the shop's own `src/api/middlewares.ts`; the shop keeps its own routes (e.g. orders) and lists
+`authenticate(...)` for them. See the packages' READMEs.
 
 ## Storefront revalidation
 
