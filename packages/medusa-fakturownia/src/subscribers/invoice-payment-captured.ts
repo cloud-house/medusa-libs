@@ -4,7 +4,7 @@ import { logPrefix } from '../lib/plugin-options'
 import { ensureInvoiceRow, processInvoice } from '../lib/process'
 
 /**
- * BLIK and Przelewy24 settle after the order exists: the Stripe webhook captures the payment
+ * BLIK and Przelewy24 settle after the order exists: the payment provider's webhook captures the payment
  * (`capturePaymentWorkflow` emits `payment.captured` with the payment id) – the invoice can go.
  * A card's later webhook emits it too; the invoice is then already there.
  */

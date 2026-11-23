@@ -20,7 +20,7 @@ const CORRECTION_TONE: Record<AdminCorrectionView['status'], string | undefined>
 const OrderInvoiceWidget = ({ data: order }: DetailWidgetProps<AdminOrder>) => {
   const queryClient = useQueryClient()
   const prompt = usePrompt()
-  const key = ['chonasupa', 'invoice', order.id]
+  const key = ['fakturownia', 'invoice', order.id]
   const path = `/admin/orders/${order.id}/invoice`
   const card = useQuery({
     queryKey: key,
