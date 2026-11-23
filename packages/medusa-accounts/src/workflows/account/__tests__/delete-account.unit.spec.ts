@@ -10,7 +10,10 @@ const eraseWorkflow = createWorkflow(
   (input: { customerId: string }) => new WorkflowResponse(eraseCustomerDataStep(input)),
 )
 
-function setup(onAccountDeleted: ((container: never, customerId: string) => Promise<void>)[]) {
+function setup(
+  onAccountDeleted: ((container: never, customerId: string) => Promise<void>)[],
+  deletedEmail?: (customerId: string) => string,
+) {
   const calls: string[] = []
   const customers = {
     listCustomerAddresses: jest.fn(async () => [{ id: 'addr_1' }]),
@@ -29,6 +32,7 @@ function setup(onAccountDeleted: ((container: never, customerId: string) => Prom
   const options = resolveOptions({
     paths: { confirmEmail: '/a', passwordReset: '/b', setPassword: '/c' },
     onAccountDeleted: onAccountDeleted as never,
+    deletedEmail,
   })
   const services: Record<string, unknown> = {
     customer: customers,
@@ -98,6 +102,24 @@ describe('eraseCustomerDataStep', () => {
     )
     expect(after).not.toHaveBeenCalled()
     expect(auth.deleteAuthIdentities).not.toHaveBeenCalled()
+  })
+
+  it('writes the default placeholder e-mail over the erased account', async () => {
+    const { customers, container } = setup([])
+    await eraseWorkflow(container as never).run({ input: { customerId: 'cus_1' } })
+    expect(customers.updateCustomers).toHaveBeenCalledWith(
+      'cus_1',
+      expect.objectContaining({ email: 'deleted+cus_1@account-deleted.invalid' }),
+    )
+  })
+
+  it("writes the shop's own placeholder e-mail when deletedEmail is set", async () => {
+    const { customers, container } = setup([], (id) => `usuniete+${id}@example.invalid`)
+    await eraseWorkflow(container as never).run({ input: { customerId: 'cus_1' } })
+    expect(customers.updateCustomers).toHaveBeenCalledWith(
+      'cus_1',
+      expect.objectContaining({ email: 'usuniete+cus_1@example.invalid' }),
+    )
   })
 
   it('works without callbacks', async () => {

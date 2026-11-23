@@ -35,6 +35,14 @@ export interface AccountsOptions {
   onAccountDeleted?: ((container: MedusaContainer, customerId: string) => Promise<void>)[]
   /** At most `max` e-mails of one kind to one address per `windowMs`; default 3 per 15 minutes. */
   emailThrottle?: EmailThrottle
+  /** E-mail written over an erased account (keeps the address unique and unusable); default `deleted+<id>@account-deleted.invalid`. */
+  deletedEmail?: (customerId: string) => string
+  /**
+   * The order metadata entry the checkout sets when the customer ticks „create an account”;
+   * default `{ key: 'create_account', value: 'true' }`. A shop whose checkout writes another
+   * contract passes its own.
+   */
+  createAccountFlag?: { key: string; value: string }
 }
 
 export interface ResolvedAccountsOptions {
@@ -45,7 +53,16 @@ export interface ResolvedAccountsOptions {
   resolveContact: ContactResolver | null
   onAccountDeleted: ((container: MedusaContainer, customerId: string) => Promise<void>)[]
   emailThrottle: EmailThrottle
+  deletedEmail: (customerId: string) => string
+  createAccountFlag: { key: string; value: string }
 }
+
+/** Default e-mail of an erased account. */
+export const defaultDeletedEmail = (customerId: string) =>
+  `deleted+${customerId}@account-deleted.invalid`
+
+/** Default order metadata entry of the checkout's „create an account” box. */
+export const DEFAULT_CREATE_ACCOUNT_FLAG = { key: 'create_account', value: 'true' }
 
 const fail = (message: string): never => {
   throw new Error(`@cloud-house/medusa-accounts: ${message}`)
@@ -62,6 +79,8 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
     resolveContact = null,
     onAccountDeleted = [],
     emailThrottle = { ...ACCOUNT_EMAIL_LIMIT },
+    deletedEmail = defaultDeletedEmail,
+    createAccountFlag = { ...DEFAULT_CREATE_ACCOUNT_FLAG },
   } = withoutUndefined(options)
 
   if (!ACCOUNT_LOCALES.includes(locale))
@@ -72,6 +91,17 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
   for (const key of PATH_KEYS) {
     if (!paths?.[key]) fail(`paths.${key} is required.`)
   }
+
+  if (typeof deletedEmail !== 'function')
+    fail('deletedEmail must be a function (customerId) => string.')
+
+  if (
+    typeof createAccountFlag?.key !== 'string' ||
+    !createAccountFlag.key ||
+    typeof createAccountFlag.value !== 'string' ||
+    !createAccountFlag.value
+  )
+    fail('createAccountFlag needs a non-empty key and value.')
 
   if (!(emailThrottle.max >= 1) || !(emailThrottle.windowMs > 0))
     fail('emailThrottle needs max >= 1 and windowMs > 0.')
@@ -84,5 +114,7 @@ export function resolveOptions(options: AccountsOptions): ResolvedAccountsOption
     resolveContact,
     onAccountDeleted,
     emailThrottle,
+    deletedEmail,
+    createAccountFlag: { key: createAccountFlag.key, value: createAccountFlag.value },
   }
 }

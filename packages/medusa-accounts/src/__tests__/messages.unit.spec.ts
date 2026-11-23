@@ -2,7 +2,7 @@ import { ACCOUNT_ERROR_CODES } from '../errors'
 import { messages, resolveMessages } from '../messages'
 
 describe('messages', () => {
-  it('pl dictionary equals the current ChoNaSupa texts', () => {
+  it('pl dictionary equals the legacy texts', () => {
     expect(messages.pl).toEqual({
       duplicateAccount: 'Konto z tym adresem już istnieje.',
       linkExpired: 'Link wygasł albo został już użyty.',
@@ -14,6 +14,9 @@ describe('messages', () => {
       orderNotFound: 'Nie znaleziono zamówienia.',
       cartNotFound: 'Nie znaleziono koszyka.',
       invoiceNotFound: 'Nie znaleziono faktury.',
+      sessionExpired: 'Sesja wygasła. Zaloguj się ponownie.',
+      notFound: 'Nie znaleziono.',
+      metadataUnavailable: 'Pole metadata jest niedostępne.',
     })
   })
 

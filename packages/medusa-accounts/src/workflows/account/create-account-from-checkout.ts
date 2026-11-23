@@ -21,7 +21,7 @@ type Decision =
   | { kind: 'relink'; customerId: string; throttled: boolean }
   | { kind: 'create'; email: string; first_name: string; last_name: string; phone: string }
 
-/** What the the checkout's „create an account” checkbox checkbox of this order leads to. */
+/** What the checkout's „create an account” checkbox of this order leads to. */
 export const decideCheckoutAccountStep = createStep(
   'decide-checkout-account',
   async ({ orderId }: { orderId: string }, { container }) => {
@@ -31,7 +31,8 @@ export const decideCheckoutAccountStep = createStep(
         { id: orderId },
         { select: ['id', 'email', 'metadata'], relations: ['shipping_address'] },
       )
-    if (!order?.email || order.metadata?.create_account !== 'tak') {
+    const flag = accountsOptions(container).createAccountFlag
+    if (!order?.email || order.metadata?.[flag.key] !== flag.value) {
       return new StepResponse({ kind: 'skip' } as Decision)
     }
     const email = order.email.trim().toLowerCase()

@@ -2,7 +2,8 @@
 
 Medusa 2 plugin: customer accounts (registration, e-mail confirmation, password reset, checkout
 sign-up, account deletion): workflows, event subscribers, the three account e-mails, options,
-dictionaries, error codes and the account helpers. Account routes follow.
+dictionaries, error codes, the account helpers and the `/store/account/*` routes with their
+middlewares.
 
 ```sh
 pnpm add --save-exact @cloud-house/medusa-accounts
@@ -50,8 +51,19 @@ const options: AccountsOptions = {
   resolveContact: async (container) => null, // ContactResolver from medusa-emails
   onAccountDeleted: [async (container, customerId) => {}],
   emailThrottle: { max: 3, windowMs: 15 * 60 * 1000 }, // the defaults
+  deletedEmail: (customerId) => `deleted+${customerId}@account-deleted.invalid`, // the default
+  createAccountFlag: { key: 'create_account', value: 'true' }, // the default, see below
 }
 ```
+
+`deletedEmail` is the e-mail stored over an erased account (the row stays after Medusa's soft delete).
+A shop that already has erased accounts in its own format passes that format here, so old and new
+rows stay identical (e.g. `(id) => \`usuniete+${id}@shop.invalid\``).
+
+`createAccountFlag` is the order metadata entry the checkout sets when the customer ticks „create an
+account” (`createAccountFromCheckoutWorkflow` reads it on `order.placed`). A shop whose checkout
+writes another contract passes its own, e.g. `{ key: 'create_account', value: 'yes' }`; both parts
+must be non-empty strings.
 
 `resolveOptions` treats `undefined` values as unset and throws when a `paths` entry is missing or
 `locale` is unknown.
@@ -60,8 +72,8 @@ const options: AccountsOptions = {
 
 `messages.pl` / `messages.en` hold the API error texts (`duplicateAccount`, `linkExpired`,
 `tooManyRequests`, `wrongCurrentPassword`, `wrongPassword`, `signInAgain`, `tokenIssuedAtMissing`,
-`orderNotFound`, `cartNotFound`, `invoiceNotFound`). `ACCOUNT_ERROR_CODES` has the matching stable
-`account_*` codes.
+`orderNotFound`, `cartNotFound`, `invoiceNotFound`, `sessionExpired`, `notFound`,
+`metadataUnavailable`). `ACCOUNT_ERROR_CODES` has the matching stable `account_*` codes.
 
 ## Helpers
 
@@ -118,3 +130,57 @@ to `http://localhost:3200`.
 name (and its locative, used in the subjects) from the `medusa-emails` theme. Their texts are Polish.
 `accountEmailData(container, options, logger, { email, firstName, path, orderNumber? })` builds the
 data (link, contact, seller, Reply-To) a template needs.
+
+## Routes
+
+All under `/store/account` (a publishable API key is needed like on every store route). Errors from
+the routes themselves are `{ type, message }` with the dictionary text; errors thrown by the
+workflows (e.g. duplicate account, unknown order) carry the stable `code` too.
+
+| Method and path | Auth | Body | Answers |
+| --- | --- | --- | --- |
+| `POST /register` | none | `email`, `password` (8-128), `first_name`, `last_name`, `phone` | `201 { customer: { id, email } }`; `422` duplicate account; `400` validation |
+| `POST /register-from-order` | none | `order_id`, `cart_id`, `password` | `201 { customer: { id, email } }`; `404` order not found (the cart must be the one that placed it); `422` the e-mail already has an account |
+| `POST /confirm-email` | customer | `code` | `200 { linked }` (guest orders moved in); `400` expired, used or not this account's code |
+| `POST /email-confirmation` | customer | `{}` | `201 { sent: true }`; `200 { sent: false, confirmed: true }`; `429` throttled |
+| `POST /set-password` | none (the e-mailed code is the access) | `code`, `password` | `200 { email, linked }`; `400` expired, used, or not an account waiting for a password |
+| `POST /password` | customer | `current_password`, `new_password` | `200 { success: true }`, every older session ends; `400` wrong current password |
+| `POST /sessions/end-others` | customer | `{}` | `200 { success: true }`: tokens older than this one stop working; `400` token without `iat` |
+| `GET /profile` | customer | | `200 { customer: { id, email, first_name, last_name, phone, email_confirmed } }`; `401` |
+| `POST /cart` | customer | `cart_id` | `200 { cart_id }` the open cart now belongs to the customer (`ACCOUNT_CART_FLAG`, `LAST_CART`); `404` |
+| `GET /cart` | customer | | `200 { cart_id }` the customer's last open cart, or `null` |
+| `POST /delete` | customer | `password` | `200 { deleted: true }`; `400` wrong password; see `onAccountDeleted` |
+
+„customer” is Medusa's `authenticate('customer', ['session', 'bearer'])`. Bodies are strict
+(`400` on unknown fields); e-mails are trimmed and lower-cased, so ` Jan@Example.PL ` and
+`jan@example.pl` are the same account and the same throttle counter.
+
+`ownOrder(req)` (exported) returns `{ id, display_id }` of the order `req.params.id` when it belongs
+to the signed-in customer (never a draft order), else `null`. A shop's own `/store/account/orders/:id`
+routes use it for their 404.
+
+## Middlewares
+
+`src/api/middlewares.ts` of the plugin registers, with the same matchers and order the routes need:
+
+- `sessionGuard` on `/store/customers/me*`, `/store/orders*`, `/store/account*` and
+  `/store/carts/:id/customer`: a token older than the customer's `sessions_valid_from` (set by a
+  password change or `end-others`) gets `401 sessionExpired`; a deleted account's token too;
+- `rejectCustomerMetadata` on `/store/customers` (`POST /store/customers` and `/me` with `metadata`
+  is `400`: the plugin keeps account state there);
+- `verificationDisabled` on `/auth/verification/*` and `closedRoutes` on Medusa's own customer
+  registration (`POST /store/customers`, `POST /auth/customer/emailpass/register`): `404`; the
+  e-mail confirmation goes only through `/store/account/*`;
+- `rejectCustomerTokens` on `POST /auth/token/refresh` and `POST /auth/session`: a customer token is
+  never refreshed or exchanged for a session (it would dodge `sessions_valid_from`);
+- the `authenticate` and body validators of the routes above.
+
+Medusa merges the middlewares of all plugins with the shop's own `src/api/middlewares.ts` and sorts
+them by specificity, not by file, so the plugin's `/store/account*` session guard also applies to
+routes the **shop** adds under `/store/account/*` (e.g. its orders). The shop still lists its own
+`authenticate(...)` for those routes. `closedRoutes(paths)` and `routedPath(req)` are exported
+for the shop's own guards (`closedRoutes(['/store/returns'])`).
+
+## Test-shop
+
+`apps/test-shop` of this repo runs the routes end to end (`pnpm --filter test-shop test:integration:http -- account`).

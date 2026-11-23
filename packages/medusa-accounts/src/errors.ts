@@ -20,6 +20,12 @@ export const ACCOUNT_ERROR_CODES = {
   cartNotFound: 'account_cart_not_found',
   /** The order has no invoice (404). */
   invoiceNotFound: 'account_invoice_not_found',
+  /** The token was issued before the account's „sessions valid from” (401). */
+  sessionExpired: 'account_session_expired',
+  /** A route closed on purpose (404). */
+  notFound: 'account_not_found',
+  /** `metadata` of a customer cannot be written through the Store API (400). */
+  metadataUnavailable: 'account_metadata_unavailable',
 } as const
 
 export type AccountErrorCode = (typeof ACCOUNT_ERROR_CODES)[keyof typeof ACCOUNT_ERROR_CODES]
