@@ -22,7 +22,7 @@ const CLAIM_LINE =
 /** A container whose Query answers by entity; the fakturownia module only records calls. */
 function container(returns: Record<string, unknown>[], shopOrder = true) {
   const logger = { info: jest.fn(), warn: jest.fn(), error: jest.fn() }
-  const graph = jest.fn(async ({ entity }: { entity: string }) => ({
+  const graph = jest.fn(async () => ({
     data: returns,
   }))
   const fakturownia = {
