@@ -43,9 +43,9 @@ describe('resolveOptions', () => {
   })
 
   it('rejects an accountOrderPath without :id and a labelPath without :displayId', () => {
-    expect(() => resolveOptions({ resolveOrder, resolveContact, accountOrderPath: '/konto' })).toThrow(
-      RETURNS_ERROR_CODES.invalidOption,
-    )
+    expect(() =>
+      resolveOptions({ resolveOrder, resolveContact, accountOrderPath: '/konto' }),
+    ).toThrow(RETURNS_ERROR_CODES.invalidOption)
     expect(() => resolveOptions({ resolveOrder, resolveContact, labelPath: '/zwrot' })).toThrow(
       RETURNS_ERROR_CODES.invalidOption,
     )

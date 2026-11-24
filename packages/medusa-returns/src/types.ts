@@ -1,5 +1,5 @@
-import type { ShopContact } from '@cloud-house/medusa-emails'
 import type { ReturnQuantities, ReturnWindowFulfillment } from '@cloud-house/commerce-rules'
+import type { ShopContact } from '@cloud-house/medusa-emails'
 
 /** An order item as returns see it: what it is and how many pieces are left to return. */
 export interface ReturnOrderItem {
