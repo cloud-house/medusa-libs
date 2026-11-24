@@ -13,6 +13,7 @@ const data = (over: Partial<ReturnAlertEmailData> = {}): ReturnAlertEmailData =>
   note: null,
   adminUrl: null,
   shopUrl: 'https://sklep.test',
+  afterReceiveHint: 'sklep wystawi wtedy korektę faktury',
   ...over,
 })
 
@@ -98,5 +99,13 @@ describe('return-alert e-mail', () => {
 
     expect(html).not.toContain('<script>alert')
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
+  })
+
+  it('without the hint the alert does not promise a credit note', async () => {
+    const { text } = await render({ afterReceiveHint: null })
+    const plain = flat(text)
+
+    expect(plain).toContain('Gdy paczka dotrze, przyjmij zwrot w zamówieniu w panelu Medusy.')
+    expect(plain).not.toContain('korektę')
   })
 })

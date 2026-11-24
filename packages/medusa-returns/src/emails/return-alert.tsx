@@ -52,8 +52,9 @@ export function ReturnAlertEmail({
           </Text>
         )}
         <Text style={text}>
-          Gdy paczka dotrze, przyjmij zwrot w zamówieniu w panelu Medusy – sklep wystawi wtedy
-          korektę faktury. Pieniądze zwróć ręcznie w płatnościach zamówienia (Refund).
+          Gdy paczka dotrze, przyjmij zwrot w zamówieniu w panelu Medusy
+          {data.afterReceiveHint ? ` – ${data.afterReceiveHint}` : ''}. Pieniądze zwróć ręcznie w
+          płatnościach zamówienia (Refund).
         </Text>
         {data.adminUrl ? (
           <Button ctx={ctx} href={data.adminUrl}>

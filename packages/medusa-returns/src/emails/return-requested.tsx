@@ -20,7 +20,7 @@ export function returnLineLabel(line: Pick<ReturnEmailLine, 'name' | 'variant' |
 
 /**
  * „Mamy Twoje zgłoszenie zwrotu” (spec 6e-b §5.5): what the customer returns, how to send it back
- * and when the money comes back – the same terms as Regulamin §8 and „Dostawa i zwroty”.
+ * and when the money comes back.
  */
 export function ReturnRequestedEmail({
   data,
@@ -74,12 +74,10 @@ export function ReturnRequestedEmail({
           <Text style={text}>Napisz do nas przed wysłaniem paczki – podamy adres do zwrotu.</Text>
         )}
         <Text style={text}>
-          Bezpośredni koszt odesłania Towaru ponosi Kupujący. Deskę SUP trzeba odesłać kurierem,
-          akcesoria możesz nadać też w paczkomacie.
+          Bezpośredni koszt odesłania Towaru ponosi Kupujący.
+          {data.shippingHint ? ` ${data.shippingHint}` : ''}
         </Text>
-        <Text style={small}>
-          Deskę zapakuj najlepiej w oryginalny plecak lub karton, z wiosłem i akcesoriami z zestawu.
-        </Text>
+        {data.packingHint && <Text style={small}>{data.packingHint}</Text>}
       </Card>
 
       <Card ctx={ctx} title="Zwrot pieniędzy">

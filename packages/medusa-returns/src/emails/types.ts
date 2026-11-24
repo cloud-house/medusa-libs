@@ -31,6 +31,10 @@ export interface ReturnRequestedEmailData {
   shopUrl: string
   contact: EmailContact | null
   seller: string | null
+  /** The shop's shipping advice (`emailCopy.shippingHint`); `null` – none. */
+  shippingHint: string | null
+  /** The shop's packing advice (`emailCopy.packingHint`); `null` – none. */
+  packingHint: string | null
 }
 
 /** Alert to the shop's contact address about a new return (spec 6e-b §5.5). */
@@ -46,4 +50,6 @@ export interface ReturnAlertEmailData {
   /** The order in the Medusa admin (`MEDUSA_ADMIN_URL`), `null` – the address is not set. */
   adminUrl: string | null
   shopUrl: string
+  /** Added to „przyjmij zwrot w zamówieniu w panelu Medusy” (`emailCopy.afterReceiveHint`); `null` – nothing. */
+  afterReceiveHint: string | null
 }

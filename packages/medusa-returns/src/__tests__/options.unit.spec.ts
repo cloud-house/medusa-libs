@@ -19,6 +19,20 @@ describe('resolveOptions', () => {
       logPrefix: '[Returns]',
       labelPath: '/returns/label?order=:displayId',
       accountOrderPath: '/account/orders/:id',
+      emailCopy: { shippingHint: null, packingHint: null, afterReceiveHint: null },
+    })
+  })
+
+  it('keeps the shop e-mail copy and treats undefined parts as unset', () => {
+    const options = resolveOptions({
+      resolveOrder,
+      resolveContact,
+      emailCopy: { shippingHint: 'Ship by courier.', packingHint: undefined },
+    })
+    expect(options.emailCopy).toEqual({
+      shippingHint: 'Ship by courier.',
+      packingHint: null,
+      afterReceiveHint: null,
     })
   })
 

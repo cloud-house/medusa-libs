@@ -65,6 +65,11 @@ function container(hasAccount = false) {
             logPrefix: '[Shop]',
             labelPath: '/zwrot/etykieta?zamowienie=:displayId',
             accountOrderPath: '/konto/zamowienia/:id',
+            emailCopy: {
+              shippingHint: 'Ship boards by courier.',
+              packingHint: 'Pack the board well.',
+              afterReceiveHint: 'the shop issues the credit note',
+            },
           }),
         },
       })[key],
@@ -120,6 +125,8 @@ describe('loadReturnEmails', () => {
           hours: 'pn–pt 9–16',
         },
         seller: 'Acme Shop sp. z o.o.',
+        shippingHint: 'Ship boards by courier.',
+        packingHint: 'Pack the board well.',
       },
     })
     expect(staff).toEqual({
@@ -133,6 +140,7 @@ describe('loadReturnEmails', () => {
         note: 'Nie działa',
         adminUrl: 'https://api.sklep.test/app/orders/order_1',
         shopUrl: 'https://sklep.test',
+        afterReceiveHint: 'the shop issues the credit note',
       },
     })
   })

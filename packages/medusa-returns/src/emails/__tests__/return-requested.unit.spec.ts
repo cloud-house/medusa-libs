@@ -19,6 +19,9 @@ const data = (over: Partial<ReturnRequestedEmailData> = {}): ReturnRequestedEmai
   shopUrl: 'https://sklep.test',
   contact: { canReply: true, email: 'sklep@shop.example', phone: null, hours: null },
   seller: null,
+  shippingHint: 'Deskę SUP trzeba odesłać kurierem, akcesoria możesz nadać też w paczkomacie.',
+  packingHint:
+    'Deskę zapakuj najlepiej w oryginalny plecak lub karton, z wiosłem i akcesoriami z zestawu.',
   ...over,
 })
 
@@ -130,5 +133,14 @@ describe('return-requested e-mail', () => {
     expect(html).not.toContain('<script>alert')
     expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;')
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
+  })
+
+  it('without the shop copy there is no board-specific advice', async () => {
+    const { text } = await render({ shippingHint: null, packingHint: null })
+    const plain = flat(text)
+
+    expect(plain).toContain('Bezpośredni koszt odesłania Towaru ponosi Kupujący.')
+    expect(plain).not.toContain('Deskę')
+    expect(plain).not.toContain('paczkomacie')
   })
 })

@@ -75,7 +75,7 @@ export async function loadReturnEmails(
   ])
   if (!order?.shopOrder || !row || row.orderId !== order.id) return NONE
 
-  const { labelPath, accountOrderPath } = returnsOptions(container)
+  const { labelPath, accountOrderPath, emailCopy } = returnsOptions(container)
   const contact = await readContact(container)
   if (!contact) {
     logger.warn(
@@ -108,6 +108,8 @@ export async function loadReturnEmails(
           hours: contact?.hours ?? null,
         },
         seller: contact?.seller ?? null,
+        shippingHint: emailCopy.shippingHint,
+        packingHint: emailCopy.packingHint,
       },
     }
   }
@@ -126,6 +128,7 @@ export async function loadReturnEmails(
         note: row.items.find((line) => line.note)?.note ?? null,
         adminUrl: adminBase ? `${adminBase}/orders/${order.id}` : null,
         shopUrl,
+        afterReceiveHint: emailCopy.afterReceiveHint,
       },
     }
   } else {

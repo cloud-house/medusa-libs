@@ -61,7 +61,8 @@ only the missing ones). Without them a claim fails with `returns_no_return_reaso
 
 Medusa's own `POST /store/returns` is closed (it skips the window and the quantities). Errors are
 `{ type: 'not_allowed' | 'not_found' | 'conflict', message }` with a Polish `message`; one claim per
-order at a time (a lock), a second concurrent claim gets 409.
+order at a time (a lock): a second concurrent claim waits for the first and is then refused by the
+ordinary rules (400, nothing left to return); 409 only comes when the wait runs out (30 s).
 
 ## Options
 
@@ -72,9 +73,20 @@ order at a time (a lock), a second concurrent claim gets 409.
 | `labelPath` | `/returns/label?order=:displayId` | the printable label page in the storefront |
 | `accountOrderPath` | `/account/orders/:id` | the order in the customer account (must contain `:id`) |
 | `logPrefix` | `[Returns]` | prefix of the log lines |
+| `emailCopy` | none | shop-specific sentences in the e-mails, all optional and omitted when not given: `shippingHint` (customer e-mail, after the line about who pays for the return), `packingHint` (customer e-mail, small paragraph), `afterReceiveHint` (shop alert, e.g. `'sklep wystawi wtedy korektę faktury'` when invoices are issued) |
 
 Environment: `STOREFRONT_URL` (links in the e-mails), `EMAIL_REPLY_TO` (reply-to; else the contact's
 `replyTo`, else its e-mail), `MEDUSA_ADMIN_URL` (link in the shop's alert).
+
+## Notes
+
+- The e-mails and error messages are Polish. `NOT_SHOP_ORDER_MESSAGE` (shown for an order the shop did
+  not place, e.g. an admin draft) refers to a „Dostawa i zwroty” page – have such a page or ignore
+  that answer.
+- The plugin registers a subscriber (`order.return_requested`) and the workflow `send-return-emails`
+  (step `prepare-return-emails`); do not define those ids in the shop.
+- `resolveOrder().shopOrder` should follow the same rule as the guest lookup: the order has an
+  `order_cart` link and is not a draft.
 
 ## Advanced API
 
