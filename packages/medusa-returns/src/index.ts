@@ -18,7 +18,7 @@ export {
 } from './lib/claim'
 export { loadReturnPolicy, type ReturnPolicy, returnPolicyOf } from './lib/policy'
 export { ensureReturnReasons } from './lib/reasons'
-export { loadReturn, toReturnRow } from './lib/return-row'
+export { loadReturn, RETURN_FIELDS, toReturnRow } from './lib/return-row'
 export { NOT_SHOP_ORDER_MESSAGE, quantitiesOf, toAccountReturn, toReturnInfo } from './lib/view'
 export { RETURNS_MODULE } from './modules/shop-returns'
 export type { default as ShopReturnsModuleService } from './modules/shop-returns/service'
