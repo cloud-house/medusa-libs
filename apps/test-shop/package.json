@@ -15,6 +15,7 @@
     "@cloud-house/medusa-favorites": "workspace:*",
     "@cloud-house/medusa-newsletter": "workspace:*",
     "@cloud-house/medusa-omnibus": "workspace:*",
+    "@cloud-house/medusa-returns": "workspace:*",
     "@medusajs/admin-sdk": "catalog:medusa",
     "@medusajs/cli": "catalog:medusa",
     "@medusajs/framework": "catalog:medusa",

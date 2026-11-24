@@ -2,8 +2,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
 import { invoiceEmailTemplates } from '@cloud-house/medusa-fakturownia'
+import { returnEmailTemplates } from '@cloud-house/medusa-returns'
 import { defineConfig } from '@medusajs/framework/utils'
 import { resolveOrder, resolveReturn, resolveReturnOrder } from './src/lib/fakturownia'
+import { resolveContact, resolveOrder as resolveReturnsOrder } from './src/lib/returns'
 
 module.exports = defineConfig({
   admin: { disable: true },
@@ -31,7 +33,11 @@ module.exports = defineConfig({
               mode: 'preview',
               previewDir: join(tmpdir(), 'test-shop-emails'),
               theme: { shopName: 'Test Shop', shopNameLocative: 'Test Shop' },
-              templates: [...accountEmailTemplates, ...invoiceEmailTemplates],
+              templates: [
+                ...accountEmailTemplates,
+                ...invoiceEmailTemplates,
+                ...returnEmailTemplates,
+              ],
             },
           },
         ],
@@ -65,6 +71,17 @@ module.exports = defineConfig({
       resolve: '@cloud-house/medusa-fakturownia',
       // `FAKTUROWNIA_URL=atrapa` (set by the HTTP test) selects the in-process fake of Fakturownia.
       options: { resolveOrder, resolveReturnOrder, resolveReturn, oidPrefix: 'TEST-' },
+    },
+    {
+      resolve: '@cloud-house/medusa-returns',
+      // Fixture values; the HTTP test shows the paths reach the e-mails.
+      options: {
+        resolveOrder: resolveReturnsOrder,
+        resolveContact,
+        logPrefix: '[Test]',
+        labelPath: '/returns/label?order=:displayId',
+        accountOrderPath: '/account/orders/:id',
+      },
     },
     {
       resolve: '@cloud-house/medusa-newsletter',

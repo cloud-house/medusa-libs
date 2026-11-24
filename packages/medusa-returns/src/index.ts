@@ -6,6 +6,20 @@ export type {
   ReturnRequestedEmailData,
 } from './emails/types'
 export { RETURNS_ERROR_CODES, type ReturnsErrorCode } from './errors'
+export {
+  claimReturn,
+  findGuestOrder,
+  GUEST_NOT_FOUND,
+  ReturnClaimError,
+  type ReturnClaimInput,
+  type ReturnClaimLine,
+  returnOptionId,
+  returnReasonIds,
+} from './lib/claim'
+export { loadReturnPolicy, type ReturnPolicy, returnPolicyOf } from './lib/policy'
+export { ensureReturnReasons } from './lib/reasons'
+export { loadReturn, toReturnRow } from './lib/return-row'
+export { quantitiesOf, toAccountReturn, toReturnInfo } from './lib/view'
 export { RETURNS_MODULE } from './modules/shop-returns'
 export type { default as ShopReturnsModuleService } from './modules/shop-returns/service'
 export type { ResolvedReturnsOptions, ReturnsOptions } from './options'

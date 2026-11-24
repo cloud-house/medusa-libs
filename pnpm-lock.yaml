@@ -83,6 +83,9 @@ importers:
       '@cloud-house/medusa-omnibus':
         specifier: workspace:*
         version: link:../../packages/medusa-omnibus
+      '@cloud-house/medusa-returns':
+        specifier: workspace:*
+        version: link:../../packages/medusa-returns
       '@medusajs/admin-sdk':
         specifier: catalog:medusa
         version: 2.21.2
