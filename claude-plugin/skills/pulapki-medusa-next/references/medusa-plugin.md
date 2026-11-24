@@ -127,3 +127,24 @@ Słowa: `pnpm pack`, tarball, `file:`, parytet, wydanie, rejestr
 - **Objaw:** błąd przeniesienia (inny payload, inny mail, inna trasa) wychodzi dopiero po wydaniu, gdy wersji nie da się wycofać.
 - **Przyczyna:** testy sklepu na pakiecie z rejestru są możliwe dopiero po publikacji.
 - **Rozwiązanie:** `pnpm build && pnpm pack` w pakiecie, w sklepie `"@cloud-house/<pakiet>": "file:<ścieżka>.tgz"`, pełne testy (snapshoty maili i payloadów bez zmian, HTTP, `db:migrate` na kopii bazy), dopiero potem wydanie i przypięcie wersji z rejestru (wpis w `minimumReleaseAgeExclude`, odświeżony lockfile).
+
+## `medusa plugin:build` bez katalogu `src/admin`
+Słowa: `plugin:build`, `__admin-extensions__.js`, ENOENT, `.gitkeep`
+
+- **Objaw:** `medusa plugin:build` kończy się `ENOENT … src/admin/__admin-extensions__.js` w pluginie bez panelu admina.
+- **Przyczyna:** budowanie rozszerzeń admina zawsze zakłada katalog `src/admin`.
+- **Rozwiązanie:** pusty `src/admin/.gitkeep` (tak ma `medusa-accounts`).
+
+## Test HTTP w test-shopie: zamówienie klienta zmienia właściciela
+Słowa: `placeOrder`, `account_customer_id`, `ownOrder`, `order.placed`, test-shop
+
+- **Objaw:** trasa konta (`ownOrder`) zwraca 404 dla zamówienia, które test założył klientowi, choć tuż po `placeOrder` `customer_id` się zgadza.
+- **Przyczyna:** subskrybent `order.placed` pluginu `medusa-accounts` przepisuje zamówienie na innego klienta (rekord gościa), gdy koszyk nie wskazuje konta.
+- **Rozwiązanie:** `placeOrder(..., { customerId, cartMetadata: { account_customer_id: customerId } })`, jak w `account-orders-link.spec`.
+
+## Jest: „Converting circular structure to JSON” zamiast błędu asercji
+Słowa: `circular`, `AxiosError`, `jest-worker`, `--runInBand`, `api.post`
+
+- **Objaw:** pakiet HTTP w test-shopie kończy się `Jest worker encountered 4 child process exceptions` i zerem testów.
+- **Przyczyna:** test rzucił `AxiosError` (żądanie z kodem 4xx bez `send(...)`), a worker nie umie przesłać go do rodzica.
+- **Rozwiązanie:** `TEST_TYPE=integration:http NODE_OPTIONS="--experimental-vm-modules --max-old-space-size=8192" pnpm exec jest --runInBand <plik>` pokazuje prawdziwy błąd; w testach oczekiwany błąd łap przez `send(...)`.
