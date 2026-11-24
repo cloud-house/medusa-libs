@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.5.0
+
+### Minor Changes
+
+- a155e45: Return rules and types (window from delivery, returnable quantities, reasons, messages, API shapes), moved from the shop for `@cloud-house/medusa-returns`.
+
 ## 0.4.0
 
 ### Minor Changes
