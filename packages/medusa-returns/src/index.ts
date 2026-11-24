@@ -19,7 +19,7 @@ export {
 export { loadReturnPolicy, type ReturnPolicy, returnPolicyOf } from './lib/policy'
 export { ensureReturnReasons } from './lib/reasons'
 export { loadReturn, toReturnRow } from './lib/return-row'
-export { quantitiesOf, toAccountReturn, toReturnInfo } from './lib/view'
+export { NOT_SHOP_ORDER_MESSAGE, quantitiesOf, toAccountReturn, toReturnInfo } from './lib/view'
 export { RETURNS_MODULE } from './modules/shop-returns'
 export type { default as ShopReturnsModuleService } from './modules/shop-returns/service'
 export type { ResolvedReturnsOptions, ReturnsOptions } from './options'
