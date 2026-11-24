@@ -1,5 +1,12 @@
 # @cloud-house/next-medusa
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [a155e45]
+  - @cloud-house/commerce-rules@0.5.0
+
 ## 0.1.2
 
 ### Patch Changes

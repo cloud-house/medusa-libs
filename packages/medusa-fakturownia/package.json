@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-fakturownia",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Medusa plugin: Fakturownia invoices – invoice and credit-note issuing, KSeF, e-mail with the PDF, retry job, admin invoice card.",
   "license": "MIT",
   "repository": {
