@@ -48,7 +48,8 @@
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@cloud-house/commerce-rules": "workspace:^"
+    "@cloud-house/commerce-rules": "workspace:^",
+    "sharp": "0.35.4"
   },
   "peerDependencies": {
     "@medusajs/admin-sdk": "catalog:medusa-peer",

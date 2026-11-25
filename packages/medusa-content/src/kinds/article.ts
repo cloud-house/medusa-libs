@@ -1,6 +1,13 @@
-import { ARTICLE_BLOCKS, articleSlugError, categorySlugError } from '@cloud-house/commerce-rules'
+import {
+  ARTICLE_BLOCKS,
+  articleSlugError,
+  categorySlugError,
+  readingMinutes,
+} from '@cloud-house/commerce-rules'
 import { z } from '@medusajs/framework/zod'
 import type { ContentKind } from '../kinds'
+import { CATEGORY_IN_USE_MESSAGE } from '../lib/api-errors'
+import type { EntryData } from '../types'
 import { checked, lexical, mediaRef, optionalText, requiredText } from './common'
 import { lexicalLinkError } from './lexical-rules'
 import { LINK_MESSAGE, SHOP_LINKS, slugField } from './page'
@@ -70,6 +77,17 @@ export function articleKind(): ContentKind {
       ['content', 'lexical'],
     ],
     view: articleView,
+    prepare: (data, { row, publishing }) => {
+      const next: EntryData = { ...data, readingMinutes: readingMinutes(data.content) }
+      if (publishing) {
+        const previous = row.data?.publishedAt
+        next.publishedAt =
+          data.publishedAt ??
+          (typeof previous === 'string' ? previous : null) ??
+          new Date().toISOString()
+      }
+      return next
+    },
   }
 }
 
@@ -79,5 +97,6 @@ export function articleCategoryKind(): ContentKind {
     label: 'Kategorie artykułów',
     schema: ArticleCategorySchema,
     view: categoryView,
+    deleteGuard: { usedBy: ['article'], message: CATEGORY_IN_USE_MESSAGE },
   }
 }

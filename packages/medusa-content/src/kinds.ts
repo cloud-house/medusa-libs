@@ -55,6 +55,10 @@ export interface ContentKind {
   defaults?: unknown
   /** Addresses that cannot be deleted, unpublished or renamed (pages other things link to). */
   protectedSlugs?: string[]
+  /** Adjusts the checked data before it is saved (computed fields); `publishing` – a publication. */
+  prepare?: (data: EntryData, ctx: { row: EntryRow; publishing: boolean }) => EntryData
+  /** An entry of this kind cannot be deleted while an entry of one of `usedBy` points at it. */
+  deleteGuard?: { usedBy: string[]; message: string }
 }
 
 const TYPE_KEY = /^[a-z0-9_]{1,40}$/
