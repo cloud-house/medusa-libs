@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-content",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Medusa plugin: editorial content – pages, articles, header/footer/home page and shop-defined kinds, with drafts, versions, references, handle history, media and a Lexical admin editor.",
   "license": "MIT",
   "repository": {
