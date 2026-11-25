@@ -129,6 +129,25 @@ moduleIntegrationTestRunner<ContentModuleService>({
         ).rejects.toThrow(CONFLICT_MESSAGE)
       })
 
+      it('two simultaneous writes from the same state: one wins, the other gets the conflict (Review Focus 2)', async () => {
+        for (let round = 0; round < 5; round += 1) {
+          const entry = await page(`race-${round}`)
+          const saved = await service.saveDraft({ id: entry.id, data: { title: 'start' } })
+          const results = await Promise.allSettled(
+            ['a', 'b'].map((title) =>
+              service.saveDraft({
+                id: entry.id,
+                data: { title },
+                expectedUpdatedAt: saved.updated_at,
+              }),
+            ),
+          )
+          expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1)
+          const lost = results.find((r) => r.status === 'rejected') as PromiseRejectedResult
+          expect(String(lost.reason)).toContain(CONFLICT_MESSAGE)
+        }
+      })
+
       it('finds the version published at a given moment', async () => {
         const entry = await page()
         await service.publish({ id: entry.id, data: { title: 'pierwsza' } })

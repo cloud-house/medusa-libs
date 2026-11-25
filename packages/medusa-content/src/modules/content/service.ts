@@ -58,6 +58,18 @@ class ContentModuleService extends MedusaService({
     return (await this.retrieveContentEntry(id, {}, sharedContext)) as unknown as EntryRow
   }
 
+  /**
+   * The entry for a write: the row is locked until the transaction ends, so a second write from the
+   * same starting state waits and then fails the freshness check instead of overwriting silently.
+   */
+  private async lockedEntry(id: string, sharedContext: Context): Promise<EntryRow> {
+    const manager = sharedContext.transactionManager as
+      | { execute(sql: string, params: unknown[]): Promise<unknown> }
+      | undefined
+    await manager?.execute('select id from "content_entry" where id = ? for update', [id])
+    return this.entry(id, sharedContext)
+  }
+
   private checkFresh(row: EntryRow, expected: WriteInput['expectedUpdatedAt']) {
     if (expected && !sameInstant(row.updated_at, expected)) {
       throw new MedusaError(MedusaError.Types.NOT_ALLOWED, CONFLICT_MESSAGE)
@@ -110,7 +122,7 @@ class ContentModuleService extends MedusaService({
     input: WriteInput & { data: EntryData; autosave?: boolean },
     @MedusaContext() sharedContext: Context = {},
   ): Promise<EntryRow> {
-    const row = await this.entry(input.id, sharedContext)
+    const row = await this.lockedEntry(input.id, sharedContext)
     if (!this.policy(row).drafts) {
       throw new MedusaError(MedusaError.Types.NOT_ALLOWED, 'Ta treść nie ma wersji roboczych.')
     }
@@ -142,7 +154,7 @@ class ContentModuleService extends MedusaService({
     input: WriteInput & { data?: EntryData },
     @MedusaContext() sharedContext: Context = {},
   ): Promise<EntryRow> {
-    const row = await this.entry(input.id, sharedContext)
+    const row = await this.lockedEntry(input.id, sharedContext)
     this.checkFresh(row, input.expectedUpdatedAt)
     const data = input.data ?? row.draft ?? row.data
     if (!data) throw new MedusaError(MedusaError.Types.INVALID_DATA, 'Brak treści do publikacji.')
@@ -171,7 +183,7 @@ class ContentModuleService extends MedusaService({
   /** Back to a draft: the store stops showing it, the editor keeps working on the same content. */
   @InjectTransactionManager()
   async unpublish(input: WriteInput, @MedusaContext() sharedContext: Context = {}) {
-    const row = await this.entry(input.id, sharedContext)
+    const row = await this.lockedEntry(input.id, sharedContext)
     this.checkFresh(row, input.expectedUpdatedAt)
     await this.updateContentEntries(
       {

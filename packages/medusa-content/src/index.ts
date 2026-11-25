@@ -7,6 +7,29 @@ export {
   type VersionPolicy,
   type ViewContext,
 } from './kinds'
+export { adminEntry, entryTitle } from './lib/admin-view'
+export { type EntityDoc, findEntities } from './lib/entities'
+export { recordHandle } from './lib/handle-history'
+export {
+  emptyLookups,
+  type Lookups,
+  loadLookups,
+  type MediaDoc,
+  populate,
+} from './lib/populate'
+export { draftRequested, PREVIEW_EXPIRED_MESSAGE } from './lib/preview'
+export { collectRefs, mapRefs } from './lib/refs'
+export {
+  byNewest,
+  bySlug,
+  listEntries,
+  lookupsFor,
+  modifiedAt,
+  readable,
+  readEntity,
+  readPublished,
+  stateOf,
+} from './lib/store-views'
 export { CONTENT_MODULE } from './modules/content'
 export { CONFLICT_MESSAGE } from './modules/content/policy'
 export type { default as ContentModuleService } from './modules/content/service'
