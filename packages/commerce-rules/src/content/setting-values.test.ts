@@ -1,5 +1,5 @@
-import { EMPTY_SELLER } from '../seller'
 import { describe, expect, it } from 'vitest'
+import { EMPTY_SELLER } from '../seller'
 import type { LayoutData } from './layout-types'
 import { settingValue } from './setting-values'
 

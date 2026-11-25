@@ -1,5 +1,5 @@
-import { EMPTY_SELLER } from '../seller'
 import { describe, expect, it } from 'vitest'
+import { EMPTY_SELLER } from '../seller'
 import { DEFAULT_LAYOUT } from './__fixtures__/layout'
 import { freeShippingFrom, type RawLayoutGlobals, resolveLayoutData } from './layout-views'
 import { NEUTRAL_LAYOUT } from './neutral-defaults'

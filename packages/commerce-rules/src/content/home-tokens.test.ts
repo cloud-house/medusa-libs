@@ -1,5 +1,5 @@
-import { formatPrice } from '../format-price'
 import { describe, expect, it } from 'vitest'
+import { formatPrice } from '../format-price'
 import { DEFAULT_LAYOUT } from './__fixtures__/layout'
 import { fillHomeBlockTokens, fillHomeTokens, homeTokenError } from './home-tokens'
 
