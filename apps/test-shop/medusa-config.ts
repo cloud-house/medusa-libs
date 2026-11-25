@@ -2,9 +2,14 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
 import { invoiceEmailTemplates } from '@cloud-house/medusa-fakturownia'
+import { furgonetkaEmailTemplates } from '@cloud-house/medusa-furgonetka'
 import { returnEmailTemplates } from '@cloud-house/medusa-returns'
 import { defineConfig } from '@medusajs/framework/utils'
 import { resolveOrder, resolveReturn, resolveReturnOrder } from './src/lib/fakturownia'
+import {
+  resolveContact as furgonetkaContact,
+  resolveOrder as furgonetkaOrder,
+} from './src/lib/furgonetka'
 import { resolveContact, resolveOrder as resolveReturnsOrder } from './src/lib/returns'
 
 module.exports = defineConfig({
@@ -37,6 +42,7 @@ module.exports = defineConfig({
                 ...accountEmailTemplates,
                 ...invoiceEmailTemplates,
                 ...returnEmailTemplates,
+                ...furgonetkaEmailTemplates,
               ],
             },
           },
@@ -71,6 +77,20 @@ module.exports = defineConfig({
       resolve: '@cloud-house/medusa-fakturownia',
       // `FAKTUROWNIA_URL=atrapa` (set by the HTTP test) selects the in-process fake of Fakturownia.
       options: { resolveOrder, resolveReturnOrder, resolveReturn, oidPrefix: 'TEST-' },
+    },
+    {
+      resolve: '@cloud-house/medusa-furgonetka',
+      // `FURGONETKA_URL=atrapa` (set by the HTTP test) selects the in-process fake of Furgonetka.
+      options: {
+        resolveOrder: furgonetkaOrder,
+        resolveContact: furgonetkaContact,
+        parcelClasses: [
+          { key: 'sofa', label: 'Sofa', carriers: ['dpd'] },
+          { key: 'lamp', label: 'Lampa', carriers: ['dpd', 'inpost_courier'] },
+        ],
+        logPrefix: '[Test]',
+        senderName: 'Test Shop',
+      },
     },
     {
       resolve: '@cloud-house/medusa-returns',
