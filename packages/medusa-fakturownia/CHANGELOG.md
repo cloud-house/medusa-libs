@@ -1,5 +1,12 @@
 # @cloud-house/medusa-fakturownia
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [dd9cb35]
+  - @cloud-house/commerce-rules@0.7.0
+
 ## 0.1.2
 
 ### Patch Changes

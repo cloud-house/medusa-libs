@@ -1,5 +1,12 @@
 # @cloud-house/medusa-omnibus
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [dd9cb35]
+  - @cloud-house/commerce-rules@0.7.0
+
 ## 0.1.6
 
 ### Patch Changes
