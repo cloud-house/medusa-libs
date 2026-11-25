@@ -4,7 +4,7 @@ import { type ContentKind, KindRegistry } from './kinds'
 import type { EntityKind } from './types'
 
 /** `plugins: [{ resolve: '@cloud-house/medusa-content', options }]` in `medusa-config.ts`. */
-export interface ContentOptions {
+export type ContentOptions = {
   /** The kinds of content of the shop (`contentKinds()` for the ready-made ones plus its own). Required. */
   kinds: ContentKind[]
   /** Secret that signs preview tokens; default `process.env.CONTENT_PREVIEW_SECRET`. */

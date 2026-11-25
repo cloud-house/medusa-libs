@@ -40,12 +40,13 @@
       "default": "./.medusa/server/src/admin/index.js"
     },
     "./admin-kit": {
-      "types": "./dist/admin-kit.d.mts",
+      "types": "./dist/admin-kit.d.ts",
+      "import": "./dist/admin-kit.mjs",
       "default": "./dist/admin-kit.mjs"
     }
   },
   "scripts": {
-    "build": "medusa plugin:build && tsup",
+    "build": "medusa plugin:build && tsup && cp dist/admin-kit.d.mts dist/admin-kit.d.ts",
     "dev": "medusa plugin:develop",
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test": "pnpm run test:unit && pnpm run test:integration:modules",
