@@ -27,7 +27,16 @@ export function contentKinds(options: ContentKindsOptions = {}): ContentKind[] {
 }
 
 export * from './article'
-export { checked, lexical, mediaRef, optionalText, requiredText, rows } from './common'
+export {
+  checked,
+  httpUrl,
+  lexical,
+  mediaRef,
+  optionalText,
+  productRef,
+  requiredText,
+  rows,
+} from './common'
 export type { HomePageKindOptions } from './home'
 export {
   type HomeBlockDefinition,
