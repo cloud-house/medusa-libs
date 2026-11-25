@@ -5,6 +5,7 @@ import { invoiceEmailTemplates } from '@cloud-house/medusa-fakturownia'
 import { furgonetkaEmailTemplates } from '@cloud-house/medusa-furgonetka'
 import { returnEmailTemplates } from '@cloud-house/medusa-returns'
 import { defineConfig } from '@medusajs/framework/utils'
+import { testContentKinds } from './src/lib/content'
 import { resolveOrder, resolveReturn, resolveReturnOrder } from './src/lib/fakturownia'
 import {
   resolveContact as furgonetkaContact,
@@ -72,6 +73,11 @@ module.exports = defineConfig({
           },
         ],
       },
+    },
+    {
+      resolve: '@cloud-house/medusa-content',
+      // `CONTENT_PREVIEW_SECRET` and `STOREFRONT_URL` are set by the HTTP test.
+      options: { kinds: testContentKinds, logPrefix: '[Test]', mediaFolder: 'test-content' },
     },
     {
       resolve: '@cloud-house/medusa-fakturownia',

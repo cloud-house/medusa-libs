@@ -10,10 +10,11 @@
   "dependencies": {
     "@cloud-house/medusa-accounts": "workspace:*",
     "@cloud-house/medusa-brands": "workspace:*",
+    "@cloud-house/medusa-content": "workspace:*",
     "@cloud-house/medusa-emails": "workspace:*",
     "@cloud-house/medusa-fakturownia": "workspace:*",
-    "@cloud-house/medusa-furgonetka": "workspace:*",
     "@cloud-house/medusa-favorites": "workspace:*",
+    "@cloud-house/medusa-furgonetka": "workspace:*",
     "@cloud-house/medusa-newsletter": "workspace:*",
     "@cloud-house/medusa-omnibus": "workspace:*",
     "@cloud-house/medusa-returns": "workspace:*",
