@@ -262,7 +262,7 @@ function BlockForm({
     default: {
       const extra = homeBlockUi(block.blockType)
       return extra ? (
-        <>{extra.render({ block, set, related, remember: remember as never })}</>
+        extra.render({ block, set, related, remember: remember as never })
       ) : (
         <Text size="small">Nieznany blok.</Text>
       )
