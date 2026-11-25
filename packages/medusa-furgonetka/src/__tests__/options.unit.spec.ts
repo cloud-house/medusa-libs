@@ -5,13 +5,35 @@ import { resolveOptions } from '../options'
 
 const resolveOrder = async () => null
 const BOARD = { key: 'board', label: 'Deska' }
-const base = { resolveOrder, parcelClasses: [BOARD] }
+const base = { resolveOrder, parcelClasses: [BOARD], referencePrefix: 'ACME' }
 
 describe('resolveOptions', () => {
   it('throws furgonetka_missing_option naming the missing option', () => {
     expect(() => resolveOptions({} as never)).toThrow(FURGONETKA_ERROR_CODES.missingOption)
     expect(() => resolveOptions({} as never)).toThrow('"resolveOrder"')
     expect(() => resolveOptions({ resolveOrder } as never)).toThrow('"parcelClasses"')
+  })
+
+  it('requires a referencePrefix – it keeps the packages of two shops on one account apart', () => {
+    expect(() => resolveOptions({ resolveOrder, parcelClasses: [BOARD] } as never)).toThrow(
+      FURGONETKA_ERROR_CODES.missingOption,
+    )
+    expect(() => resolveOptions({ resolveOrder, parcelClasses: [BOARD] } as never)).toThrow(
+      '"referencePrefix"',
+    )
+  })
+
+  it.each(['a', 'acme shop', 'acme', 'TOOLONGPREFIX1', 'AC-ME', ''])(
+    'rejects the referencePrefix "%s"',
+    (referencePrefix) => {
+      expect(() => resolveOptions({ ...base, referencePrefix })).toThrow(
+        FURGONETKA_ERROR_CODES.invalidOption,
+      )
+    },
+  )
+
+  it('keeps the referencePrefix', () => {
+    expect(resolveOptions({ ...base, referencePrefix: 'CHNS' }).referencePrefix).toBe('CHNS')
   })
 
   it('fills the defaults', () => {

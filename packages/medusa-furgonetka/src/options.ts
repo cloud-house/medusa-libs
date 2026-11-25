@@ -35,6 +35,11 @@ export interface FurgonetkaOptions {
   ) => Promise<Map<string, string>>
   /** `shipping_option_type.code` of the InPost delivery options; default `kurier-inpost` and `paczkomat-inpost`. */
   deliveryCodes?: { inpostCourier?: string; inpostLocker?: string }
+  /**
+   * Prefix of the reference the shop gives its packages (`<prefix>-<order number>`, the key to find a
+   * package in Furgonetka again). `[A-Z0-9]{2,10}`; give every shop on one Furgonetka account its own. Required.
+   */
+  referencePrefix: string
   /** The sender's name on labels; default `Shop`. */
   senderName?: string
   /** The stock location the shipments go from; default the first one with an address. */
@@ -49,6 +54,7 @@ export interface ResolvedFurgonetkaOptions {
   resolveOrder: FurgonetkaOptions['resolveOrder']
   resolveContact: NonNullable<FurgonetkaOptions['resolveContact']> | null
   parcelClasses: (ParcelClass & { carriers: Carrier[] })[]
+  referencePrefix: string
   resolveParcelClasses: NonNullable<FurgonetkaOptions['resolveParcelClasses']>
   deliveryCodes: { inpostCourier: string; inpostLocker: string }
   senderName: string
@@ -114,6 +120,21 @@ export function resolveOptions(options: FurgonetkaOptions): ResolvedFurgonetkaOp
     )
   }
   const parcelClasses = checkClasses(given.parcelClasses)
+  if (given.referencePrefix === undefined) {
+    throw furgonetkaError(
+      FURGONETKA_ERROR_CODES.missingOption,
+      'option "referencePrefix" is required (e.g. "ACME").',
+    )
+  }
+  if (
+    typeof given.referencePrefix !== 'string' ||
+    !/^[A-Z0-9]{2,10}$/.test(given.referencePrefix)
+  ) {
+    throw furgonetkaError(
+      FURGONETKA_ERROR_CODES.invalidOption,
+      `option "referencePrefix" must match [A-Z0-9]{2,10} (got "${String(given.referencePrefix)}").`,
+    )
+  }
   const {
     resolveContact = null,
     resolveParcelClasses = metadataParcelClasses,
@@ -133,6 +154,7 @@ export function resolveOptions(options: FurgonetkaOptions): ResolvedFurgonetkaOp
     resolveOrder: given.resolveOrder,
     resolveContact,
     parcelClasses,
+    referencePrefix: given.referencePrefix,
     resolveParcelClasses,
     deliveryCodes: {
       inpostCourier: codes.inpostCourier ?? 'kurier-inpost',

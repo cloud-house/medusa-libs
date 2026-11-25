@@ -9,7 +9,7 @@ import {
   type ShipmentReceiver,
   type TemplatePurpose,
 } from '../types'
-import { carrierForCode, type DeliveryCodes } from './carriers'
+import { carrierForCode, type DeliveryCodes, onlyCarriersText } from './carriers'
 import { normalizeLockerCode } from './locker'
 import { activeFulfillment, type ShippingOrder } from './order'
 import { suggestParcels } from './parcels'
@@ -123,6 +123,22 @@ export function classRefuses(
   )
 }
 
+const ALL_CARRIERS: Carrier[] = ['dpd', 'inpost_courier', 'inpost_locker']
+
+/** The carriers that take every item of the order (all of them for an order without parcel classes). */
+export function allowedCarriers(order: ShippingOrder, settings: PlanSettings): Carrier[] {
+  return ALL_CARRIERS.filter((carrier) => !classRefuses(order, carrier, settings))
+}
+
+/** The first parcel class (in the shop's order) among the items; its carton is the one a courier shipment starts with. */
+export function classPurposeOf(order: ShippingOrder, settings: PlanSettings): string | null {
+  return (
+    settings.classes.find((candidate) =>
+      order.items.some((item) => item.parcelClass === candidate.key),
+    )?.key ?? null
+  )
+}
+
 /** What stops an order from being selected on the list; each one is solved by a draft (§5.4). */
 export interface ShippingProblem {
   code: 'bulky_inpost' | 'locker_code' | 'locker_phone' | 'address' | 'template'
@@ -130,8 +146,6 @@ export interface ShippingProblem {
 }
 
 const MESSAGES = {
-  bulky_inpost:
-    'Sprawdź dostawę: produkt wysyłany tylko kurierem DPD – zmień przewoźnika w karcie „Wysyłka”.',
   locker_code: 'Paczkomat bez kodu – wpisz kod w karcie „Wysyłka”.',
   locker_phone: 'Numer stacjonarny przy paczkomacie – wpisz numer komórkowy w karcie „Wysyłka”.',
   address: 'Brak adresu dostawy – uzupełnij go w karcie „Wysyłka”.',
@@ -154,8 +168,11 @@ export function planProblems(
   const receiver = 'missing' in plan ? receiverFromOrder(order) : plan.receiver
   const problems: ShippingProblem[] = []
   const add = (code: keyof typeof MESSAGES) => problems.push({ code, message: MESSAGES[code] })
+  const bulky = `Sprawdź dostawę: produkt wysyłany ${onlyCarriersText(allowedCarriers(order, settings))} – zmień przewoźnika w karcie „Wysyłka”.`
 
-  if (classRefuses(order, carrier, settings)) add('bulky_inpost')
+  if (classRefuses(order, carrier, settings)) {
+    problems.push({ code: 'bulky_inpost', message: bulky })
+  }
   if (carrier === 'inpost_locker') {
     if (!normalizeLockerCode(receiver.point)) add('locker_code')
     if (!isPolishMobile(receiver.phone)) add('locker_phone')

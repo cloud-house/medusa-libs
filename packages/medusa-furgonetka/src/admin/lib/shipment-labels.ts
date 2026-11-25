@@ -5,6 +5,7 @@ import type {
   PickupChoice,
   ShipmentState,
 } from '../../lib/card-types'
+import { onlyCarriersText } from '../../lib/carriers'
 import { type PickupWindow, pickupText } from '../../lib/pickup'
 import type { CreateResult, QueueRow } from '../../lib/queue-types'
 import {
@@ -416,19 +417,24 @@ export function termProblem(form: CardForm, term: PickupWindow): string | null {
     : 'Podaj dzień i godziny odbioru – początek przed końcem.'
 }
 
+/** The card's note under the carrier choice: the carriers the order's parcel classes allow. */
+export function bulkyHint(allowed: Carrier[]): string {
+  return `Ten produkt wysyłamy ${onlyCarriersText(allowed)}.`
+}
+
 /**
  * Another carrier. Between a parcel locker and a courier the parcels change: a locker takes one
- * locker size, a courier a carton – for a board (`bulky`) the board carton. The address and the
+ * locker size, a courier a carton – for a bulky item the carton of its class (`classPurpose`). The address and the
  * locker stay in the form, so changing back loses nothing.
  */
 export function changeCarrier(
   form: CardForm,
   carrier: Carrier,
   templates: CardTemplate[],
-  bulky: boolean,
+  classPurpose: string | null,
 ): CardForm {
   if (isLocker(carrier) === isLocker(form.carrier)) return { ...form, carrier }
-  const purpose = isLocker(carrier) ? 'accessories_locker' : bulky ? 'board' : 'accessories_courier'
+  const purpose = isLocker(carrier) ? 'accessories_locker' : (classPurpose ?? 'accessories_courier')
   const allowed = templatesFor(carrier, templates)
   const template = allowed.find((candidate) => candidate.purpose === purpose) ?? allowed[0]
   return { ...form, carrier, parcels: template ? [formParcelOf(template)] : [] }

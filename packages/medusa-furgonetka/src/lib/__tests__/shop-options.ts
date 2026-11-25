@@ -21,6 +21,7 @@ export function furgonetkaService(
       ],
       resolveParcelClasses: async () => new Map(),
       deliveryCodes: { inpostCourier: 'kurier-inpost', inpostLocker: 'paczkomat-inpost' },
+      referencePrefix: 'CHNS',
       senderName: 'Acme Shop',
       stockLocationName: null,
       logPrefix: SHOP_PREFIX,

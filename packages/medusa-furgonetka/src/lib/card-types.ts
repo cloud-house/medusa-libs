@@ -57,7 +57,17 @@ export interface AdminShipmentResponse {
   configured: boolean
   /** Why nothing can be created now (setup, connection, warehouse address); empty – it works. */
   blockers: string[]
-  order: { paid: boolean; canceled: boolean; bulky: boolean; manualFulfillment: boolean }
+  order: {
+    paid: boolean
+    canceled: boolean
+    /** Some item has a parcel class. */
+    bulky: boolean
+    /** The carriers that take every item of the order. */
+    allowedCarriers: Carrier[]
+    /** The key of the first parcel class among the items (the carton for a courier), else `null`. */
+    classPurpose: string | null
+    manualFulfillment: boolean
+  }
   /** What the form starts from; `null` – the order cannot be planned (shipped, fulfilled by hand…). */
   plan: ShipmentPlan | null
   /** The plan is a saved draft (or the plan of a failed try), not the suggestion. */

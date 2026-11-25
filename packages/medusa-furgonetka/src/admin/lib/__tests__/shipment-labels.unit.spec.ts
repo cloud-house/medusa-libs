@@ -8,6 +8,7 @@ import type { ParcelSpec, ShipmentPlan } from '../../../types'
 import {
   addParcel,
   batchToast,
+  bulkyHint,
   type CardForm,
   type ChosenTerm,
   cardToast,
@@ -342,7 +343,15 @@ const card = (
   blockers: [],
   shipment: null,
   ...over,
-  order: { paid: true, canceled: false, bulky: false, manualFulfillment: false, ...over.order },
+  order: {
+    paid: true,
+    canceled: false,
+    bulky: false,
+    allowedCarriers: ['dpd', 'inpost_courier', 'inpost_locker'],
+    classPurpose: null,
+    manualFulfillment: false,
+    ...over.order,
+  },
   actions: {
     save: false,
     create: false,
@@ -809,14 +818,14 @@ describe('changing the carrier in the card', () => {
   it('only changes the carrier between two couriers', () => {
     const form = formOf(PLAN)
 
-    expect(changeCarrier(form, 'inpost_courier', TEMPLATES, false)).toEqual({
+    expect(changeCarrier(form, 'inpost_courier', TEMPLATES, null)).toEqual({
       ...form,
       carrier: 'inpost_courier',
     })
   })
 
   it('gives a parcel locker one locker parcel', () => {
-    const form = changeCarrier(formOf(PLAN), 'inpost_locker', TEMPLATES, false)
+    const form = changeCarrier(formOf(PLAN), 'inpost_locker', TEMPLATES, null)
 
     expect(form.carrier).toBe('inpost_locker')
     expect(form.parcels).toEqual([
@@ -827,16 +836,28 @@ describe('changing the carrier in the card', () => {
   it('gives a courier a carton: for a board the board carton, else the accessories one', () => {
     const lockerForm = formOf(LOCKER_PLAN)
 
-    expect(changeCarrier(lockerForm, 'dpd', TEMPLATES, true).parcels).toEqual([
+    expect(changeCarrier(lockerForm, 'dpd', TEMPLATES, 'board').parcels).toEqual([
       expect.objectContaining({ template_id: 'pt_board', name: 'Karton deski' }),
     ])
-    expect(changeCarrier(lockerForm, 'dpd', TEMPLATES, false).parcels).toEqual([
+    expect(changeCarrier(lockerForm, 'dpd', TEMPLATES, null).parcels).toEqual([
       expect.objectContaining({ template_id: 'pt_small', name: 'Karton mały' }),
     ])
   })
 
+  it('gives a courier the carton of the class of the order, not always the board carton', () => {
+    const lockerForm = formOf(LOCKER_PLAN)
+    const templates = [
+      ...TEMPLATES,
+      { ...TEMPLATES[0], id: 'pt_lamp', name: 'Karton lampy', purpose: 'lamp' },
+    ] as typeof TEMPLATES
+
+    expect(changeCarrier(lockerForm, 'inpost_courier', templates, 'lamp').parcels).toEqual([
+      expect.objectContaining({ template_id: 'pt_lamp', name: 'Karton lampy' }),
+    ])
+  })
+
   it('keeps the address and the locker, so that changing back loses nothing', () => {
-    const toDpd = changeCarrier(formOf(LOCKER_PLAN), 'dpd', TEMPLATES, false)
+    const toDpd = changeCarrier(formOf(LOCKER_PLAN), 'dpd', TEMPLATES, null)
 
     expect(toDpd.point).toBe('KRA01M')
     expect(toDpd.pointLabel).toBe('ul. Krakowska 1, 30-001 Kraków')
@@ -846,10 +867,10 @@ describe('changing the carrier in the card', () => {
     const noPurposes = TEMPLATES.map((t) => ({ ...t, purpose: null }))
     const form = formOf(PLAN)
 
-    expect(changeCarrier(form, 'inpost_locker', noPurposes, false).parcels[0]?.template_id).toBe(
+    expect(changeCarrier(form, 'inpost_locker', noPurposes, null).parcels[0]?.template_id).toBe(
       'pt_a',
     )
-    expect(changeCarrier(form, 'inpost_locker', [], false).parcels).toEqual([])
+    expect(changeCarrier(form, 'inpost_locker', [], null).parcels).toEqual([])
   })
 })
 
@@ -889,5 +910,17 @@ describe('formParcelOf', () => {
       height: '30',
       weight: '15',
     })
+  })
+})
+
+describe('bulkyHint', () => {
+  it('says DPD only the way the card always did', () => {
+    expect(bulkyHint(['dpd'])).toBe('Ten produkt wysyłamy tylko kurierem DPD.')
+  })
+
+  it('names the carriers a class allows', () => {
+    expect(bulkyHint(['dpd', 'inpost_courier'])).toBe(
+      'Ten produkt wysyłamy tylko: Kurier DPD, Kurier InPost.',
+    )
   })
 })

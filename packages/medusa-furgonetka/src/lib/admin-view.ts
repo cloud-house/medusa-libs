@@ -17,6 +17,8 @@ import { isFresh } from './create'
 import { activeFulfillment, loadShippingOrder, pendingOrderIds, type ShippingOrder } from './order'
 import { defaultPickup, type PickupWindow } from './pickup'
 import {
+  allowedCarriers,
+  classPurposeOf,
   keptPackage,
   orderBlocker,
   PAGE_BLOCKERS,
@@ -322,13 +324,12 @@ export async function loadAdminShipment(
   const shown = active ?? kept
   const templates = (await shipments.listParcelTemplates({}, { take: null })) as TemplateRow[]
   const blockers = await pageBlockers(container, config)
+  const settings = planSettings(container)
 
   const manualFulfillment =
     activeFulfillment(order) !== null && (!active || PLAN_STATES.includes(active.state))
   const planned =
-    config && !orderBlocker(order, active)
-      ? plannedPlan(order, active, templates, planSettings(container))
-      : null
+    config && !orderBlocker(order, active) ? plannedPlan(order, active, templates, settings) : null
   const draft = planned !== null && active !== null && PLAN_STATES.includes(active.state)
   // A row that is being created is not to be touched until the creation ends; nor is the plan of
   // an order whose canceled package Furgonetka still has.
@@ -341,6 +342,8 @@ export async function loadAdminShipment(
       paid: order.paid,
       canceled: order.canceled,
       bulky: order.items.some((item) => item.parcelClass !== null),
+      allowedCarriers: allowedCarriers(order, settings),
+      classPurpose: classPurposeOf(order, settings),
       manualFulfillment,
     },
     plan: planned?.plan ?? null,

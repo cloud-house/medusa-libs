@@ -161,8 +161,26 @@ medusaIntegrationTestRunner({
         const allowedRow = await rowOf(allowed)
 
         expect(blockedRow.selectable).toBe(false)
-        expect(blockedRow.problems[0]).toContain('DPD')
+        expect(blockedRow.problems[0]).toContain('tylko kurierem DPD')
         expect(allowedRow.selectable).toBe(true)
+      })
+
+      it('the order card lets the operator pick the carriers the classes allow, with the class carton', async () => {
+        const lampOrder = await order([{ title: 'Lampa', quantity: 1, product_id: lamp }])
+        const sofaOrder = await order(
+          [{ title: 'Sofa', quantity: 1, product_id: sofa }],
+          {},
+          'ola@example.pl',
+        )
+
+        const lampCard = (await api.get(`/admin/orders/${lampOrder}/shipment`, admin)).data
+        const sofaCard = (await api.get(`/admin/orders/${sofaOrder}/shipment`, admin)).data
+
+        expect(lampCard.order).toMatchObject({
+          allowedCarriers: ['dpd', 'inpost_courier'],
+          classPurpose: 'lamp',
+        })
+        expect(sofaCard.order).toMatchObject({ allowedCarriers: ['dpd'], classPurpose: 'sofa' })
       })
 
       it('a product whose class nobody declared is an ordinary item', async () => {
@@ -205,6 +223,8 @@ medusaIntegrationTestRunner({
         const shipments = await furgonetka().listShipments({ order_id: orderId })
         expect(shipments).toHaveLength(1)
         expect(shipments[0]?.state).toBe('ready')
+        // The reference carries the shop's own prefix, so two shops on one account never collide.
+        expect(shipments[0]?.reference).toMatch(/^TEST-\d+$/)
 
         const label = await api.get(`/admin/shipments/${shipments[0]?.id}/label`, {
           ...admin,

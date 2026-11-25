@@ -10,6 +10,7 @@ import {
   type ShipmentReceiver,
 } from '../types'
 import { FurgonetkaError } from './api-errors'
+import { onlyCarriersText } from './carriers'
 import type { PackageInfo } from './client'
 import { furgonetkaConfig } from './config'
 import { clientFor } from './connect'
@@ -23,6 +24,7 @@ import {
 import { normalizeLockerCode } from './locker'
 import { loadShippingOrder } from './order'
 import {
+  allowedCarriers,
   classRefuses,
   keptPackage,
   normalizePhone,
@@ -46,7 +48,6 @@ const MAX_PARCELS = 15
 const DPD_MAX_WEIGHT_G = 31_500
 const LOCKER_KINDS: string[] = ['locker_a', 'locker_b', 'locker_c']
 
-const BULKY_MESSAGE = 'Ten produkt wysyłamy tylko kurierem DPD.'
 const PARCEL_COUNT_MESSAGE = `Przesyłka musi mieć od 1 do ${MAX_PARCELS} paczek.`
 const DIMENSIONS_MESSAGE = 'Wymiary i waga paczki muszą być dodatnimi liczbami całkowitymi.'
 const DPD_WEIGHT_MESSAGE = 'Paczka DPD może ważyć od 1 g do 31,5 kg.'
@@ -100,13 +101,14 @@ const moduleOf = (container: MedusaContainer) =>
 export function validateDraft(
   input: DraftInput,
   bulky: boolean | ((carrier: Carrier) => boolean),
+  allowed: Carrier[] = ['dpd'],
 ): DraftInput {
   const refuse = (message: string): never => {
     throw new ShipmentActionError(message)
   }
   const refused =
     typeof bulky === 'function' ? bulky(input.carrier) : bulky && input.carrier !== 'dpd'
-  if (refused) refuse(BULKY_MESSAGE)
+  if (refused) refuse(`Ten produkt wysyłamy ${onlyCarriersText(allowed)}.`)
   const { parcels } = input
   if (parcels.length < 1 || parcels.length > MAX_PARCELS) refuse(PARCEL_COUNT_MESSAGE)
   const whole = (value: number) => Number.isInteger(value) && value > 0
@@ -190,7 +192,11 @@ export async function saveDraft(
     if (row?.state === 'creating') throw new ShipmentActionError(BUSY_MESSAGE)
 
     const settings = planSettings(container)
-    const draft = validateDraft(input, (carrier) => classRefuses(order, carrier, settings))
+    const draft = validateDraft(
+      input,
+      (carrier) => classRefuses(order, carrier, settings),
+      allowedCarriers(order, settings),
+    )
     if (row?.package_id) {
       const current = {
         carrier: row.carrier,

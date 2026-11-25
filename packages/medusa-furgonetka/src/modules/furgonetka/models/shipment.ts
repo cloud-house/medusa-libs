@@ -33,7 +33,7 @@ export const Shipment = model
     pickup_from: model.text().nullable(),
     pickup_to: model.text().nullable(),
     pickup_id: model.text().nullable(),
-    /** `CHNS-{display_id}`, how the package is found in Furgonetka again. */
+    /** `<referencePrefix>-{display_id}`, how the package is found in Furgonetka again. */
     reference: model.text().nullable(),
     package_id: model.text().nullable(),
     order_command_id: model.text().nullable(),

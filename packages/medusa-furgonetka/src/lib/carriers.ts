@@ -1,12 +1,21 @@
 import type { Carrier } from '../types'
 
 // The names live in `types.ts`, which has no server imports, so the admin panel can use them too.
-export { CARRIER_NAMES } from '../types'
+import { CARRIER_NAMES } from '../types'
+
+export { CARRIER_NAMES }
 
 /** The shop's codes of the two InPost delivery options (`deliveryCodes` option). */
 export interface DeliveryCodes {
   inpostCourier: string
   inpostLocker: string
+}
+
+/** „tylko kurierem DPD” for DPD alone, else „tylko: Kurier DPD, Kurier InPost” – the carriers a bulky class allows. */
+export function onlyCarriersText(allowed: Carrier[]): string {
+  return allowed.length === 1 && allowed[0] === 'dpd'
+    ? 'tylko kurierem DPD'
+    : `tylko: ${allowed.map((carrier) => CARRIER_NAMES[carrier]).join(', ')}`
 }
 
 /** The carrier of a delivery option code (`shipping_option_type.code`); DPD for anything else. */

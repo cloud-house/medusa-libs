@@ -2,6 +2,7 @@ import type { ShipmentRow, TemplateRow } from '../../modules/furgonetka/service'
 import type { ParcelSpec, ShipmentReceiver } from '../../types'
 import type { ShippingOrder } from '../order'
 import {
+  allowedCarriers,
   keptPackage,
   orderBlocker,
   PAGE_BLOCKERS,
@@ -573,5 +574,32 @@ describe('parcel classes in the plan (kit step 4c)', () => {
     const found = planProblems(o, plan, settings).find((problem) => problem.code === 'template')
 
     expect(found?.message).toContain('Sofa')
+  })
+
+  it('allowedCarriers lists the carriers that take every item of the order', () => {
+    expect(allowedCarriers(order(), SETTINGS)).toEqual(['dpd'])
+    expect(allowedCarriers(order({ items: [sofaItem] }), settings)).toEqual([
+      'dpd',
+      'inpost_courier',
+    ])
+    expect(
+      allowedCarriers(order({ items: [{ ...sofaItem, parcelClass: null }] }), settings),
+    ).toEqual(['dpd', 'inpost_courier', 'inpost_locker'])
+  })
+
+  it('the InPost problem names the carriers the class allows', () => {
+    const o = order({
+      deliveryCode: 'paczkomat-inpost',
+      lockerCode: 'KRA01M',
+      lockerLabel: 'ul. Krakowska 1',
+      items: [sofaItem],
+    })
+    const plan = shipmentPlan(o, null, [sofaTemplate], settings)
+
+    const found = planProblems(o, plan, settings).find((problem) => problem.code === 'bulky_inpost')
+
+    expect(found?.message).toBe(
+      'Sprawdź dostawę: produkt wysyłany tylko: Kurier DPD, Kurier InPost – zmień przewoźnika w karcie „Wysyłka”.',
+    )
   })
 })

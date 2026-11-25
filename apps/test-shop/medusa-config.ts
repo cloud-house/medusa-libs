@@ -89,6 +89,7 @@ module.exports = defineConfig({
           { key: 'lamp', label: 'Lampa', carriers: ['dpd', 'inpost_courier'] },
         ],
         logPrefix: '[Test]',
+        referencePrefix: 'TEST',
         senderName: 'Test Shop',
       },
     },

@@ -147,3 +147,43 @@ describe('samePlan – whether a draft changes what goes into the package', () =
     expect(samePlan(draft(), draft({ declaredValueCents: 1 }))).toBe(false)
   })
 })
+
+describe('validateDraft – the carriers a bulky class allows', () => {
+  const draft = () => ({
+    carrier: 'inpost_courier' as const,
+    receiver: {
+      name: 'Jan Kowalski',
+      company: null,
+      phone: '+48600100200',
+      email: null,
+      street: 'ul. Morska 5',
+      postal_code: '80-001',
+      city: 'Gdańsk',
+      point: null,
+      point_label: null,
+    },
+    parcels: [
+      {
+        template_id: null,
+        name: 'Karton',
+        kind: 'box' as const,
+        length_cm: 40,
+        width_cm: 30,
+        height_cm: 20,
+        weight_g: 3000,
+      },
+    ],
+    declaredValueCents: 1000,
+    pickup: 'courier' as const,
+  })
+
+  it('names the allowed carriers in the refusal', () => {
+    expect(() => validateDraft(draft(), () => true, ['dpd', 'inpost_locker'])).toThrow(
+      'Ten produkt wysyłamy tylko: Kurier DPD, Paczkomat InPost.',
+    )
+  })
+
+  it('a carrier the class allows passes', () => {
+    expect(() => validateDraft(draft(), () => false, ['dpd', 'inpost_courier'])).not.toThrow()
+  })
+})

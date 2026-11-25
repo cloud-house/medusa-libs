@@ -31,6 +31,7 @@ import {
   type ShipmentPlan,
   shipmentPlan,
 } from './plan'
+import { furgonetkaOptions } from './plugin-options'
 import type { CreateResult } from './queue-types'
 import { asJson } from './rows'
 import { loadSender } from './sender'
@@ -399,7 +400,7 @@ async function prepareLocked(
     pickup_date: window?.date ?? null,
     pickup_from: window?.from ?? null,
     pickup_to: window?.to ?? null,
-    reference: `CHNS-${order.displayId}`,
+    reference: `${furgonetkaOptions(ctx.container).referencePrefix}-${order.displayId}`,
     last_error: null,
   }
   // A row an earlier attempt took to Furgonetka (it has a reference) may have left a package there.

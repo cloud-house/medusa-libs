@@ -27,6 +27,7 @@ import { CARRIER_NAMES, type Carrier, type ShipmentPlan } from '../../types'
 import { errorMessage, sdk } from '../lib/sdk'
 import {
   addParcel,
+  bulkyHint,
   type CardForm,
   type ChosenTerm,
   cardToast,
@@ -228,7 +229,7 @@ function ShipmentForm({
             size="small"
             value={form.carrier}
             onValueChange={(carrier) =>
-              setForm(changeCarrier(form, carrier as Carrier, templates, order.bulky))
+              setForm(changeCarrier(form, carrier as Carrier, templates, order.classPurpose))
             }
           >
             <Select.Trigger id={`${uid}-carrier`}>
@@ -239,7 +240,7 @@ function ShipmentForm({
                 <Select.Item
                   key={carrier}
                   value={carrier}
-                  disabled={order.bulky && carrier !== 'dpd'}
+                  disabled={!order.allowedCarriers.includes(carrier)}
                 >
                   {CARRIER_NAMES[carrier]}
                 </Select.Item>
@@ -248,7 +249,7 @@ function ShipmentForm({
           </Select>
           {order.bulky && (
             <Text size="small" className="text-ui-fg-subtle">
-              Ten produkt wysyłamy tylko kurierem DPD.
+              {bulkyHint(order.allowedCarriers)}
             </Text>
           )}
         </Field>

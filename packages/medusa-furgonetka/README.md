@@ -30,6 +30,7 @@ plugins: [
     options: {
       resolveOrder, // (container, orderId) => Promise<ShippingOrderSource | null>
       resolveContact, // (container) => Promise<ShopContact & { replyTo? } | null>
+      referencePrefix: 'ACME', // [A-Z0-9]{2,10}; every shop on one Furgonetka account needs its own
       parcelClasses: [
         { key: 'board', label: 'Board' }, // carriers default to ['dpd']
         { key: 'lamp', label: 'Lamp', carriers: ['dpd', 'inpost_courier'] },
@@ -50,7 +51,7 @@ warnings for a bad environment setup.
 A **parcel class** is a kind of item that does not fit a parcel locker: a board, a sofa, a long
 lamp. Every piece of a classed item gets **its own carton** (the template whose *purpose* is the class
 key), the items without a class share one accessories carton, and only the carriers a class lists
-take it (default: DPD only – the order is then blocked for the InPost courier and lockers).
+take it (default: DPD only – the order is then blocked for the InPost courier and lockers). The order card and the queue show the carriers a class allows; a class that lists `inpost_locker` is not planned as a locker parcel (a locker shipment is always one accessories parcel), so list only DPD and the InPost courier unless the items fit a locker.
 
 * `parcelClasses` – the classes, in the order their cartons are planned. Keys: `[a-z0-9_]{1,40}`, not
   `accessories_locker` / `accessories_courier`, no repeats; at least one class.
@@ -80,6 +81,7 @@ InPost courier) can ask the same question.
 | Option | Default | |
 |---|---|---|
 | `resolveOrder` | – (required) | `ShippingOrderSource`: id, `displayId`, `email`, `customerName`, `shopOrder`, `paid`, `canceled`, `hasAccount`, `deliveryCode`, `lockerCode`/`lockerLabel`, `address`, `items` (`id`, `title`, `variant`, `quantity`, `productId`), `itemsTotalCents`, `fulfillments` |
+| `referencePrefix` | – (required) | `[A-Z0-9]{2,10}`; packages are referenced as `<prefix>-<order number>` in Furgonetka (`user_reference_number`), and a crashed creation finds its package again by that reference – shops sharing an account must not share a prefix |
 | `parcelClasses` | – (required) | see above |
 | `resolveParcelClasses` | `metadata.parcel_class` | see above |
 | `resolveContact` | none | contact for the e-mails and alerts (may resolve to `null` or throw – the e-mail then goes without contact data) |
