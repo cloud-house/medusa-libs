@@ -1,0 +1,510 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`plan and API body parity DPD, board and accessories 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 95,
+        "height": 30,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 15,
+        "width": 45,
+      },
+      {
+        "depth": 40,
+        "height": 20,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 3,
+        "width": 30,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "dpd",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 30,
+        "kind": "box",
+        "length_cm": 95,
+        "name": "Karton deski",
+        "template_id": "ptpl_0",
+        "weight_g": 15000,
+        "width_cm": 45,
+      },
+      {
+        "height_cm": 20,
+        "kind": "box",
+        "length_cm": 40,
+        "name": "Karton mały",
+        "template_id": "ptpl_5",
+        "weight_g": 3000,
+        "width_cm": 30,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
+
+exports[`plan and API body parity DPD, courier-only product and accessories 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 120,
+        "height": 15,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 4,
+        "width": 25,
+      },
+      {
+        "depth": 40,
+        "height": 20,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 3,
+        "width": 30,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "dpd",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 15,
+        "kind": "box",
+        "length_cm": 120,
+        "name": "Karton długi",
+        "template_id": "ptpl_1",
+        "weight_g": 4000,
+        "width_cm": 25,
+      },
+      {
+        "height_cm": 20,
+        "kind": "box",
+        "length_cm": 40,
+        "name": "Karton mały",
+        "template_id": "ptpl_5",
+        "weight_g": 3000,
+        "width_cm": 30,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
+
+exports[`plan and API body parity DPD, one board 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 95,
+        "height": 30,
+        "type": "package",
+        "value": 2499,
+        "weight": 15,
+        "width": 45,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "dpd",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 30,
+        "kind": "box",
+        "length_cm": 95,
+        "name": "Karton deski",
+        "template_id": "ptpl_0",
+        "weight_g": 15000,
+        "width_cm": 45,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
+
+exports[`plan and API body parity DPD, two pieces of a board 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 95,
+        "height": 30,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 15,
+        "width": 45,
+      },
+      {
+        "depth": 95,
+        "height": 30,
+        "type": "package",
+        "value": 1249.5,
+        "weight": 15,
+        "width": 45,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "dpd",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 30,
+        "kind": "box",
+        "length_cm": 95,
+        "name": "Karton deski",
+        "template_id": "ptpl_0",
+        "weight_g": 15000,
+        "width_cm": 45,
+      },
+      {
+        "height_cm": 30,
+        "kind": "box",
+        "length_cm": 95,
+        "name": "Karton deski",
+        "template_id": "ptpl_0",
+        "weight_g": 15000,
+        "width_cm": 45,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
+
+exports[`plan and API body parity InPost courier with a board (blocked) 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 95,
+        "height": 30,
+        "type": "package",
+        "value": 2499,
+        "weight": 15,
+        "width": 45,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "inpost_courier",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 30,
+        "kind": "box",
+        "length_cm": 95,
+        "name": "Karton deski",
+        "template_id": "ptpl_0",
+        "weight_g": 15000,
+        "width_cm": 45,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [
+    {
+      "code": "bulky_inpost",
+      "message": "Sprawdź dostawę: produkt wysyłany tylko kurierem DPD – zmień przewoźnika w karcie „Wysyłka”.",
+    },
+  ],
+}
+`;
+
+exports[`plan and API body parity InPost courier, accessories 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 40,
+        "height": 20,
+        "type": "package",
+        "value": 2499,
+        "weight": 3,
+        "width": 30,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "postcode": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "inpost_courier",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 20,
+        "kind": "box",
+        "length_cm": 40,
+        "name": "Karton mały",
+        "template_id": "ptpl_5",
+        "weight_g": 3000,
+        "width_cm": 30,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": null,
+      "point_label": null,
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
+
+exports[`plan and API body parity parcel locker, accessories 1`] = `
+{
+  "body": {
+    "parcels": [
+      {
+        "depth": 64,
+        "height": 8,
+        "type": "package",
+        "value": 2499,
+        "weight": 2,
+        "width": 38,
+      },
+    ],
+    "pickup": {
+      "city": "Gdańsk",
+      "country_code": "PL",
+      "email": "sklep@example.com",
+      "name": "Magazyn",
+      "phone": "+48600100200",
+      "postcode": "80-002",
+      "street": "ul. Portowa 3",
+    },
+    "receiver": {
+      "country_code": "PL",
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": "KRA01M",
+    },
+    "service_id": 7,
+    "user_reference_number": "1001",
+  },
+  "plan": {
+    "carrier": "inpost_locker",
+    "declaredValueCents": 249900,
+    "parcels": [
+      {
+        "height_cm": 8,
+        "kind": "locker_a",
+        "length_cm": 64,
+        "name": "Paczkomat A",
+        "template_id": "ptpl_2",
+        "weight_g": 2000,
+        "width_cm": 38,
+      },
+    ],
+    "pickup": "courier",
+    "receiver": {
+      "city": "Gdańsk",
+      "company": null,
+      "email": "jan@example.com",
+      "name": "Jan Kowalski",
+      "phone": "+48600100200",
+      "point": "KRA01M",
+      "point_label": "ul. Krakowska 1, 30-001 Kraków",
+      "postal_code": "80-001",
+      "street": "ul. Morska 5 m. 3",
+    },
+  },
+  "problems": [],
+}
+`;
