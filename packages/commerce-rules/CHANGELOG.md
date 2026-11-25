@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.6.0
+
+### Minor Changes
+
+- 3fe8275: `isPolishMobile`, `MOBILE_PREFIXES` and `MOBILE_FOR_LOCKER` (a parcel locker sends the pick-up code by SMS to a Polish mobile number), moved from the shop for `@cloud-house/medusa-furgonetka`.
+
 ## 0.5.0
 
 ### Minor Changes
