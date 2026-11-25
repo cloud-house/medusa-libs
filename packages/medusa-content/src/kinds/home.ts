@@ -9,9 +9,10 @@ import {
   mapHomePage,
   validateHref,
 } from '@cloud-house/commerce-rules'
+import type { MedusaContainer } from '@medusajs/framework/types'
 import { z } from '@medusajs/framework/zod'
 import type { ContentKind } from '../kinds'
-import type { RefKind } from '../types'
+import type { EntryData, RefKind } from '../types'
 import { checked, mediaRef } from './common'
 import { populated } from './views'
 
@@ -167,6 +168,8 @@ export interface HomeBlockDefinition {
   refs?: [path: string, kind: RefKind | 'lexical'][]
   /** Store view of one row (`null` – skipped). */
   view?: ExtraBlockMapper<ExtraHomeBlock>
+  /** Adds data that needs I/O to the mapped block (e.g. a feed). */
+  enrich?: (block: ExtraHomeBlock, ctx: { container: MedusaContainer }) => Promise<ExtraHomeBlock>
 }
 
 const meta = {
@@ -178,6 +181,8 @@ export interface HomePageKindOptions {
   extraBlocks?: HomeBlockDefinition[]
   /** The home page the store shows until one is saved (`HomePageView` of commerce-rules). */
   defaults?: unknown
+  /** The data the panel starts a new home page from (layout, meta title and description). */
+  initial?: EntryData
 }
 
 /** Home page of blocks: hero first, single hero / trust bar / newsletter (+ the shop's single blocks). */
@@ -196,6 +201,9 @@ export function homePageKind(options: HomePageKindOptions = {}): ContentKind {
   ] as unknown as [(typeof CORE_BLOCKS)[number], ...(typeof CORE_BLOCKS)[number][]])
   const mappers = Object.fromEntries(
     extras.flatMap((block) => (block.view ? [[block.type, block.view]] : [])),
+  )
+  const enrichers = new Map(
+    extras.flatMap((block) => (block.enrich ? [[block.type, block.enrich] as const] : [])),
   )
   return {
     type: 'global',
@@ -223,6 +231,15 @@ export function homePageKind(options: HomePageKindOptions = {}): ContentKind {
       ...extras.flatMap((block) => block.refs ?? []),
     ],
     defaults: options.defaults,
+    initial: options.initial,
     view: (item, ctx) => mapHomePage(populated(item, ctx), mappers),
+    enrich: async (view, ctx) => {
+      const page = view as { blocks: ExtraHomeBlock[] } | null
+      if (!page || !enrichers.size) return view
+      const blocks = await Promise.all(
+        page.blocks.map((block) => enrichers.get(block.type)?.(block, ctx) ?? block),
+      )
+      return { ...page, blocks }
+    },
   }
 }

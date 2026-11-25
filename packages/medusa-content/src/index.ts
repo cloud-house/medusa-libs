@@ -8,7 +8,8 @@ export {
   type ViewContext,
 } from './kinds'
 export * from './kinds/index'
-export { adminEntry, entryTitle } from './lib/admin-view'
+export { actorId, adminEntry, entryTitle } from './lib/admin-view'
+export { contentWarnings } from './lib/config'
 export { type EntityDoc, findEntities } from './lib/entities'
 export { recordHandle } from './lib/handle-history'
 export {
@@ -36,3 +37,4 @@ export { CONFLICT_MESSAGE } from './modules/content/policy'
 export type { default as ContentModuleService } from './modules/content/service'
 export type { ContentOptions, ResolvedContentOptions } from './options'
 export * from './types'
+export { type ContentEventData, ContentEvents } from './workflows/events'

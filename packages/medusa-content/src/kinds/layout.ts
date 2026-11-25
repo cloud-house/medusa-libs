@@ -7,6 +7,7 @@ import {
 } from '@cloud-house/commerce-rules'
 import { z } from '@medusajs/framework/zod'
 import type { ContentKind } from '../kinds'
+import type { EntryData } from '../types'
 import { checked, optionalText, requiredText } from './common'
 
 const href = checked(z.string(), (value) => validateHref(value))
@@ -61,6 +62,7 @@ export function headerKind(options: { defaults?: NavLink[] } = {}): ContentKind 
     label: 'Nagłówek',
     schema: HeaderSchema,
     defaults: options.defaults,
+    initial: { navigation: options.defaults ?? [] },
   }
 }
 
@@ -73,6 +75,7 @@ export function announcementBarKind(
     label: 'Pasek ogłoszeń',
     schema: AnnouncementBarSchema,
     defaults: options.defaults,
+    initial: (options.defaults ?? { enabled: false, items: [] }) as EntryData,
   }
 }
 
@@ -83,6 +86,7 @@ export function footerKind(options: { defaults?: LayoutData['footer'] } = {}): C
     label: 'Stopka',
     schema: FooterSchema,
     defaults: options.defaults,
+    initial: options.defaults as EntryData | undefined,
   }
 }
 

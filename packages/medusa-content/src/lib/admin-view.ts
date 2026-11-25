@@ -1,5 +1,7 @@
+import { isProtectedPageSlug } from '@cloud-house/commerce-rules'
 import type { MedusaContainer } from '@medusajs/framework/types'
 import type { EntryRow } from '../types'
+import { contentOptions } from './plugin-options'
 import { loadLookups } from './populate'
 
 /** An entry for the panel's editor with the documents it points at (pickers show names, images). */
@@ -9,8 +11,11 @@ export async function adminEntry(container: MedusaContainer, entry: EntryRow) {
     [entry.data, entry.draft].map((data) => ({ type: entry.type, slug: entry.slug, data })),
     { drafts: true },
   )
+  const kind = contentOptions(container).registry.get(entry.type, entry.slug)
   return {
     entry,
+    /** Cannot be deleted, unpublished or renamed (the checkout and e-mails link to it). */
+    protected: isProtectedPageSlug(entry.slug, kind?.protectedSlugs ?? []),
     related: Object.fromEntries(
       Object.entries(lookups).map(([kind, map]) => [kind, Object.fromEntries(map)]),
     ),

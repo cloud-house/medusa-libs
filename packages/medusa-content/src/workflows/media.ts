@@ -92,7 +92,7 @@ const createMediaStep = createStep(
 
 const resolveFolderStep = createStep(
   'resolve-media-folder',
-  async (_: void, { container }) => new StepResponse(contentOptions(container).mediaFolder),
+  async (_: undefined, { container }) => new StepResponse(contentOptions(container).mediaFolder),
 )
 
 /** Uploads an image or PDF through the file provider (folder `mediaFolder`) and describes it in the media library. */

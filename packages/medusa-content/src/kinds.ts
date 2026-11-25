@@ -26,6 +26,8 @@ export interface ViewContext {
   registry: KindRegistry
   draft: boolean
   lookups: Lookups
+  /** The product, category or brand an entity kind's content belongs to. */
+  entity?: { id: string; handle: string; title: string }
 }
 
 /**
@@ -51,8 +53,12 @@ export interface ContentKind {
   entity?: EntityKind
   /** Store view of the entry; default the data with the documents it points at filled in. */
   view?: (item: { row: EntryRow; data: EntryData }, ctx: ViewContext) => unknown
+  /** Adds what needs I/O to the finished view (e.g. a feed behind a home-page block). */
+  enrich?: (view: unknown, ctx: { container: MedusaContainer }) => Promise<unknown>
   /** Store view of a global (or an entity's content) that has nothing published yet. */
   defaults?: unknown
+  /** The data the panel starts a not-yet-saved entry (a global) from. */
+  initial?: EntryData
   /** Addresses that cannot be deleted, unpublished or renamed (pages other things link to). */
   protectedSlugs?: string[]
   /** Adjusts the checked data before it is saved (computed fields); `publishing` – a publication. */

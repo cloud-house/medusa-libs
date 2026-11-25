@@ -13,6 +13,8 @@ export interface ContentOptions {
   previewHeader?: string
   /** Folder of the uploaded media in the file provider; default `content`. */
   mediaFolder?: string
+  /** Path of the storefront route that starts a preview (`STOREFRONT_URL` + path); default `/api/preview`. */
+  previewPath?: string
   /** Prefix of the log lines; default `[Content]`. */
   logPrefix?: string
   /** Current handle of a product, category or brand (for the address history); default reads the Product module and `brand`. */
@@ -28,6 +30,7 @@ export interface ResolvedContentOptions {
   previewSecret: string | null
   previewHeader: string
   mediaFolder: string
+  previewPath: string
   logPrefix: string
   resolveEntityHandle: NonNullable<ContentOptions['resolveEntityHandle']> | null
 }
@@ -53,6 +56,7 @@ export function resolveOptions(options: ContentOptions): ResolvedContentOptions 
   const {
     previewHeader = 'x-preview-token',
     mediaFolder = 'content',
+    previewPath = '/api/preview',
     logPrefix = '[Content]',
     resolveEntityHandle = null,
   } = given
@@ -68,12 +72,19 @@ export function resolveOptions(options: ContentOptions): ResolvedContentOptions 
       `option "mediaFolder" must match [A-Za-z0-9_-]{1,60} (got "${String(mediaFolder)}").`,
     )
   }
+  if (typeof previewPath !== 'string' || !previewPath.startsWith('/')) {
+    throw contentError(
+      CONTENT_ERROR_CODES.invalidOption,
+      `option "previewPath" must start with "/" (got "${String(previewPath)}").`,
+    )
+  }
   const secret = given.previewSecret ?? process.env.CONTENT_PREVIEW_SECRET
   return {
     registry,
     previewSecret: secret && secret.length > 0 ? secret : null,
     previewHeader,
     mediaFolder,
+    previewPath,
     logPrefix,
     resolveEntityHandle,
   }

@@ -21,7 +21,8 @@
     "lexical"
   ],
   "files": [
-    ".medusa/server"
+    ".medusa/server",
+    "dist"
   ],
   "exports": {
     ".": {
@@ -37,10 +38,14 @@
       "import": "./.medusa/server/src/admin/index.mjs",
       "require": "./.medusa/server/src/admin/index.js",
       "default": "./.medusa/server/src/admin/index.js"
+    },
+    "./admin-kit": {
+      "types": "./dist/admin-kit.d.mts",
+      "default": "./dist/admin-kit.mjs"
     }
   },
   "scripts": {
-    "build": "medusa plugin:build",
+    "build": "medusa plugin:build && tsup",
     "dev": "medusa plugin:develop",
     "typecheck": "tsc --noEmit -p tsconfig.test.json",
     "test": "pnpm run test:unit && pnpm run test:integration:modules",
@@ -49,6 +54,16 @@
   },
   "dependencies": {
     "@cloud-house/commerce-rules": "workspace:^",
+    "@lexical/headless": "0.50.0",
+    "@lexical/history": "0.50.0",
+    "@lexical/link": "0.50.0",
+    "@lexical/list": "0.50.0",
+    "@lexical/react": "0.50.0",
+    "@lexical/rich-text": "0.50.0",
+    "@lexical/selection": "0.50.0",
+    "@lexical/utils": "0.50.0",
+    "lexical": "0.50.0",
+    "multer": "2.4.0",
     "sharp": "0.35.4"
   },
   "peerDependencies": {
@@ -71,11 +86,13 @@
     "@swc/jest": "^0.2.36",
     "@tanstack/react-query": "catalog:medusa",
     "@types/jest": "^29.5.13",
+    "@types/multer": "2.1.0",
     "@types/node": "^24.0.0",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
     "typescript": "~5.9.3",
     "vite": "^7.3.6"
   },
