@@ -57,6 +57,7 @@ moduleIntegrationTestRunner<FurgonetkaModuleService>({
   moduleOptions: {
     resolveOrder: async () => null,
     parcelClasses: [{ key: 'board', label: 'Deska' }],
+    referencePrefix: 'TEST',
   },
   testSuite: ({ service }) => {
     describe('parcel class purposes (kit step 4c)', () => {
