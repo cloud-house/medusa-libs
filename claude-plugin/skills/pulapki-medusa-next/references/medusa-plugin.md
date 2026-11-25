@@ -148,3 +148,31 @@ Słowa: `circular`, `AxiosError`, `jest-worker`, `--runInBand`, `api.post`
 - **Objaw:** pakiet HTTP w test-shopie kończy się `Jest worker encountered 4 child process exceptions` i zerem testów.
 - **Przyczyna:** test rzucił `AxiosError` (żądanie z kodem 4xx bez `send(...)`), a worker nie umie przesłać go do rodzica.
 - **Rozwiązanie:** `TEST_TYPE=integration:http NODE_OPTIONS="--experimental-vm-modules --max-old-space-size=8192" pnpm exec jest --runInBand <plik>` pokazuje prawdziwy błąd; w testach oczekiwany błąd łap przez `send(...)`.
+
+## `exports` pluginu: `./modules/*` zasłania głębokie importy serwisu modułu
+Słowa: `exports`, `./modules/*`, `./*`, deep import, `modules/<nazwa>/service`
+
+- **Objaw:** `import … from '@cloud-house/<plugin>/modules/<nazwa>/service'` wskazuje na `…/modules/<nazwa>/service/index.js` i nie działa.
+- **Przyczyna:** wzorzec `./modules/*` jest dłuższy niż `./*`, więc wygrywa i dokleja `/index.js`.
+- **Rozwiązanie:** typy i stałą modułu eksportuj z indeksu pakietu (`FURGONETKA_MODULE`, `type FurgonetkaModuleService`, typy wierszy); głębokie ścieżki `…/lib/<plik>` zostaw tylko testom sklepu.
+
+## Test modułowy pluginu z wymaganymi opcjami
+Słowa: `moduleIntegrationTestRunner`, `moduleOptions`, `*_missing_option`
+
+- **Objaw:** wszystkie testy modułowe padają przy tworzeniu serwisu (`…_missing_option`), choć testują tabele.
+- **Przyczyna:** serwis modułu waliduje opcje w konstruktorze (jak przy starcie sklepu), a runner tworzy go bez nich.
+- **Rozwiązanie:** `moduleOptions: { … }` w `moduleIntegrationTestRunner` z minimalnym zestawem wymaganych opcji; po dodaniu nowej wymaganej opcji uzupełnij go (pełny przebieg kitu to wyłapie).
+
+## Realizacja zamówienia w teście HTTP test-shopa
+Słowa: `createOrderFulfillmentWorkflow`, `service_zone`, shipping method, stock location, fulfillment set
+
+- **Objaw:** `Cannot read properties of undefined (reading 'service_zone')` przy tworzeniu realizacji dla zamówienia założonego w module Order.
+- **Przyczyna:** workflow czyta opcję dostawy z metody dostawy zamówienia; bez metody z prawdziwą opcją, strefy i lokalizacji magazynu nie ma skąd.
+- **Rozwiązanie:** pomocnik `setupOutbound` (lokalizacja z adresem i telefonem, zestaw wysyłki ze strefą, link do dostawcy `manual_manual`, opcja dostawy) i `placeOrder(…, { shippingOptionId })`.
+
+## Aliasy `timeout` na macOS i testy w tle
+Słowa: `timeout: command not found`, `run_in_background`
+
+- **Objaw:** polecenie z `timeout 250 pnpm test…` nie wypisuje wyników, a wygląda jak zawieszone testy.
+- **Przyczyna:** macOS nie ma polecenia `timeout` (zsh zgłasza błąd, który ginie w `grep`).
+- **Rozwiązanie:** uruchamiaj testy bez `timeout`; długie przebiegi w tle (`run_in_background`) i czekaj na powiadomienie.
