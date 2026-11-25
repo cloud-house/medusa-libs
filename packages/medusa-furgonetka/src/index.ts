@@ -6,7 +6,7 @@ export type {
   ShipmentEmailData,
 } from './emails/types'
 export { FURGONETKA_ERROR_CODES, type FurgonetkaErrorCode } from './errors'
-export { CARRIER_NAMES, carrierForCode } from './lib/carriers'
+export { CARRIER_NAMES, carrierForCode, httpUrl } from './lib/carriers'
 export { furgonetkaConfig, furgonetkaWarnings } from './lib/config'
 export { createShipments, errorText } from './lib/create'
 export {
