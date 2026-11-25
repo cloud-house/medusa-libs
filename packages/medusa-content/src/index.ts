@@ -7,6 +7,7 @@ export {
   type VersionPolicy,
   type ViewContext,
 } from './kinds'
+export * from './kinds/index'
 export { adminEntry, entryTitle } from './lib/admin-view'
 export { type EntityDoc, findEntities } from './lib/entities'
 export { recordHandle } from './lib/handle-history'

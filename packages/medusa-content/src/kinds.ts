@@ -1,7 +1,15 @@
 import type { MedusaContainer } from '@medusajs/framework/types'
 import type { z } from '@medusajs/framework/zod'
 import { CONTENT_ERROR_CODES, contentError } from './errors'
-import { ENTITY_KINDS, type EntityKind, type EntryRow, GLOBAL_TYPE, type RefKind } from './types'
+import type { Lookups } from './lib/populate'
+import {
+  ENTITY_KINDS,
+  type EntityKind,
+  type EntryData,
+  type EntryRow,
+  GLOBAL_TYPE,
+  type RefKind,
+} from './types'
 
 export interface VersionPolicy {
   /** Working copy (`draft`) with autosave, preview and a separate „Publish”. */
@@ -12,10 +20,12 @@ export interface VersionPolicy {
 
 export const NO_VERSIONS: VersionPolicy = { drafts: false, maxVersions: null }
 
-/** Where the store view of an entry is built: the entry, whether it is a preview, the container. */
+/** What building the store view of an entry needs: whether it is a preview, the documents it points at. */
 export interface ViewContext {
   container: MedusaContainer
+  registry: KindRegistry
   draft: boolean
+  lookups: Lookups
 }
 
 /**
@@ -39,8 +49,12 @@ export interface ContentKind {
   refs?: [path: string, kind: RefKind | 'lexical'][]
   /** The Medusa record the entries are bound to (`entity_id`). */
   entity?: EntityKind
-  /** Store view of the entry; default the data with media filled in. */
-  view?: (row: EntryRow, ctx: ViewContext) => unknown
+  /** Store view of the entry; default the data with the documents it points at filled in. */
+  view?: (item: { row: EntryRow; data: EntryData }, ctx: ViewContext) => unknown
+  /** Store view of a global (or an entity's content) that has nothing published yet. */
+  defaults?: unknown
+  /** Addresses that cannot be deleted, unpublished or renamed (pages other things link to). */
+  protectedSlugs?: string[]
 }
 
 const TYPE_KEY = /^[a-z0-9_]{1,40}$/
@@ -84,7 +98,16 @@ export function defineKind(kind: ContentKind): ContentKind {
   ) {
     throw invalid('versions.maxVersions must be null, 0 (unlimited) or a positive integer')
   }
-  return { ...kind, versions: { ...versions }, refs: [...(kind.refs ?? [])] }
+  const protectedSlugs = kind.protectedSlugs ?? []
+  if (!Array.isArray(protectedSlugs) || protectedSlugs.some((slug) => typeof slug !== 'string')) {
+    throw invalid('protectedSlugs must be a list of strings')
+  }
+  return {
+    ...kind,
+    versions: { ...versions },
+    refs: [...(kind.refs ?? [])],
+    protectedSlugs: [...protectedSlugs],
+  }
 }
 
 /** The kinds a shop registered, looked up by `type` (and `slug` for globals). */
