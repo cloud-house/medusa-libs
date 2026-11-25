@@ -1,4 +1,4 @@
-import { EMPTY_SELLER } from '@cloud-house/commerce-rules'
+import { EMPTY_SELLER } from '../seller'
 import { describe, expect, it } from 'vitest'
 import type { LayoutData } from './layout-types'
 import { settingValue } from './setting-values'

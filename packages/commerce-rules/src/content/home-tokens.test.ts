@@ -1,4 +1,4 @@
-import { formatPrice } from '@cloud-house/commerce-rules'
+import { formatPrice } from '../format-price'
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_LAYOUT } from './__fixtures__/layout'
 import { fillHomeBlockTokens, fillHomeTokens, homeTokenError } from './home-tokens'
