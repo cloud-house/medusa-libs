@@ -90,6 +90,10 @@ const createMediaStep = createStep(
   },
 )
 
+/** Base name only, plain characters: the upload cannot leave its folder. */
+export const safeName = (name: string) =>
+  (name.split(/[\\/]/).pop() ?? '').replace(/[^\w.\- ]+/g, '_').replace(/^\.+/, '') || 'file'
+
 const resolveFolderStep = createStep(
   'resolve-media-folder',
   async (_: undefined, { container }) => new StepResponse(contentOptions(container).mediaFolder),
@@ -102,7 +106,7 @@ export const uploadMediaWorkflow = createWorkflow('upload-media', (input: Upload
   const upload = transform({ input, folder }, ({ input, folder }) => ({
     files: [
       {
-        filename: `${folder}/${input.filename}`,
+        filename: `${folder}/${safeName(input.filename)}`,
         mimeType: input.mime_type,
         content: input.content,
         access: 'public' as const,

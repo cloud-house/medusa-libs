@@ -70,15 +70,18 @@
   "peerDependencies": {
     "@medusajs/admin-sdk": "catalog:medusa-peer",
     "@medusajs/framework": "catalog:medusa-peer",
+    "@medusajs/icons": "catalog:medusa-peer",
     "@medusajs/js-sdk": "catalog:medusa-peer",
     "@medusajs/medusa": "catalog:medusa-peer",
     "@medusajs/ui": "catalog:medusa-peer",
-    "@tanstack/react-query": "catalog:medusa-peer"
+    "@tanstack/react-query": "catalog:medusa-peer",
+    "react": "catalog:medusa-peer"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "catalog:medusa",
     "@medusajs/cli": "catalog:medusa",
     "@medusajs/framework": "catalog:medusa",
+    "@medusajs/icons": "catalog:medusa",
     "@medusajs/js-sdk": "catalog:medusa",
     "@medusajs/medusa": "catalog:medusa",
     "@medusajs/test-utils": "catalog:medusa",

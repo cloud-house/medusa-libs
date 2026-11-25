@@ -30,6 +30,7 @@ describe('resolveOptions', () => {
       ],
       [{ type: 'page', slug: 'x' }],
       [{ type: 'faq', entity: 'order' as never }],
+      [{ type: 'product_faq', entity: 'product' }],
       [{ type: 'faq', label: ' ' }],
       [{ type: 'faq', versions: { drafts: true, maxVersions: -1 } }],
     ]
@@ -75,6 +76,9 @@ describe('resolveOptions', () => {
 
   it('rejects an unusable header or media folder', () => {
     expect(() => resolveOptions({ kinds: [kind()], previewHeader: 'X Token' })).toThrow(
+      '[content_invalid_option]',
+    )
+    expect(() => resolveOptions({ kinds: [kind()], previewPath: '//evil.example/x' })).toThrow(
       '[content_invalid_option]',
     )
     expect(() => resolveOptions({ kinds: [kind()], mediaFolder: '../x' })).toThrow(

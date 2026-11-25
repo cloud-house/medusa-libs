@@ -97,6 +97,9 @@ export function defineKind(kind: ContentKind): ContentKind {
   if (kind.entity !== undefined && !ENTITY_KINDS.includes(kind.entity)) {
     throw invalid(`entity must be one of ${ENTITY_KINDS.join(', ')}`)
   }
+  if (kind.entity !== undefined && kind.type !== kind.entity) {
+    throw invalid(`a kind bound to a ${kind.entity} must have the type "${kind.entity}"`)
+  }
   if (kind.entity !== undefined && kind.type === GLOBAL_TYPE) {
     throw invalid('a global kind cannot be bound to an entity')
   }

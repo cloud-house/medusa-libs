@@ -68,6 +68,9 @@ async function findOrCreate(
   if (!('key' in target) && !registry.get(target.type)) {
     throw notAllowed(`Nieznany typ treści: ${target.type}.`)
   }
+  if (!('key' in target) && !('entity_id' in target) && registry.get(target.type)?.entity) {
+    throw notAllowed(`Treść typu ${target.type} dotyczy produktu, kategorii albo marki.`)
+  }
   const row = (await content.createContentEntries({
     type: target.type,
     slug: 'key' in target ? target.key : null,
@@ -115,9 +118,13 @@ export async function writeContent(
     published_at: row.published_at,
     created,
   }
+  // Only a write of this call may be rolled back: when it fails before writing (validation, a
+  // conflict with a save that won the row lock) the row belongs to the winner.
+  let wrote = false
   try {
     const { registry } = contentOptions(container)
     const kind = registry.get(row.type, row.slug)
+    if (!kind) throw notAllowed(`Nieznany typ treści: ${row.type}.`)
     const policy = versionPolicy(registry, row.type, row.slug)
     const publishing = input.mode === 'publish' || !policy.drafts
     const parsed = registry
@@ -157,6 +164,7 @@ export async function writeContent(
     const entry = publishing
       ? await content.publish(common)
       : await content.saveDraft({ ...common, autosave: input.mode === 'autosave' })
+    wrote = true
 
     return {
       output: {
@@ -168,7 +176,7 @@ export async function writeContent(
       snapshot,
     }
   } catch (error) {
-    await restoreSnapshot(content, snapshot)
+    if (created || wrote) await restoreSnapshot(content, snapshot)
     throw error
   }
 }

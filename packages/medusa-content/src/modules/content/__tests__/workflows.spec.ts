@@ -21,6 +21,12 @@ jest.setTimeout(60 * 1000)
 
 const kinds = [
   ...contentKinds({ reservedSlugs: ['koszyk'], protectedSlugs: ['regulamin'] }),
+  {
+    type: 'product',
+    label: 'Product',
+    entity: 'product' as const,
+    schema: z.object({}).passthrough(),
+  },
   { type: 'faq', label: 'FAQ', schema: z.object({ q: z.string().min(1, 'Podaj pytanie.') }) },
 ]
 
@@ -154,6 +160,39 @@ moduleIntegrationTestRunner<ContentModuleService>({
         await expect(
           save({ target: { type: 'global', key: 'nope' }, mode: 'publish', data: {} }),
         ).rejects.toThrow('Nieznany element układu: nope.')
+      })
+
+      it('a save that loses the race does not roll back the winner (review finding 1)', async () => {
+        const { output } = await save({
+          target: { type: 'page' },
+          mode: 'publish',
+          data: page('wyscig'),
+        })
+        const start = output.entry.updated_at
+        const results = await Promise.allSettled(
+          ['A', 'B'].map((title) =>
+            save({
+              target: { id: output.entry.id },
+              mode: 'publish',
+              data: page('wyscig', { title }),
+              expected_updated_at: new Date(start).toISOString(),
+            }),
+          ),
+        )
+        expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1)
+        const winner = results.find((r) => r.status === 'fulfilled') as PromiseFulfilledResult<
+          Awaited<ReturnType<typeof save>>
+        >
+        const row = await service.retrieveContentEntry(output.entry.id)
+        expect((row.data as { title: string }).title).toBe(
+          (winner.value.output.entry.data as { title: string }).title,
+        )
+      })
+
+      it('refuses a kind bound to a record without the record, and an unregistered stored type', async () => {
+        await expect(
+          save({ target: { type: 'product' }, mode: 'publish', data: {} }),
+        ).rejects.toThrow('dotyczy produktu')
       })
 
       it('keeps what the entry points at, per the paths of its kind', async () => {

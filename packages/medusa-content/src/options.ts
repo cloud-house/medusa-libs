@@ -72,7 +72,11 @@ export function resolveOptions(options: ContentOptions): ResolvedContentOptions 
       `option "mediaFolder" must match [A-Za-z0-9_-]{1,60} (got "${String(mediaFolder)}").`,
     )
   }
-  if (typeof previewPath !== 'string' || !previewPath.startsWith('/')) {
+  if (
+    typeof previewPath !== 'string' ||
+    !previewPath.startsWith('/') ||
+    previewPath.startsWith('//')
+  ) {
     throw contentError(
       CONTENT_ERROR_CODES.invalidOption,
       `option "previewPath" must start with "/" (got "${String(previewPath)}").`,

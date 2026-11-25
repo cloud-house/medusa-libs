@@ -39,6 +39,10 @@ catalogs:
     react-dom:
       specifier: 18.3.1
       version: 18.3.1
+  medusa-peer:
+    react:
+      specifier: ^18.3.1
+      version: 18.3.1
   next:
     next:
       specifier: 16.3.3
@@ -299,6 +303,9 @@ importers:
       multer:
         specifier: 2.4.0
         version: 2.4.0
+      react:
+        specifier: catalog:medusa-peer
+        version: 18.3.1
       sharp:
         specifier: 0.35.4
         version: 0.35.4(@types/node@24.19.2)
@@ -312,6 +319,9 @@ importers:
       '@medusajs/framework':
         specifier: catalog:medusa
         version: 2.21.2(@medusajs/cli@2.21.2(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@24.19.2)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.11.1(supports-color@8.1.1))(supports-color@8.1.1)(vite@7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1))(zod@4.2.0)
+      '@medusajs/icons':
+        specifier: catalog:medusa
+        version: 2.21.2(react@18.3.1)
       '@medusajs/js-sdk':
         specifier: catalog:medusa
         version: 2.21.2
