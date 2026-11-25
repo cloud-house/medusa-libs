@@ -23,7 +23,12 @@ export { metadataParcelClasses, parcelClassesOf } from './lib/parcel-classes'
 export { type DefaultTemplate, ensureParcelTemplates } from './lib/templates'
 export { sweepShipments } from './lib/tracking'
 export { FURGONETKA_MODULE } from './modules/furgonetka'
-export type { default as FurgonetkaModuleService } from './modules/furgonetka/service'
+export type {
+  ConnectionRow,
+  default as FurgonetkaModuleService,
+  ShipmentRow,
+  TemplateRow,
+} from './modules/furgonetka/service'
 export type {
   FurgonetkaContact,
   FurgonetkaOptions,
