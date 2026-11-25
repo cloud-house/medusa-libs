@@ -11,6 +11,10 @@ export interface PlaceOrderOptions {
   metadata?: Record<string, unknown>
   /** Metadata of the cart that placed the order, e.g. the account flag. */
   cartMetadata?: Record<string, unknown>
+  /** The order lines; default one `Test item`. */
+  items?: { title: string; quantity: number; unit_price: number; product_id?: string }[]
+  /** The shipping option of the order's delivery method (needed to make a fulfillment). */
+  shippingOptionId?: string
 }
 
 /**
@@ -19,7 +23,15 @@ export interface PlaceOrderOptions {
  */
 export async function placeOrder(
   container: MedusaContainer,
-  { email, regionId, customerId, metadata, cartMetadata }: PlaceOrderOptions,
+  {
+    email,
+    regionId,
+    customerId,
+    metadata,
+    cartMetadata,
+    items,
+    shippingOptionId,
+  }: PlaceOrderOptions,
 ): Promise<{ orderId: string; cartId: string }> {
   const cart = await container.resolve(Modules.CART).createCarts({
     region_id: regionId,
@@ -49,7 +61,10 @@ export async function placeOrder(
       country_code: 'pl',
       phone: '+48600100200',
     },
-    items: [{ title: 'Test item', quantity: 1, unit_price: 1000 }],
+    items: items ?? [{ title: 'Test item', quantity: 1, unit_price: 1000 }],
+    shipping_methods: shippingOptionId
+      ? [{ name: 'Kurier', amount: 0, shipping_option_id: shippingOptionId }]
+      : undefined,
   })
   await container.resolve(ContainerRegistrationKeys.LINK).create({
     [Modules.ORDER]: { order_id: order.id },

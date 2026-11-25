@@ -8,6 +8,8 @@ export interface TestProductInput {
   price?: number | null
   status?: ProductStatus
   currency?: string
+  /** Product metadata, e.g. `{ parcel_class: 'sofa' }`. */
+  metadata?: Record<string, unknown>
 }
 
 /** A product with one variant in the sales channel, without inventory management. */
@@ -30,6 +32,7 @@ export async function createTestProduct(
           handle: input.handle,
           status: input.status ?? ProductStatus.PUBLISHED,
           shipping_profile_id: profile.id,
+          metadata: input.metadata,
           sales_channels: [{ id: salesChannelId }],
           options: [{ title: 'Size', values: ['Standard'] }],
           variants: [
