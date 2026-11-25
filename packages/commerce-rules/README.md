@@ -22,6 +22,7 @@ Everything customer-facing is Polish by default and takes an options object as t
 - `lowestPriceBeforeDiscount`, `OMNIBUS_WINDOW_DAYS` – Omnibus lowest price in the last 30 days
 - `splitLineDiscount` – cart line discounts split into bundle and typed codes
 - `stockStatus`, `isAvailableNow`, `STOCK_RANK`, `STOCK_STATUSES`, `LOW_STOCK_THRESHOLD`
+- phone (`phone.ts`): `isPolishMobile`, `MOBILE_PREFIXES`, `MOBILE_FOR_LOCKER` (parcel lockers need a Polish mobile number)
 - returns (`returns.ts`, Polish texts): `returnWindowStart`, `isReturnEligible`, `returnLastDay`, `returnableQuantity`, `RETURN_REASONS` / `isReturnReasonCode` / `returnReasonLabel`, `RETURN_MESSAGES`, `returnExpiredMessage`, `returnStatusKey` / `RETURN_STATUS_LABELS`, `RETURN_WINDOW_DAYS` (30), `RETURN_OPTION_CODE` (`zwrot-wlasny`), and the API shapes (`ReturnInfo`, `AccountReturn`, `ReturnLookupResponse`, `ReturnClaimResponse`) shared by `@cloud-house/medusa-returns` and the storefront
 
 ## Options
