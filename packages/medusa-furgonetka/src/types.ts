@@ -100,6 +100,8 @@ export interface ShippingOrder {
   shopOrder: boolean
   paid: boolean
   canceled: boolean
+  /** The customer has an account – the e-mail then links the order there. */
+  hasAccount: boolean
   /** `shipping_option_type.code` of the delivery method the customer chose. */
   deliveryCode: string | null
   deliveryName: string | null

@@ -58,6 +58,7 @@ const order = (overrides: Partial<ShippingOrder> = {}): ShippingOrder => ({
   shopOrder: true,
   paid: true,
   canceled: false,
+  hasAccount: false,
   deliveryCode: 'kurier-dpd',
   deliveryName: 'Kurier DPD',
   lockerCode: null,
