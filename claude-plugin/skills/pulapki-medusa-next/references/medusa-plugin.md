@@ -216,3 +216,21 @@ Słowa: `server.deps.inline`, `server-only`, `This module cannot be imported fro
 
 - **Objaw:** testy sklepu, które pośrednio importują pakiet kitu z `server-only`, padają mimo mocka.
 - **Rozwiązanie:** dopisz pakiet do `server.deps.inline` w `vitest.config` projektu `unit` (jak `next-medusa`).
+
+## Hooki workflow i subskrybenci w pluginie ładują się bez dodatkowego kodu
+Słowa: `workflows/hooks`, `addShippingMethodToCartWorkflow.hooks.validate`, `src/subscribers`, plugin
+
+- **Zasada:** Medusa 2.21.2 ładuje `src/workflows/hooks/*` i `src/subscribers/*` pluginu tak samo jak sklepu; funkcja rejestrująca nie jest potrzebna. Sprawdź to testem HTTP w test-shopie (hook zwraca 400 z komunikatem), nie założeniem.
+- **Pułapka:** po przeniesieniu kodu ze sklepu do pluginu usuń oryginały w sklepie (inaczej hook uruchomi się dwa razy).
+
+## Plugin importuje kod innego pluginu: wystaw to w głównym indeksie, ale bez `core-flows`
+Słowa: `parcelClassesOf`, `FURGONETKA_MODULE`, `container.resolve`, peer
+
+- **Objaw:** sklep bez drugiego pluginu przestaje startować albo rzuca w trasie.
+- **Rozwiązanie:** sprawdź `container.resolve(<MODUŁ>)` w `try/catch` przed wywołaniem funkcji drugiego pluginu i zwróć „brak” (pusta lista); peer deklaruj w `peerDependencies`.
+
+## Siatka parity w sklepie łapie zmiany tekstu logów
+Słowa: parity, snapshot, `toHaveBeenCalledWith`, logger
+
+- **Objaw:** po przeniesieniu kodu pada test sklepu, który sprawdza treść ostrzeżenia (np. numer zamówienia w logu).
+- **Rozwiązanie:** zamiast zmieniać test, daj opcji kontekst (`resolveContact(container, { logger })`), żeby sklep odtworzył dotychczasowy komunikat.
