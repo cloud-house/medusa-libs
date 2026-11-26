@@ -41,9 +41,7 @@ export function createPreviewRoutes({
       path: '/',
       expires: new Date(claims.exp * 1000),
     })
-    // Not `redirect()` from next/navigation: the `.js` specifier the package needs is not aliased
-    // for route handlers and breaks the Turbopack build.
-    return Response.redirect(new URL(target, request.url), 307)
+    return redirectTo(target, 307)
   }
 
   async function POST(request: Request): Promise<Response> {
@@ -57,10 +55,20 @@ export function createPreviewRoutes({
         typeof slug === 'string' ? slug : null,
         typeof collection === 'string' ? collection : null,
       ) ?? '/'
-    return Response.redirect(new URL(target, request.url), 303)
+    return redirectTo(target, 303)
   }
 
   return { enter: { GET }, exit: { POST } }
+}
+
+/**
+ * Relative `Location`, like Next's own `redirect()`: `request.url` of a route handler is built from
+ * the server's listen address (e.g. `0.0.0.0:3000` behind a proxy), not the public host. Not
+ * `redirect()` from next/navigation either: its `.js` specifier is not aliased for route handlers
+ * and breaks the Turbopack build.
+ */
+function redirectTo(target: string, status: 303 | 307): Response {
+  return new Response(null, { status, headers: { Location: target } })
 }
 
 function stripUndefined<T extends object>(value: T | undefined): Partial<T> {
