@@ -23,11 +23,6 @@ vi.mock('next/headers.js', () => ({
     delete: (name: string) => state.deleted.push(name),
   }),
 }))
-vi.mock('next/navigation.js', () => ({
-  redirect: (target: string) => {
-    throw Object.assign(new Error('NEXT_REDIRECT'), { target })
-  },
-}))
 
 const SECRET = 'test-preview-secret'
 process.env.CONTENT_PREVIEW_SECRET = SECRET
@@ -70,9 +65,9 @@ describe('enter route', () => {
   it('valid token: enables draft mode, sets an httpOnly cookie that expires with the token, redirects', async () => {
     const e = exp()
     const token = await signPreviewToken({ sub: 'u', exp: e }, SECRET)
-    const error = await routes.enter.GET(url({ token, slug: 'regulamin' })).catch((x) => x)
-    expect(error.message).toBe('NEXT_REDIRECT')
-    expect(error.target).toBe('/regulamin')
+    const res = await routes.enter.GET(url({ token, slug: 'regulamin' }))
+    expect(res.status).toBe(307)
+    expect(new URL(res.headers.get('location') as string).pathname).toBe('/regulamin')
     expect(state.enabled).toBe(true)
     expect(state.set).toHaveLength(1)
     expect(state.set[0]).toMatchObject({

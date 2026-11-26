@@ -48,6 +48,12 @@ describe.skipIf(!built)('built dist', () => {
     })
   }
 
+  it('the server entry does not import next/navigation (breaks the Turbopack route build)', () => {
+    for (const file of ['dist/server.js', 'dist/server.cjs']) {
+      expect(readFileSync(`${root}${file}`, 'utf8')).not.toMatch(/next\/navigation/)
+    }
+  })
+
   it('the index entry (client-safe) does not import server-only or next/headers', () => {
     for (const file of ['dist/index.js', 'dist/index.cjs']) {
       const source = readFileSync(`${root}${file}`, 'utf8')

@@ -1,6 +1,5 @@
 import { previewTarget, verifyPreviewToken } from '@cloud-house/commerce-rules'
 import { cookies, draftMode } from 'next/headers.js'
-import { redirect } from 'next/navigation.js'
 
 export interface PreviewRoutesOptions {
   cookieName: string
@@ -42,7 +41,9 @@ export function createPreviewRoutes({
       path: '/',
       expires: new Date(claims.exp * 1000),
     })
-    redirect(target)
+    // Not `redirect()` from next/navigation: the `.js` specifier the package needs is not aliased
+    // for route handlers and breaks the Turbopack build.
+    return Response.redirect(new URL(target, request.url), 307)
   }
 
   async function POST(request: Request): Promise<Response> {
