@@ -1,5 +1,12 @@
 # @cloud-house/medusa-returns
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [802a3bf]
+  - @cloud-house/commerce-rules@0.8.0
+
 ## 0.1.2
 
 ### Patch Changes

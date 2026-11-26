@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.8.0
+
+### Minor Changes
+
+- 802a3bf: Checkout types (`DeliveryOption`, `ShippingRate`, `CheckoutCheckResponse`, `OrderSummary`, `OrderReference`, `CheckoutOrderResponse`, `STRIPE_PROVIDER_IDS`) and the delivery review (`DeliveryReview`, `DELIVERY_REVIEW_NOTES`, `deliveryReviewOf`).
+
 ## 0.7.0
 
 ### Minor Changes
