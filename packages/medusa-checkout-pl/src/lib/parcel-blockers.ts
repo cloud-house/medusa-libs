@@ -39,13 +39,17 @@ const named = (blockers: ParcelBlocker[], one: string, many: string) => {
     : `${first?.title} i inne produkty ${many}`
 }
 
-/** Customer-facing reason the parcel locker is closed; `null` when nothing blocks it. */
+/**
+ * Customer-facing reason the parcel locker is closed; `null` only when nothing blocks it. A shop's
+ * `blockReasons` callback only words the reason – an empty answer falls back to the default text.
+ */
 export function blockedReason(
   blockers: ParcelBlocker[],
   options: Pick<ResolvedCheckoutPlOptions, 'blockReasons'>,
 ): string | null {
   if (blockers.length === 0) return null
-  if (options.blockReasons.locker) return options.blockReasons.locker(blockers)
+  const custom = options.blockReasons.locker?.(blockers)
+  if (custom) return custom
   return named(blockers, 'nie mieści się w paczkomacie.', 'nie mieszczą się w paczkomacie.')
 }
 
@@ -55,6 +59,7 @@ export function courierBlockedReason(
   options: Pick<ResolvedCheckoutPlOptions, 'blockReasons'>,
 ): string | null {
   if (blockers.length === 0) return null
-  if (options.blockReasons.inpostCourier) return options.blockReasons.inpostCourier(blockers)
+  const custom = options.blockReasons.inpostCourier?.(blockers)
+  if (custom) return custom
   return named(blockers, 'wysyłamy tylko kurierem DPD.', 'wysyłamy tylko kurierem DPD.')
 }

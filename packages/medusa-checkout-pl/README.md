@@ -43,10 +43,9 @@ export default defineConfig({
 | `deliveryOrder` | InPost courier, courier, locker | order of the options at checkout |
 | `blockReasons.locker` / `.inpostCourier` | „`<product>` nie mieści się w paczkomacie.” / „… wysyłamy tylko kurierem DPD.” | customer-facing reason a method is closed |
 | `texts` | Polish | `lockerBlocked`, `lockerMissing`, `courierBlocked` of the checkout check |
-| `deliveryReviewNotes` | Polish | notes for a reviewed delivery (`board_to_parcel_locker`, `bulky_with_inpost_courier`) |
+| `deliveryReviewNotes` | Polish | notes of the order e-mail for a reviewed delivery (`board_to_parcel_locker`, `bulky_with_inpost_courier`); the storefront's confirmation page has its own copy |
 | `currency` | `pln` | currency of the shop's region |
 | `storefrontUrlEnv`, `replyToEnv` | `STOREFRONT_URL`, `EMAIL_REPLY_TO` | env variables of the e-mail |
-| `asyncPaymentMethodTypes` | `['blik', 'p24']` | Stripe methods that settle later; `[]` for the EU (`paymentModules(env, { asyncPaymentMethodTypes })`) |
 | `logPrefix` | `[Checkout]` | prefix of the log lines |
 
 Errors at start-up: `checkout_pl_missing_option`, `checkout_pl_invalid_option`.
@@ -67,4 +66,4 @@ Written by the storefront checkout, read here: `order.metadata.nip`, `customer_n
 
 ## Exports
 
-Root: options and module (`CHECKOUT_PL_MODULE`), `checkoutEmailTemplates`, `orderPlacedData` (demo data for previews), `toOrderPlacedEmailData`, `loadOrderPlacedEmail`, `loadOrderSummary`, `saleAmounts`, `paidTotal`, `PAID_STATUSES`, `listShippingRates`, `adjustmentCodes`. `@cloud-house/medusa-checkout-pl/payments`: `paymentModules`, `regionPaymentProviders`. Workflows and `core-flows` code are not imported by the root entry.
+Root: options and module (`CHECKOUT_PL_MODULE`), `checkoutEmailTemplates`, `orderPlacedData` (demo data for previews), `toOrderPlacedEmailData`, `loadOrderPlacedEmail`, `loadOrderSummary`, `saleAmounts`, `paidTotal`, `PAID_STATUSES`, `listShippingRates`, `adjustmentCodes`. `@cloud-house/medusa-checkout-pl/payments`: `paymentModules(env, { asyncPaymentMethodTypes })` (default `['blik', 'p24']`, `[]` for the EU), `regionPaymentProviders` – this entry has no Medusa imports. The root entry loads `@medusajs/medusa/core-flows` (order summary and the furgonetka plugin), which is fine in `medusa-config.ts` but not free: import `/payments` when only the payment config is needed.

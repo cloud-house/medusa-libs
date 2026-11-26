@@ -45,6 +45,17 @@ describe('parcelLockerBlockers', () => {
   })
 })
 
+describe('a custom reason that says nothing', () => {
+  it('falls back to the default text, so every endpoint agrees the method is closed', () => {
+    const options = resolveOptions({
+      resolveContact: async () => null,
+      blockReasons: { locker: () => null, inpostCourier: () => '' },
+    })
+    expect(blockedReason([paddle], options)).toBe('Wiosło nie mieści się w paczkomacie.')
+    expect(courierBlockedReason([paddle], options)).toBe('Wiosło wysyłamy tylko kurierem DPD.')
+  })
+})
+
 describe('default reasons', () => {
   it('are null when nothing blocks', () => {
     expect(blockedReason([], defaults)).toBeNull()
@@ -73,7 +84,7 @@ describe('default reasons', () => {
       },
     })
     expect(blockedReason([board, paddle], options)).toBe('Deski nie mieszczą się w paczkomacie.')
-    expect(blockedReason([paddle], options)).toBeNull()
+    expect(blockedReason([paddle], options)).toBe('Wiosło nie mieści się w paczkomacie.')
     expect(courierBlockedReason([paddle], options)).toBe('Wiosło wysyłamy tylko kurierem DPD.')
   })
 })
