@@ -67,7 +67,7 @@ describe('enter route', () => {
     const token = await signPreviewToken({ sub: 'u', exp: e }, SECRET)
     const res = await routes.enter.GET(url({ token, slug: 'regulamin' }))
     expect(res.status).toBe(307)
-    expect(new URL(res.headers.get('location') as string).pathname).toBe('/regulamin')
+    expect(res.headers.get('location')).toBe('/regulamin')
     expect(state.enabled).toBe(true)
     expect(state.set).toHaveLength(1)
     expect(state.set[0]).toMatchObject({
@@ -104,14 +104,14 @@ describe('exit route', () => {
     expect(state.disabled).toBe(true)
     expect(state.deleted).toEqual(['shop_preview'])
     expect(res.status).toBe(303)
-    expect(new URL(res.headers.get('location') as string).pathname).toBe('/regulamin')
+    expect(res.headers.get('location')).toBe('/regulamin')
   })
 
   it('without a form body or with a bad collection goes to /', async () => {
     const none = await routes.exit.POST(post())
     expect(none.status).toBe(303)
-    expect(new URL(none.headers.get('location') as string).pathname).toBe('/')
+    expect(none.headers.get('location')).toBe('/')
     const bad = await routes.exit.POST(post({ slug: 'x', collection: 'nope' }))
-    expect(new URL(bad.headers.get('location') as string).pathname).toBe('/')
+    expect(bad.headers.get('location')).toBe('/')
   })
 })
