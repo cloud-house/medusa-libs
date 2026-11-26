@@ -176,3 +176,23 @@ Słowa: `timeout: command not found`, `run_in_background`
 - **Objaw:** polecenie z `timeout 250 pnpm test…` nie wypisuje wyników, a wygląda jak zawieszone testy.
 - **Przyczyna:** macOS nie ma polecenia `timeout` (zsh zgłasza błąd, który ginie w `grep`).
 - **Rozwiązanie:** uruchamiaj testy bez `timeout`; długie przebiegi w tle (`run_in_background`) i czekaj na powiadomienie.
+
+## Plugin z panelem: `src/admin` poza głównym tsc i kod współdzielony ze sklepem
+Słowa: `plugin:build`, `src/admin`, `tsup`, `admin-kit`, `.d.mts`, TS1479
+
+- **Objaw:** `medusa plugin:build` pada na typach DOM (`HTMLInputElement`, `files`, `click`), gdy plik z panelu trafi do głównej kompilacji; typy `.d.mts` z tsup nie działają w sklepie na CJS (TS1479).
+- **Przyczyna:** `src/admin` ma własny tsconfig z DOM i jest budowany osobno; główny tsc go wyklucza. Eksport dla panelu sklepu (`./admin-kit`) musi leżeć w `src/admin`, nie w `src/`.
+- **Rozwiązanie:** wejście tsup w `src/admin/kit.ts` z `tsconfig: src/admin/tsconfig.json`, skrypt budowania kopiuje `dist/admin-kit.d.mts` do `dist/admin-kit.d.ts`; React, `@medusajs/*` i `react-router-dom` jako externals i peery.
+
+## Blokada wiersza w zapisie (dwa równoległe zapisy tego samego wpisu)
+Słowa: `lockedEntry`, `FOR UPDATE`, `manager.execute`, `getConnection().execute`
+
+- **Objaw:** dwa jednoczesne zapisy obu się udają, a przegrany po błędzie przywraca stary stan nad zwycięzcą.
+- **Przyczyna:** brak blokady wiersza; `getConnection().execute` działa poza transakcją workflow, więc blokada nic nie robi.
+- **Rozwiązanie:** `SELECT … FOR UPDATE` przez `manager.execute` (transakcja kroku) i wycofanie tylko wtedy, gdy ten krok sam utworzył albo zapisał wpis (`created || wrote`).
+
+## Główny indeks pluginu nie importuje workflows ani core-flows
+Słowa: `src/index.ts`, `@medusajs/core-flows`, `exports`, `workflows/<nazwa>`
+
+- **Objaw:** import pluginu w `medusa-config.ts` ładuje workflows za wcześnie i zrywa start.
+- **Rozwiązanie:** indeks eksportuje tylko typy, opcje i rejestr; workflows dostępne głęboką ścieżką `@cloud-house/<plugin>/workflows/<nazwa>`.
