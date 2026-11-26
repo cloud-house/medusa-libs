@@ -31,6 +31,7 @@ export {
   saleTotal,
 } from './lib/sale-amounts'
 export { listShippingRates, type ShippingOptionRow, toShippingRate } from './lib/shipping-rates'
+export { quantitiesByVariant, stockShortage } from './lib/stock'
 export { CHECKOUT_PL_MODULE } from './modules/checkout-pl'
 export type { default as CheckoutPlModuleService } from './modules/checkout-pl/service'
 export type {
