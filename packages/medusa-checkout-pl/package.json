@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-checkout-pl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Medusa plugin: Polish checkout backend – Stripe card/BLIK/P24 config, shipping rates and delivery options, parcel locker rule, checkout check, order summary and the order confirmation e-mail.",
   "license": "MIT",
   "repository": {

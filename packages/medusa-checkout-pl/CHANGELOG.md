@@ -1,5 +1,11 @@
 # @cloud-house/medusa-checkout-pl
 
+## 0.1.1
+
+### Patch Changes
+
+- 2fe3547: Stricter start-up validation of options (customer texts, function options, prefixes); a custom `blockReasons` callback that returns nothing falls back to the default text so every endpoint agrees the method is closed; the no-op plugin option `asyncPaymentMethodTypes` is removed (it is an argument of `paymentModules`); README corrections.
+
 ## 0.1.0
 
 ### Minor Changes
