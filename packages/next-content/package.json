@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/next-content",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Next.js storefront helpers for @cloud-house/medusa-content: content client, preview session and routes, Lexical renderer, live preview refresh.",
   "license": "MIT",
   "repository": {

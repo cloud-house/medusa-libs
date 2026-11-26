@@ -1,5 +1,11 @@
 # @cloud-house/next-content
 
+## 0.1.1
+
+### Patch Changes
+
+- ed0e307: Preview enter and exit routes redirect with a relative `Location` (like Next's `redirect()`), so behind a proxy the browser is not sent to the server's listen address.
+
 ## 0.1.0
 
 ### Minor Changes
