@@ -72,6 +72,9 @@ importers:
       '@cloud-house/medusa-brands':
         specifier: workspace:*
         version: link:../../packages/medusa-brands
+      '@cloud-house/medusa-checkout-pl':
+        specifier: workspace:*
+        version: link:../../packages/medusa-checkout-pl
       '@cloud-house/medusa-content':
         specifier: workspace:*
         version: link:../../packages/medusa-content

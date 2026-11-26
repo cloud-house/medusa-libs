@@ -1,10 +1,12 @@
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { accountEmailTemplates } from '@cloud-house/medusa-accounts'
+import { checkoutEmailTemplates } from '@cloud-house/medusa-checkout-pl'
 import { invoiceEmailTemplates } from '@cloud-house/medusa-fakturownia'
 import { furgonetkaEmailTemplates } from '@cloud-house/medusa-furgonetka'
 import { returnEmailTemplates } from '@cloud-house/medusa-returns'
 import { defineConfig } from '@medusajs/framework/utils'
+import { resolveContact as checkoutContact } from './src/lib/checkout'
 import { testContentKinds } from './src/lib/content'
 import { resolveOrder, resolveReturn, resolveReturnOrder } from './src/lib/fakturownia'
 import {
@@ -41,6 +43,7 @@ module.exports = defineConfig({
               theme: { shopName: 'Test Shop', shopNameLocative: 'Test Shop' },
               templates: [
                 ...accountEmailTemplates,
+                ...checkoutEmailTemplates,
                 ...invoiceEmailTemplates,
                 ...returnEmailTemplates,
                 ...furgonetkaEmailTemplates,
@@ -73,6 +76,11 @@ module.exports = defineConfig({
           },
         ],
       },
+    },
+    {
+      resolve: '@cloud-house/medusa-checkout-pl',
+      // Defaults everywhere except the contact (required) and the log prefix.
+      options: { resolveContact: checkoutContact, logPrefix: '[Test]' },
     },
     {
       resolve: '@cloud-house/medusa-content',
