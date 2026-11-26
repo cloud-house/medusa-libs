@@ -7,6 +7,7 @@ export type {
   OrderPlacedEmailData,
 } from './emails/types'
 export { CHECKOUT_PL_ERROR_CODES, type CheckoutPlErrorCode } from './errors'
+export { optionCodes } from './lib/checkout-check'
 export { guestOrderGuard } from './lib/guard'
 export { loadOrderPlacedEmail, replyToFor } from './lib/order-email'
 export { type OrderPlacedExtras, toOrderPlacedEmailData } from './lib/order-email-data'
