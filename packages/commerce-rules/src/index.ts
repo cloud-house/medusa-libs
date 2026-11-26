@@ -1,4 +1,5 @@
 export * from './cache-tags'
+export * from './checkout'
 export * from './content'
 export * from './discounts'
 export * from './format-price'
