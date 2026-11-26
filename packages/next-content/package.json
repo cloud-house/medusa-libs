@@ -12,26 +12,56 @@
     "registry": "https://npm.pkg.github.com",
     "access": "public"
   },
-  "keywords": ["medusa", "medusa-v2", "nextjs", "storefront", "content", "lexical", "preview"],
+  "keywords": [
+    "medusa",
+    "medusa-v2",
+    "nextjs",
+    "storefront",
+    "content",
+    "lexical",
+    "preview"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./server": {
-      "import": { "types": "./dist/server.d.ts", "default": "./dist/server.js" },
-      "require": { "types": "./dist/server.d.cts", "default": "./dist/server.cjs" }
+      "import": {
+        "types": "./dist/server.d.ts",
+        "default": "./dist/server.js"
+      },
+      "require": {
+        "types": "./dist/server.d.cts",
+        "default": "./dist/server.cjs"
+      }
     },
     "./live-preview": {
-      "import": { "types": "./dist/live-preview.d.ts", "default": "./dist/live-preview.js" },
-      "require": { "types": "./dist/live-preview.d.cts", "default": "./dist/live-preview.cjs" }
+      "import": {
+        "types": "./dist/live-preview.d.ts",
+        "default": "./dist/live-preview.js"
+      },
+      "require": {
+        "types": "./dist/live-preview.d.cts",
+        "default": "./dist/live-preview.cjs"
+      }
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
