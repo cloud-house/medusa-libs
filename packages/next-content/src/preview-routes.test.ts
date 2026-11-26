@@ -80,7 +80,7 @@ describe('enter route', () => {
       value: token,
       options: { httpOnly: true, sameSite: 'lax', path: '/' },
     })
-    expect((state.set[0]?.options.expires as Date).getTime()).toBe(e * 1000)
+    expect(((state.set[0]?.options ?? {}).expires as Date).getTime()).toBe(e * 1000)
   })
 
   it('custom messages replace the defaults', async () => {

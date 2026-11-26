@@ -1,10 +1,11 @@
+import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { type LexicalNode, renderLexical } from './lexical'
 
 const doc = (...children: LexicalNode[]) => ({ root: { type: 'root', children } })
 const html = (data: unknown, converters = {}) =>
-  renderToStaticMarkup(<>{renderLexical(data, converters)}</>)
+  renderToStaticMarkup(createElement(() => renderLexical(data, converters)))
 const text = (value: string, format = 0): LexicalNode => ({ type: 'text', text: value, format })
 
 describe('renderLexical', () => {
