@@ -44,7 +44,7 @@ export interface CheckoutPlOptions {
   /** Why the parcel locker / the InPost courier is closed for bulky items; default „<product> nie mieści się w paczkomacie.” */
   blockReasons?: Partial<{ locker: BlockReason; inpostCourier: BlockReason }>
   texts?: Partial<CheckoutTexts>
-  /** Notes of the order e-mail and the confirmation page for a reviewed delivery. */
+  /** Notes of the order e-mail for a reviewed delivery (the storefront's confirmation page has its own copy). */
   deliveryReviewNotes?: Partial<Record<DeliveryReview, string>>
   /** Currency of the shop's single region; default `pln`. */
   currency?: string
@@ -52,8 +52,6 @@ export interface CheckoutPlOptions {
   storefrontUrlEnv?: string
   /** Env variable with the Reply-To address of customer e-mails; default `EMAIL_REPLY_TO`. */
   replyToEnv?: string
-  /** Stripe methods that settle later (no separate authorization); default `['blik', 'p24']` – `[]` for the EU. */
-  asyncPaymentMethodTypes?: string[]
   /** Prefix of the log lines; default `[Checkout]`. */
   logPrefix?: string
 }
@@ -70,7 +68,6 @@ export interface ResolvedCheckoutPlOptions {
   currency: string
   storefrontUrlEnv: string
   replyToEnv: string
-  asyncPaymentMethodTypes: string[]
   logPrefix: string
 }
 
@@ -118,9 +115,28 @@ export function resolveOptions(options: CheckoutPlOptions): ResolvedCheckoutPlOp
   }
   const currency = given.currency ?? 'pln'
   if (!text(currency)) throw invalid('option "currency" must be a non-empty text.')
-  const async = given.asyncPaymentMethodTypes ?? ['blik', 'p24']
-  if (!Array.isArray(async) || !async.every(text)) {
-    throw invalid('option "asyncPaymentMethodTypes" must be a list of Stripe method types.')
+  const functions: [string, unknown][] = [
+    ['variantLabels', given.variantLabels],
+    ['groupLines', given.groupLines],
+    ['blockReasons.locker', given.blockReasons?.locker],
+    ['blockReasons.inpostCourier', given.blockReasons?.inpostCourier],
+  ]
+  for (const [name, value] of functions) {
+    if (value !== undefined && typeof value !== 'function') {
+      throw invalid(`option "${name}" must be a function.`)
+    }
+  }
+  const texts = { ...DEFAULT_TEXTS, ...withoutUndefined(given.texts) }
+  for (const [key, value] of Object.entries(texts)) {
+    if (!text(value)) throw invalid(`option "texts.${key}" must be a non-empty text.`)
+  }
+  const strings: [string, unknown][] = [
+    ['logPrefix', given.logPrefix ?? '[Checkout]'],
+    ['storefrontUrlEnv', given.storefrontUrlEnv ?? 'STOREFRONT_URL'],
+    ['replyToEnv', given.replyToEnv ?? 'EMAIL_REPLY_TO'],
+  ]
+  for (const [name, value] of strings) {
+    if (!text(value)) throw invalid(`option "${name}" must be a non-empty text.`)
   }
   return {
     resolveContact: given.resolveContact,
@@ -132,12 +148,11 @@ export function resolveOptions(options: CheckoutPlOptions): ResolvedCheckoutPlOp
       locker: given.blockReasons?.locker ?? null,
       inpostCourier: given.blockReasons?.inpostCourier ?? null,
     },
-    texts: { ...DEFAULT_TEXTS, ...withoutUndefined(given.texts) },
+    texts,
     deliveryReviewNotes: { ...withoutUndefined(given.deliveryReviewNotes) },
     currency,
     storefrontUrlEnv: given.storefrontUrlEnv ?? 'STOREFRONT_URL',
     replyToEnv: given.replyToEnv ?? 'EMAIL_REPLY_TO',
-    asyncPaymentMethodTypes: [...async],
     logPrefix: given.logPrefix ?? '[Checkout]',
   }
 }

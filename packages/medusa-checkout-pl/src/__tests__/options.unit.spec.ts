@@ -20,7 +20,6 @@ describe('resolveOptions', () => {
     })
     expect(options.deliveryOrder).toEqual(['kurier-inpost', 'kurier-dpd', 'paczkomat-inpost'])
     expect(options.currency).toBe('pln')
-    expect(options.asyncPaymentMethodTypes).toEqual(['blik', 'p24'])
     expect(options.storefrontUrlEnv).toBe('STOREFRONT_URL')
     expect(options.replyToEnv).toBe('EMAIL_REPLY_TO')
     expect(options.logPrefix).toBe('[Checkout]')
@@ -71,5 +70,37 @@ describe('CheckoutPlModuleService', () => {
     expect(() => new CheckoutPlModuleService({}, {} as never)).toThrow('"resolveContact"')
     const service = new CheckoutPlModuleService({}, { resolveContact })
     expect(service.getOptions().resolveContact).toBe(resolveContact)
+  })
+})
+
+describe('resolveOptions: stricter validation (review)', () => {
+  const invalid = CHECKOUT_PL_ERROR_CODES.invalidOption
+  const base = { resolveContact }
+
+  it('empty customer texts are refused (an empty lockerMissing would let a locker order without a point through)', () => {
+    expect(() => resolveOptions({ ...base, texts: { lockerMissing: '' } })).toThrow(
+      '"texts.lockerMissing"',
+    )
+    expect(() => resolveOptions({ ...base, texts: { courierBlocked: ' ' } })).toThrow(invalid)
+  })
+
+  it('options that must be functions are checked at start-up', () => {
+    expect(() => resolveOptions({ ...base, variantLabels: 'x' as never })).toThrow(
+      '"variantLabels"',
+    )
+    expect(() => resolveOptions({ ...base, groupLines: {} as never })).toThrow('"groupLines"')
+    expect(() => resolveOptions({ ...base, blockReasons: { locker: 'text' as never } })).toThrow(
+      '"blockReasons.locker"',
+    )
+  })
+
+  it('log prefix and env names must be non-empty texts', () => {
+    expect(() => resolveOptions({ ...base, logPrefix: '' })).toThrow('"logPrefix"')
+    expect(() => resolveOptions({ ...base, storefrontUrlEnv: '' })).toThrow('"storefrontUrlEnv"')
+    expect(() => resolveOptions({ ...base, replyToEnv: 5 as never })).toThrow('"replyToEnv"')
+  })
+
+  it('asyncPaymentMethodTypes is an argument of paymentModules only', () => {
+    expect(resolveOptions(base)).not.toHaveProperty('asyncPaymentMethodTypes')
   })
 })
