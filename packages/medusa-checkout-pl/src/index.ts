@@ -12,6 +12,7 @@ export { loadOrderPlacedEmail, replyToFor } from './lib/order-email'
 export { type OrderPlacedExtras, toOrderPlacedEmailData } from './lib/order-email-data'
 export {
   loadOrderSummary,
+  type Row as OrderRow,
   readOrderDetail,
   toOrderSummary,
   withoutReturnMethods,
