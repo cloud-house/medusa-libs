@@ -196,3 +196,23 @@ Słowa: `src/index.ts`, `@medusajs/core-flows`, `exports`, `workflows/<nazwa>`
 
 - **Objaw:** import pluginu w `medusa-config.ts` ładuje workflows za wcześnie i zrywa start.
 - **Rozwiązanie:** indeks eksportuje tylko typy, opcje i rejestr; workflows dostępne głęboką ścieżką `@cloud-house/<plugin>/workflows/<nazwa>`.
+
+## `next/navigation.js` w pakiecie psuje build tras (Turbopack)
+Słowa: `next/navigation.js`, `redirect`, route handler, `app-router-context.js`, `Could not parse module`
+
+- **Objaw:** `next build` pada na `/api/<trasa>` i `/sitemap.xml` z `Could not parse module …/app-route/vendored/contexts/app-router-context.js`.
+- **Przyczyna:** pakiet musi importować `next/*` z rozszerzeniem `.js` (Node ESM nie rozwiązuje innych), a Next aliasuje dla route handlerów tylko `next/navigation` bez rozszerzenia.
+- **Rozwiązanie:** w kodzie pakietu wykonywanym w route handlerach nie używaj `redirect()`; zwracaj `Response.redirect(new URL(target, request.url), 307)`. `next/headers.js` i `next/cache.js` działają. Strażnik: test na `dist`, że `server.js` nie zawiera `next/navigation`.
+
+## Dwie konfiguracje tsup z `clean: true` kasują sobie pliki
+Słowa: `tsup`, `defineConfig([…])`, `banner`, `'use client'`, `.d.ts`
+
+- **Objaw:** po buildzie brakuje `dist/<wejście>.d.ts` albo `.d.cts` drugiego wejścia.
+- **Przyczyna:** konfiguracje działają równolegle; `clean` jednej usuwa wyniki drugiej. Dyrektywę `'use client'` da się dodać tylko bannerem całej konfiguracji, więc wejście klienckie potrzebuje własnej.
+- **Rozwiązanie:** `clean: false` w obu i `rm -rf dist && tsup` w skrypcie `build`; sprawdź `head -c 14 dist/<klient>.js`.
+
+## `vi.mock('server-only')` nie obejmuje pakietu z `node_modules`
+Słowa: `server.deps.inline`, `server-only`, `This module cannot be imported from a Client Component module`
+
+- **Objaw:** testy sklepu, które pośrednio importują pakiet kitu z `server-only`, padają mimo mocka.
+- **Rozwiązanie:** dopisz pakiet do `server.deps.inline` w `vitest.config` projektu `unit` (jak `next-medusa`).
