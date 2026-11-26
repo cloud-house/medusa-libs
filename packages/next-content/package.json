@@ -1,0 +1,62 @@
+{
+  "name": "@cloud-house/next-content",
+  "version": "0.0.0",
+  "description": "Next.js storefront helpers for @cloud-house/medusa-content: content client, preview session and routes, Lexical renderer, live preview refresh.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloud-house/medusa-libs.git",
+    "directory": "packages/next-content"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": ["medusa", "medusa-v2", "nextjs", "storefront", "content", "lexical", "preview"],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    },
+    "./server": {
+      "import": { "types": "./dist/server.d.ts", "default": "./dist/server.js" },
+      "require": { "types": "./dist/server.d.cts", "default": "./dist/server.cjs" }
+    },
+    "./live-preview": {
+      "import": { "types": "./dist/live-preview.d.ts", "default": "./dist/live-preview.js" },
+      "require": { "types": "./dist/live-preview.d.cts", "default": "./dist/live-preview.cjs" }
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cloud-house/commerce-rules": "workspace:^"
+  },
+  "peerDependencies": {
+    "@medusajs/js-sdk": "catalog:medusa-peer",
+    "next": "^16.3.3",
+    "react": "^19.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@medusajs/js-sdk": "catalog:medusa",
+    "@types/node": "^24.0.0",
+    "@types/react": "19.2.14",
+    "next": "catalog:next",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "server-only": "^0.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "~5.9.3",
+    "vitest": "4.0.18"
+  }
+}
