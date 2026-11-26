@@ -1,5 +1,17 @@
 export { CHECKOUT_PL_ERROR_CODES, type CheckoutPlErrorCode } from './errors'
+export { PAID_STATUSES } from './lib/payment-status'
 export { checkoutPlOptions } from './lib/plugin-options'
+export { adjustmentCodes, typedPromotionCodes } from './lib/promotion-codes'
+export {
+  creditedShare,
+  paidTotal,
+  returnedShare,
+  type SaleRow,
+  type SaleShare,
+  saleAmounts,
+  saleTotal,
+} from './lib/sale-amounts'
+export { listShippingRates, type ShippingOptionRow, toShippingRate } from './lib/shipping-rates'
 export { CHECKOUT_PL_MODULE } from './modules/checkout-pl'
 export type { default as CheckoutPlModuleService } from './modules/checkout-pl/service'
 export type {
@@ -9,4 +21,10 @@ export type {
   LineGroup,
   ResolvedCheckoutPlOptions,
 } from './options'
+export {
+  type PaymentModulesOptions,
+  paymentModules,
+  regionPaymentProviders,
+  SYSTEM_PROVIDER,
+} from './payments'
 export type { BlockReason, CheckoutContact, ParcelBlocker } from './types'
