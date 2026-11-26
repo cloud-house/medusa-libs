@@ -1,4 +1,4 @@
-import type { DeliveryReview } from '@cloud-house/commerce-rules'
+import type { DeliveryReview, OrderSummaryItem } from '@cloud-house/commerce-rules'
 import type { MedusaContainer } from '@medusajs/framework/types'
 import { CHECKOUT_PL_ERROR_CODES, checkoutPlError } from './errors'
 import type { BlockReason, CheckoutContact } from './types'
@@ -33,7 +33,7 @@ export interface CheckoutPlOptions {
   /** Variant id → a short label for the e-mail (e.g. „Turkus · 10'6"”); default none (the variant title is shown). */
   variantLabels?: (container: MedusaContainer, variantIds: string[]) => Promise<Map<string, string>>
   /** Groups the order lines for the e-mail; default every line on its own. */
-  groupLines?: <T>(items: T[]) => LineGroup<T>[]
+  groupLines?: (items: OrderSummaryItem[]) => LineGroup<OrderSummaryItem>[]
   deliveryCodes?: Partial<DeliveryCodes>
   /** Order of the delivery options at checkout (codes); default InPost courier, courier, parcel locker. */
   deliveryOrder?: string[]

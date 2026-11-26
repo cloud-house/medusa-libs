@@ -1,4 +1,21 @@
+export { orderPlacedData } from './emails/demo-order'
+export { checkoutEmailTemplates } from './emails/templates'
+export type {
+  EmailContact,
+  EmailLine,
+  EmailLineGroup,
+  OrderPlacedEmailData,
+} from './emails/types'
 export { CHECKOUT_PL_ERROR_CODES, type CheckoutPlErrorCode } from './errors'
+export { guestOrderGuard } from './lib/guard'
+export { loadOrderPlacedEmail, replyToFor } from './lib/order-email'
+export { type OrderPlacedExtras, toOrderPlacedEmailData } from './lib/order-email-data'
+export {
+  loadOrderSummary,
+  readOrderDetail,
+  toOrderSummary,
+  withoutReturnMethods,
+} from './lib/order-summary'
 export { PAID_STATUSES } from './lib/payment-status'
 export { checkoutPlOptions } from './lib/plugin-options'
 export { adjustmentCodes, typedPromotionCodes } from './lib/promotion-codes'
