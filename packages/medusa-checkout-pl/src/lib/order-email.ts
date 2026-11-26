@@ -19,6 +19,11 @@ type Logger = { warn(message: string): void }
 
 type AdjustedItem = { id: string; adjustments?: (LineAdjustment | null)[] | null }
 
+/** A logger whose warnings name the order the way the shop and the admin show it. */
+export const orderLogger = (logger: Logger, displayId: number): Logger => ({
+  warn: (message: string) => logger.warn(`${message} – zamówienie #${displayId}`),
+})
+
 /** Reply-To of customer e-mails: the `replyToEnv` variable (default `EMAIL_REPLY_TO`), else the shop contact e-mail. */
 export function replyToFor(
   env: Env,
@@ -94,7 +99,7 @@ export async function loadOrderPlacedEmail(
       : Promise.resolve(new Map<string, string>()),
     discountByItem(container, order),
     orderNeedsCourier(container, orderId),
-    options.resolveContact(container),
+    options.resolveContact(container, { logger: orderLogger(logger, order.display_id) }),
   ])
   const replyTo = replyToFor(env, contact, options.replyToEnv)
   return {

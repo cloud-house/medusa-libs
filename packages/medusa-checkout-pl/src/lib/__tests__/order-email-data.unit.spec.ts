@@ -315,3 +315,12 @@ describe('replyToFor', () => {
     expect(replyToFor({}, null)).toBeNull()
   })
 })
+
+describe('orderLogger', () => {
+  it('names the order in every warning, the way the shop and the admin show it', async () => {
+    const { orderLogger } = await import('../order-email')
+    const warn = jest.fn()
+    orderLogger({ warn }, 1001).warn('Ustawienia sklepu niedostępne')
+    expect(warn).toHaveBeenCalledWith('Ustawienia sklepu niedostępne – zamówienie #1001')
+  })
+})

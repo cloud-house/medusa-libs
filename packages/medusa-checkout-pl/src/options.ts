@@ -29,7 +29,11 @@ export interface LineGroup<T> {
 /** `plugins: [{ resolve: '@cloud-house/medusa-checkout-pl', options }]` in `medusa-config.ts`. */
 export interface CheckoutPlOptions {
   /** The shop's contact data (e-mail, phone, hours, seller line); may resolve to `null`. Required. */
-  resolveContact: (container: MedusaContainer) => Promise<CheckoutContact | null>
+  resolveContact: (
+    container: MedusaContainer,
+    /** Present when the contact is read for an order's e-mail: warnings logged here name the order. */
+    context?: { logger: { warn(message: string): void } },
+  ) => Promise<CheckoutContact | null>
   /** Variant id → a short label for the e-mail (e.g. „Turkus · 10'6"”); default none (the variant title is shown). */
   variantLabels?: (container: MedusaContainer, variantIds: string[]) => Promise<Map<string, string>>
   /** Groups the order lines for the e-mail; default every line on its own. */
