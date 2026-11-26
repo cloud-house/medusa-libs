@@ -63,7 +63,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "rm -rf dist && tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
@@ -81,6 +81,7 @@
     "@medusajs/js-sdk": "catalog:medusa",
     "@types/node": "^24.0.0",
     "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "next": "catalog:next",
     "react": "19.2.6",
     "react-dom": "19.2.6",

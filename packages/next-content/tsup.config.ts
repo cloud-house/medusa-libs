@@ -11,7 +11,7 @@ export default defineConfig([
   {
     ...shared,
     entry: ['src/index.ts', 'src/server.ts'],
-    clean: true,
+    clean: false,
     splitting: true,
   },
   {
