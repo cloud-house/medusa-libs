@@ -1,0 +1,55 @@
+{
+  "name": "@cloud-house/next-seo",
+  "version": "0.0.0",
+  "description": "SEO for Next.js storefronts of Medusa 2 shops in Poland: site URL, canonical paths, Open Graph, robots, sitemap, JSON-LD (Product, ProductGroup, Breadcrumb, Article, Organization) and the Google Merchant Center feed.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloud-house/medusa-libs.git",
+    "directory": "packages/next-seo"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "medusa",
+    "medusa-v2",
+    "nextjs",
+    "storefront",
+    "seo",
+    "json-ld",
+    "google-merchant"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "~5.9.3",
+    "vitest": "4.0.18"
+  }
+}
