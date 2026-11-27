@@ -51,6 +51,24 @@ describe('addToCartFlow', () => {
     })
   }
 
+  it('the default route: a completed cart (Medusa 400 "already completed") is stale – a new cart, one retry', async () => {
+    const { client, calls } = fakeClient({
+      'POST /store/carts/cart_done/line-items': () => {
+        throw httpError(400, 'Cart cart_done is already completed.')
+      },
+      'POST /store/carts': { cart: { id: 'cart_new' } },
+      'POST /store/carts/cart_new/line-items': { cart: { id: 'cart_new' } },
+    })
+    expect(
+      await addToCartFlow(client, { cartId: 'cart_done', regionId: async () => 'reg', items }),
+    ).toEqual({ cartId: 'cart_new' })
+    expect(calls.map((c) => c.path)).toEqual([
+      '/store/carts/cart_done/line-items',
+      '/store/carts',
+      '/store/carts/cart_new/line-items',
+    ])
+  })
+
   it('by default adds every item through the standard line-items route', async () => {
     const { client, calls } = fakeClient({
       'POST /store/carts/cart_1/line-items': { cart: { id: 'cart_1' } },

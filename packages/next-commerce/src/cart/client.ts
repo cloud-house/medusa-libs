@@ -88,8 +88,13 @@ export const addLineItems: AddItems = async (client, cartId, items) => {
   }
 }
 
+/** Medusa's own answer for a completed cart on its standard routes (core-flows `validate-cart`). */
+const MEDUSA_COMPLETED = /already completed/i
+
 const isStale = (error: unknown) =>
-  statusOf(error) === 404 || (statusOf(error) === 400 && messageOf(error) === CLOSED_CART)
+  statusOf(error) === 404 ||
+  (statusOf(error) === 400 &&
+    (messageOf(error) === CLOSED_CART || MEDUSA_COMPLETED.test(messageOf(error))))
 
 /**
  * Dodaje pozycje (`addItems`, domyślnie standardowe `line-items`). Bez koszyka albo z nieaktualnym
