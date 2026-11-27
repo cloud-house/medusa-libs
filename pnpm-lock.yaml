@@ -886,6 +886,34 @@ importers:
         specifier: 4.0.18
         version: 4.0.18(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(happy-dom@20.14.6)(jiti@1.21.7)(yaml@2.9.1)
 
+  packages/next-commerce:
+    dependencies:
+      '@cloud-house/commerce-rules':
+        specifier: workspace:^
+        version: link:../commerce-rules
+      resend:
+        specifier: 6.32.0
+        version: 6.32.0(@react-email/render@2.0.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
+    devDependencies:
+      '@medusajs/types':
+        specifier: 2.21.2
+        version: 2.21.2(ioredis@5.11.1(supports-color@8.1.1))(vite@7.3.8(@types/node@24.19.2)(jiti@1.21.7)(yaml@2.9.1))
+      '@stripe/stripe-js':
+        specifier: 10.1.0
+        version: 10.1.0
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.16.22(@swc/helpers@0.5.24))(jiti@1.21.7)(postcss@8.5.32)(supports-color@8.1.1)(typescript@5.9.3)(yaml@2.9.1)
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.0.18
+        version: 4.0.18(@opentelemetry/api@1.10.0)(@types/node@24.19.2)(happy-dom@20.14.6)(jiti@1.21.7)(yaml@2.9.1)
+
   packages/next-content:
     dependencies:
       '@cloud-house/commerce-rules':
@@ -4693,6 +4721,10 @@ packages:
 
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
+
+  '@stripe/stripe-js@10.1.0':
+    resolution: {integrity: sha512-sLRPukMKMxvRVrgV3Za8LM0Yd2azrixQjfaiuzS8Fivlu/Gt7VbBuRiRZJIvfL3XxAw+FdfdmhHSvjAfLG3lkA==}
+    engines: {node: '>=12.16'}
 
   '@swc/core-darwin-arm64@1.16.22':
     resolution: {integrity: sha512-PddkOjOK3MK01AVOvqG309iAJ0hn5vK37ug9g5Zt5e2aWF3IhVLdDLjMePXts1zi8yc4ild2h9FYCkVYb5+Qcw==}
@@ -13578,6 +13610,14 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
+  '@react-email/render@2.0.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+    dependencies:
+      html-to-text: 9.0.5
+      prettier: 3.10.1
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+    optional: true
+
   '@react-email/row@0.0.13(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -13800,6 +13840,8 @@ snapshots:
   '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
+
+  '@stripe/stripe-js@10.1.0': {}
 
   '@swc/core-darwin-arm64@1.16.22':
     optional: true
@@ -17054,6 +17096,13 @@ snapshots:
       standardwebhooks: 1.1.1
     optionalDependencies:
       '@react-email/render': 2.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
+  resend@6.32.0(@react-email/render@2.0.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)):
+    dependencies:
+      postal-mime: 2.7.6
+      standardwebhooks: 1.1.1
+    optionalDependencies:
+      '@react-email/render': 2.0.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
 
   resolve-cwd@3.0.0:
     dependencies:

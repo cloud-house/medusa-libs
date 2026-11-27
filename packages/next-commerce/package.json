@@ -1,0 +1,90 @@
+{
+  "name": "@cloud-house/next-commerce",
+  "version": "0.0.0",
+  "description": "Storefront logic for Medusa 2 shops in Poland: cart client and view, checkout form with Polish validation, checkout flow, Stripe adapter and the newsletter sign-up core.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloud-house/medusa-libs.git",
+    "directory": "packages/next-commerce"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "keywords": [
+    "medusa",
+    "medusa-v2",
+    "nextjs",
+    "storefront",
+    "cart",
+    "checkout",
+    "newsletter"
+  ],
+  "type": "module",
+  "exports": {
+    "./cart": {
+      "import": {
+        "types": "./dist/cart.d.ts",
+        "default": "./dist/cart.js"
+      },
+      "require": {
+        "types": "./dist/cart.d.cts",
+        "default": "./dist/cart.cjs"
+      }
+    },
+    "./checkout": {
+      "import": {
+        "types": "./dist/checkout.d.ts",
+        "default": "./dist/checkout.js"
+      },
+      "require": {
+        "types": "./dist/checkout.d.cts",
+        "default": "./dist/checkout.cjs"
+      }
+    },
+    "./newsletter": {
+      "import": {
+        "types": "./dist/newsletter.d.ts",
+        "default": "./dist/newsletter.js"
+      },
+      "require": {
+        "types": "./dist/newsletter.d.cts",
+        "default": "./dist/newsletter.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cloud-house/commerce-rules": "workspace:^",
+    "resend": "6.32.0"
+  },
+  "peerDependencies": {
+    "@medusajs/types": "~2.21.2",
+    "@stripe/stripe-js": "^10.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@stripe/stripe-js": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@medusajs/types": "2.21.2",
+    "@stripe/stripe-js": "10.1.0",
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "~5.9.3",
+    "vitest": "4.0.18"
+  }
+}
