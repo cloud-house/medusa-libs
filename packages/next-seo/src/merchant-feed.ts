@@ -1,6 +1,6 @@
 import type { ResolvedSeoConfig } from './config'
 import type { SiteUrl } from './site'
-import { plainText, variantTitle } from './text'
+import { filled, plainText, variantTitle } from './text'
 import type { SeoProduct, SeoVariant } from './types'
 
 /** Plik produktów Google Merchant Center: RSS 2.0, jedna pozycja na wariant. */
@@ -39,11 +39,13 @@ export function createMerchantFeed(config: ResolvedSeoConfig, site: SiteUrl) {
     const [image, ...additional] = images(product, variant)
     // Google odrzuca pozycję bez zdjęcia.
     if (!image) return null
-    const title = [product.brand, variantTitle(product.title, variant.size, variant.color)]
+    const brand = filled(product.brand)
+    const title = [brand, variantTitle(product.title, variant.size, variant.color)]
       .filter(Boolean)
       .join(' ')
       .slice(0, MAX_TITLE)
-    const description = plainText(product.description) || product.subtitle || product.title
+    const description =
+      plainText(product.description) || plainText(product.subtitle) || product.title
     const onSale = variant.price < variant.regularPrice
     return [
       '<item>',
@@ -60,7 +62,7 @@ export function createMerchantFeed(config: ResolvedSeoConfig, site: SiteUrl) {
       onSale ? element('g:sale_price', price(variant.price)) : '',
       element('g:availability', variant.inStock ? 'in_stock' : 'out_of_stock'),
       element('g:condition', 'new'),
-      element('g:brand', product.brand),
+      element('g:brand', brand),
       variant.gtin ? element('g:gtin', variant.gtin) : element('g:identifier_exists', 'no'),
       element('g:color', variant.color),
       element('g:size', variant.size),

@@ -185,6 +185,11 @@ describe('productJsonLd', () => {
     expect(JSON.stringify(node)).not.toContain('null')
   })
 
+  it('a brand of only spaces is no brand', () => {
+    const node: Node = productJsonLd(single({}, { brand: '   ' }), CTX)
+    expect(node).not.toHaveProperty('brand')
+  })
+
   it('the description is plain text; empty → subtitle; neither → no key', () => {
     const html: Node = productJsonLd(
       product({ description: '<p>Deska <strong>allround</strong> &amp; touring</p>' }),

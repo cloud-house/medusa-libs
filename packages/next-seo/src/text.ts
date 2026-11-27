@@ -35,3 +35,9 @@ export function variantTitle(title: string, ...attributes: (string | null | unde
   const extra = attributes.filter((value): value is string => !!value && !hasWords(title, value))
   return [title, ...extra].join(' ')
 }
+
+/** Tekst bez spacji na brzegach; pusty (także same spacje) → `undefined`. */
+export const filled = (value: string | null | undefined): string | undefined => {
+  const text = value?.trim()
+  return text ? text : undefined
+}

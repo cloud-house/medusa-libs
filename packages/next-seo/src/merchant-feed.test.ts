@@ -126,6 +126,22 @@ describe('buildMerchantFeed', () => {
     )
   })
 
+  it('a brand of only spaces is left out of the title and g:brand', () => {
+    const blank = wave({ brand: '  ' })
+    const entry = item(buildMerchantFeed([blank]), 'var_wave_106_turkus')
+    expect(tag(entry, 'title')).toBe('Allround Wave 10&apos;6&quot; Turkus')
+    expect(entry).not.toContain('<g:brand>')
+  })
+
+  it('a subtitle of only spaces or tags falls back to the title', () => {
+    for (const subtitle of ['   ', '<p> </p>']) {
+      const bare = wave({ description: null, subtitle })
+      expect(tag(item(buildMerchantFeed([bare]), 'var_wave_106_turkus'), 'description')).toBe(
+        'Allround Wave',
+      )
+    }
+  })
+
   it('a regular price has no sale price', () => {
     const regular = wave({ variants: [variant({ price: 2199, regularPrice: 2199 })] })
     const entry = item(buildMerchantFeed([regular]), 'var_wave_106_turkus')

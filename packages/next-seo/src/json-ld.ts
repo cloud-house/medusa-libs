@@ -1,6 +1,6 @@
 import type { ResolvedSeoConfig } from './config'
 import type { SiteUrl } from './site'
-import { plainText, variantTitle } from './text'
+import { filled, plainText, variantTitle } from './text'
 import type { JsonLdNode, SeoArticle, SeoOrganization, SeoProduct, SeoVariant } from './types'
 
 /** Dane strukturalne schema.org – czyste funkcje, wszystkie adresy absolutne. */
@@ -13,11 +13,6 @@ function compact(node: JsonLdNode): JsonLdNode {
   return Object.fromEntries(
     Object.entries(node).filter(([, value]) => value !== undefined && value !== null),
   )
-}
-
-const filled = (value: string | null | undefined) => {
-  const text = value?.trim()
-  return text ? text : undefined
 }
 
 const days = ([minValue, maxValue]: readonly [number, number]) => ({
@@ -96,8 +91,10 @@ export function createJsonLd(config: ResolvedSeoConfig, site: SiteUrl) {
   const imagesOf = (images: string[]) =>
     images.length > 0 ? images.map((image) => absoluteUrl(image)) : undefined
 
-  const brandOf = (product: SeoProduct) =>
-    product.brand ? { '@type': 'Brand', name: product.brand } : undefined
+  const brandOf = (product: SeoProduct) => {
+    const name = filled(product.brand)
+    return name ? { '@type': 'Brand', name } : undefined
+  }
 
   const descriptionOf = (product: SeoProduct) =>
     filled(plainText(product.description)) ?? filled(plainText(product.subtitle))
