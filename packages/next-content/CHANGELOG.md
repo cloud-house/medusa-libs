@@ -1,5 +1,12 @@
 # @cloud-house/next-content
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [fc7f7d9]
+  - @cloud-house/commerce-rules@0.9.0
+
 ## 0.1.2
 
 ### Patch Changes

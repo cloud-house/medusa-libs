@@ -1,5 +1,16 @@
 # @cloud-house/next-commerce
 
+## 0.2.0
+
+### Minor Changes
+
+- fc7f7d9: New entries `./account` (customer account client, forms, saved addresses, cart sync on sign-in, safe return path), `./favorites` (guest list in localStorage with a configurable key, sync with the account, Medusa calls) and `./returns` (return lookup and claim forms with an optional order prefix, label helpers, Medusa calls). `SavedAddress` now lives in `./account`; `./checkout` still exports it.
+
+### Patch Changes
+
+- Updated dependencies [fc7f7d9]
+  - @cloud-house/commerce-rules@0.9.0
+
 ## 0.1.1
 
 ### Patch Changes
