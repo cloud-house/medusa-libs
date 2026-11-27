@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/next-seo",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "SEO for Next.js storefronts of Medusa 2 shops in Poland: site URL, canonical paths, Open Graph, robots, sitemap, JSON-LD (Product, ProductGroup, Breadcrumb, Article, Organization) and the Google Merchant Center feed.",
   "license": "MIT",
   "repository": {
