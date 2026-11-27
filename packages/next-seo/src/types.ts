@@ -51,7 +51,8 @@ export interface SeoArticle {
   path: string
   description: string | null
   image: string | null
-  publishedAt: string
+  /** Data publikacji; `null` – bez dat w JSON-LD. */
+  publishedAt: string | null
   updatedAt: string | null
 }
 

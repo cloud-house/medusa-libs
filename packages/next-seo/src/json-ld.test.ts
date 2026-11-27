@@ -259,6 +259,12 @@ describe('articleJsonLd', () => {
     expect(node).not.toHaveProperty('description')
     expect(node.dateModified).toBe('2026-10-07T08:00:00.000Z')
   })
+
+  it('an article without dates has no date keys', () => {
+    const node: Node = articleJsonLd({ ...ARTICLE, publishedAt: null, updatedAt: null })
+    expect(node).not.toHaveProperty('datePublished')
+    expect(node).not.toHaveProperty('dateModified')
+  })
 })
 
 const NO_ORG = { legalName: null, email: null, phone: null, sameAs: [], address: null }
