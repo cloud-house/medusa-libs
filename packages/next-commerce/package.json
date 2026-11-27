@@ -23,6 +23,16 @@
   ],
   "type": "module",
   "exports": {
+    "./account": {
+      "import": {
+        "types": "./dist/account.d.ts",
+        "default": "./dist/account.js"
+      },
+      "require": {
+        "types": "./dist/account.d.cts",
+        "default": "./dist/account.cjs"
+      }
+    },
     "./cart": {
       "import": {
         "types": "./dist/cart.d.ts",
@@ -43,6 +53,16 @@
         "default": "./dist/checkout.cjs"
       }
     },
+    "./favorites": {
+      "import": {
+        "types": "./dist/favorites.d.ts",
+        "default": "./dist/favorites.js"
+      },
+      "require": {
+        "types": "./dist/favorites.d.cts",
+        "default": "./dist/favorites.cjs"
+      }
+    },
     "./newsletter": {
       "import": {
         "types": "./dist/newsletter.d.ts",
@@ -51,6 +71,16 @@
       "require": {
         "types": "./dist/newsletter.d.cts",
         "default": "./dist/newsletter.cjs"
+      }
+    },
+    "./returns": {
+      "import": {
+        "types": "./dist/returns.d.ts",
+        "default": "./dist/returns.js"
+      },
+      "require": {
+        "types": "./dist/returns.d.cts",
+        "default": "./dist/returns.cjs"
       }
     },
     "./package.json": "./package.json"

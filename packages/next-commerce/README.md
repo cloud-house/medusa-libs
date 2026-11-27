@@ -1,12 +1,12 @@
 # @cloud-house/next-commerce
 
-Storefront logic for a Next.js 16 shop on Medusa 2 in Poland – part 1: cart, checkout, newsletter. Pure functions and flows, no React components and no server actions: the shop calls them from its own thin `'use server'` files (server actions inside `node_modules` are a risk in Next 16).
+Storefront logic for a Next.js 16 shop on Medusa 2 in Poland: cart, checkout, newsletter, customer account, favourites, returns. Pure functions and flows, no React components and no server actions: the shop calls them from its own thin `'use server'` files (server actions inside `node_modules` are a risk in Next 16).
 
 ```sh
 pnpm add @cloud-house/next-commerce @medusajs/js-sdk
 ```
 
-Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc`. Peers: `@medusajs/types` (`~2.21.2`), `@stripe/stripe-js` (optional, for the Stripe adapter). Backend counterparts: `@cloud-house/medusa-checkout-pl` (delivery options, checkout check, order view), `@cloud-house/medusa-newsletter`.
+Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc`. Peers: `@medusajs/types` (`~2.21.2`), `@stripe/stripe-js` (optional, for the Stripe adapter). Backend counterparts: `@cloud-house/medusa-checkout-pl` (delivery options, checkout check, order view), `@cloud-house/medusa-newsletter`, `@cloud-house/medusa-accounts`, `@cloud-house/medusa-favorites`, `@cloud-house/medusa-returns`, `@cloud-house/medusa-fakturownia` (see [Routes](#routes-the-entries-call)).
 
 ## `@cloud-house/next-commerce/cart`
 
@@ -35,6 +35,38 @@ Cart metadata written by `toCartUpdate` (read by `medusa-checkout-pl`): `nip`, `
 - `subscribe(form, ip, deps)` – honeypot and repeated sign-ups end with the same thanks; rate limit; consent required; the consent text is stored with the sign-up.
 - `createNewsletterDeps({ fetch, secretHeader, secret, provider, allow, consentText, logPrefix? })` – deps for `/store/newsletter-subscribers` of `medusa-newsletter`.
 - `resendNewsletterProvider(env, client?, logPrefix?)` (`NEWSLETTER_API_KEY`, `NEWSLETTER_AUDIENCE_ID`), `fakeNewsletterProvider()`, `normalizeEmail`, `redactedError` (no e-mail addresses in logs), `NEWSLETTER_MESSAGES`.
+
+## `@cloud-house/next-commerce/account`
+
+All calls take an `AccountClient` (`getSdk().client`) and, when signed in, the customer token; a 401 on an account route throws `SessionExpiredError` (`withToken`).
+
+- Sign-in and registration: `login`, `register`, `registerFromOrder`, `setPasswordFromLink`, `requestPasswordReset`, `setNewPassword`, `resendConfirmation`, `confirmEmail`.
+- Account: `profile`, `updateProfile`, `changePassword`, `endOtherSessions`, `deleteAccount`, `orders`, `order`, `invoicePdf`, `addresses`, `saveAddress`, `deleteAddress`, `toSavedAddress`, `attachCart`, `lastCart`.
+- Forms (Polish messages in `ACCOUNT_MESSAGES`): `validateRegistration`, `validateAddressForm`, `validateProfileForm`, `passwordError`, `AccountFormState`.
+- `addressesToSave(order, existing)` – „save my details” after an order; `syncCart(deps)` – the browser's cart joins the account on sign-in, otherwise the account's last open cart returns; `safeReturnPath(value, fallback = '/konto')` – only a path of this shop for `?powrot=`.
+
+## `@cloud-house/next-commerce/favorites`
+
+- Guest list in `localStorage`: `readLocalFavorites(storage, now?, key?)`, `writeLocalFavorites(storage, list, key?)` (default key `ulubione` – `DEFAULT_LOCAL_FAVORITES_KEY`; pass your shop's own key), `sanitizeFavorites`, `parseLocalFavorites`, `toggleLocal` (limit `FAVORITES_LIMIT` from `commerce-rules`).
+- `syncFavoritesFlow(deps, local)` – on page start and session change: merge into the account, the account list, or (guest or expired session) the guest list without withdrawn products.
+- Medusa calls: `accountFavorites`, `addAccountFavorite`, `removeAccountFavorite`, `mergeAccountFavorites`, `visibleProducts`; `FAVORITES_MESSAGES`, `FavoritesActions`.
+
+## `@cloud-house/next-commerce/returns`
+
+- Forms: `parseLookupForm(form, orderPrefix?)`, `orderNumber(value, orderPrefix?)` – „1001”, „#1001” and, with your order prefix (e.g. `ACME`, as `referencePrefix` of `medusa-furgonetka`), „ACME-1001”; `parseReturnForm(form, items)`, `checkReturnFormLocally(form)`, `RETURN_FORM_MESSAGES`.
+- Label page: `labelOrderNumber(param)`, `labelHref(displayId)` → `/zwrot/etykieta?zamowienie=N`.
+- Medusa calls: `lookupGuestOrder`, `claimGuestReturn`, `claimAccountReturn`.
+
+## Routes the entries call
+
+| Route | Provided by |
+| --- | --- |
+| `/auth/customer/emailpass*`, `/store/customers/me*` | Medusa core |
+| `/store/account/{register,register-from-order,set-password,profile,password,sessions/end-others,delete,email-confirmation,confirm-email,cart}` | `medusa-accounts` |
+| `/store/account/favorites*` | `medusa-favorites` |
+| `/store/returns/{lookup,claim}`, `/store/account/orders/:id/return` | `medusa-returns` |
+| `/store/account/orders/:id/invoice` | `medusa-fakturownia` |
+| `GET /store/account/orders`, `GET /store/account/orders/:id`, `POST /store/catalog/visible` | **the shop's backend** (no kit plugin yet; response types `AccountOrdersResponse`, `AccountOrderResponse`, `VisibleProductsResponse` in `commerce-rules`) |
 
 ## Example: a thin server action in the shop
 
