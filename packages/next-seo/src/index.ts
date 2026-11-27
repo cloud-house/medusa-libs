@@ -1,4 +1,8 @@
+export { categoryCanonical, pagedCanonical } from './canonical'
 export type { ResolvedSeoConfig, SeoConfig, ShareImage } from './config'
+export type { SeoRobots } from './robots'
 export { createSeo, type Seo } from './seo'
 export type { SiteUrl } from './site'
+export type { SeoSitemapEntry } from './sitemap'
+export { type SeoOpenGraph, type SeoTwitter, type SocialInput, shareImage } from './social'
 export { plainText, variantTitle } from './text'
