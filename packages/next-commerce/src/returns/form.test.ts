@@ -256,3 +256,15 @@ describe('orderNumber – Review Focus 6c', () => {
     })
   })
 })
+
+describe('orderNumber – przegląd 6c', () => {
+  it('przedrostek podany z myślnikiem (jak oidPrefix fakturowni) działa tak samo', () => {
+    expect(orderNumber('ACME-1001', 'ACME-')).toBe(1001)
+    expect(orderNumber('acme - 1001', 'ACME-')).toBe(1001)
+  })
+
+  it('przedrostek z samych spacji to brak przedrostka', () => {
+    expect(orderNumber('-5', ' ')).toBeNull()
+    expect(orderNumber('5', ' ')).toBe(5)
+  })
+})

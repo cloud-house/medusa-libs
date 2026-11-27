@@ -37,12 +37,9 @@ const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\
  */
 export function orderNumber(value: string, orderPrefix?: string): number | null {
   let digits = value.replace(/\s+/g, '').replace(/^#/, '')
-  if (orderPrefix) {
-    digits = digits.replace(
-      new RegExp(`^${escapeRegExp(orderPrefix.replace(/\s+/g, ''))}-`, 'i'),
-      '',
-    )
-  }
+  // `ACME` and `ACME-` (the style of fakturownia's `oidPrefix`) mean the same; only spaces – none.
+  const prefix = (orderPrefix ?? '').replace(/\s+/g, '').replace(/-+$/, '')
+  if (prefix) digits = digits.replace(new RegExp(`^${escapeRegExp(prefix)}-`, 'i'), '')
   if (!/^\d{1,10}$/.test(digits)) return null
   const number = Number(digits)
   return number >= 1 && number <= MAX_DISPLAY_ID ? number : null
