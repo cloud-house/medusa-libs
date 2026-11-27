@@ -2,6 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
+    account: 'src/account/index.ts',
     cart: 'src/cart/index.ts',
     checkout: 'src/checkout/index.ts',
     newsletter: 'src/newsletter/index.ts',

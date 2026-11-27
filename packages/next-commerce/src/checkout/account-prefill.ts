@@ -1,15 +1,7 @@
+import type { SavedAddress } from '../account/client'
 import { type AddressFields, type CheckoutForm, sameAddress } from './form'
 
-/** An address saved in the customer account (as the account loader shapes it). */
-export interface SavedAddress {
-  id: string
-  name: string | null
-  fields: AddressFields
-  company: string | null
-  nip: string | null
-  defaultShipping: boolean
-  defaultBilling: boolean
-}
+export type { SavedAddress }
 
 /** What the checkout shows of a signed-in customer (spec 5a §3.12). */
 export interface CheckoutAccount {
