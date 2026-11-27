@@ -1,5 +1,11 @@
 # @cloud-house/commerce-rules
 
+## 0.9.0
+
+### Minor Changes
+
+- fc7f7d9: Account and favorites rules and API types for storefronts: `PASSWORD_MIN_LENGTH`, `orderStatus`, `ORDER_STATUS_LABELS`, `orderStatusTone`, `FAVORITES_LIMIT`, and the response types of the account, favorites and visible-products routes.
+
 ## 0.8.0
 
 ### Minor Changes

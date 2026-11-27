@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-furgonetka",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Medusa plugin: Furgonetka shipping – DPD and InPost shipments, labels, pickups, tracking, shipment e-mails, configurable parcel classes, admin queue and order card.",
   "license": "MIT",
   "repository": {

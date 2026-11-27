@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/medusa-returns",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Medusa plugin: customer returns – guest and account return requests, return window from delivery, e-mails to the customer and the shop.",
   "license": "MIT",
   "repository": {

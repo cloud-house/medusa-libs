@@ -1,5 +1,13 @@
 # @cloud-house/medusa-checkout-pl
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [fc7f7d9]
+  - @cloud-house/commerce-rules@0.9.0
+  - @cloud-house/medusa-furgonetka@0.1.3
+
 ## 0.1.1
 
 ### Patch Changes
