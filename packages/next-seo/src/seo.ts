@@ -1,4 +1,5 @@
 import { type ResolvedSeoConfig, resolveConfig, type SeoConfig } from './config'
+import { createJsonLd } from './json-ld'
 import { createBuildRobots } from './robots'
 import { createSiteUrl } from './site'
 import { createBuildSitemap } from './sitemap'
@@ -18,6 +19,7 @@ export function createSeo(config: SeoConfig) {
     socialMetadata: createSocialMetadata(resolved),
     buildRobots: createBuildRobots(site),
     buildSitemap: createBuildSitemap(site),
+    ...createJsonLd(resolved, site),
   }
 }
 
