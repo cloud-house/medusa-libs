@@ -1,6 +1,6 @@
 {
   "name": "@cloud-house/next-commerce",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Storefront logic for Medusa 2 shops in Poland: cart client and view, checkout form with Polish validation, checkout flow, Stripe adapter and the newsletter sign-up core.",
   "license": "MIT",
   "repository": {
