@@ -53,6 +53,16 @@
         "default": "./dist/checkout.cjs"
       }
     },
+    "./favorites": {
+      "import": {
+        "types": "./dist/favorites.d.ts",
+        "default": "./dist/favorites.js"
+      },
+      "require": {
+        "types": "./dist/favorites.d.cts",
+        "default": "./dist/favorites.cjs"
+      }
+    },
     "./newsletter": {
       "import": {
         "types": "./dist/newsletter.d.ts",

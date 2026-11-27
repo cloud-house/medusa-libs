@@ -5,6 +5,7 @@ export default defineConfig({
     account: 'src/account/index.ts',
     cart: 'src/cart/index.ts',
     checkout: 'src/checkout/index.ts',
+    favorites: 'src/favorites/index.ts',
     newsletter: 'src/newsletter/index.ts',
   },
   format: ['esm', 'cjs'],
