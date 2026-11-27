@@ -11,7 +11,7 @@ Requires `@cloud-house:registry=https://npm.pkg.github.com` in `.npmrc`. Peers: 
 ## `@cloud-house/next-commerce/cart`
 
 - `CartClient` (the `client.fetch` of the JS SDK), `CART_FIELDS`, `retrieveCart` (a missing or completed cart is `null`).
-- `addToCartFlow(client, { cartId, regionId, items, addItems? })` – creates a cart when there is none or it went stale (404, closed) and retries once; returns the cart id for the cookie. `addItems` defaults to `addLineItems` (`POST /store/carts/:id/line-items` per item); a shop may pass a route that adds all items or none.
+- `addToCartFlow(client, { cartId, regionId, items, addItems? })` – creates a cart when there is none or it went stale (404, Medusa's 400 "already completed", or the Polish "Ten koszyk jest już zamknięty.") and retries once; any other error (e.g. not enough stock) is thrown without a new cart. Returns the cart id for the cookie. `addItems` defaults to `addLineItems` (`POST /store/carts/:id/line-items` per item – **not atomic**: when item N fails, items 1..N-1 stay in the cart); a shop that adds groups (a product with its add-ons) should pass a route that adds all items or none.
 - `updateItem`, `removeItems`, `applyCodeFlow` (retries an upper-case code, checks the code really applied, re-saves the delivery), `removePromotionCode`, `saveShippingMethod`, `refreshShippingMethod`, `cartErrorMessage` (Polish messages for the customer), `validateQuantity`, `validateLineId`, `validateLineQuantity`.
 - `toCartView(cart, { freeShippingThreshold, variants?, groupLines?, href?, hiddenSize? })` – lines (bundle and code discounts apart), codes, totals, free-shipping progress. `toLineView`, `groupLines`, `variantLabel`.
 
