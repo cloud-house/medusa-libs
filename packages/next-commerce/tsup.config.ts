@@ -7,6 +7,7 @@ export default defineConfig({
     checkout: 'src/checkout/index.ts',
     favorites: 'src/favorites/index.ts',
     newsletter: 'src/newsletter/index.ts',
+    returns: 'src/returns/index.ts',
   },
   format: ['esm', 'cjs'],
   dts: true,

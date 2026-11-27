@@ -73,6 +73,16 @@
         "default": "./dist/newsletter.cjs"
       }
     },
+    "./returns": {
+      "import": {
+        "types": "./dist/returns.d.ts",
+        "default": "./dist/returns.js"
+      },
+      "require": {
+        "types": "./dist/returns.d.cts",
+        "default": "./dist/returns.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "files": [
