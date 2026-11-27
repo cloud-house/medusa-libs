@@ -234,3 +234,17 @@ Słowa: parity, snapshot, `toHaveBeenCalledWith`, logger
 
 - **Objaw:** po przeniesieniu kodu pada test sklepu, który sprawdza treść ostrzeżenia (np. numer zamówienia w logu).
 - **Rozwiązanie:** zamiast zmieniać test, daj opcji kontekst (`resolveContact(container, { logger })`), żeby sklep odtworzył dotychczasowy komunikat.
+
+## E2E sklepu a ukryte demo w bazie deweloperskiej
+Słowa: Playwright, `allround-wave`, `pompka-elektryczna-12v`, 404 karty produktu
+
+- **Objaw:** testy koszyka i kasy padają na „Dodaj do koszyka” (timeout) albo `Cannot read properties of undefined (reading 'variants')`.
+- **Przyczyna:** testy E2E używają katalogu demo, a w bazie deweloperskiej demo jest ukryte (prawdziwy katalog).
+- **Rozwiązanie:** E2E na kopii bazy z opublikowanym demo; na samej bazie deweloperskiej sprawdzaj przepływ ręcznie na prawdziwych produktach i zapisz, że E2E nie biegło.
+
+## Przebieg CI po zatwierdzeniu: czekaj na przebieg bieżącego commita PR
+Słowa: `action_required`, `Version Packages`, `--admin`, BLOCKED
+
+- **Objaw:** `gh pr merge` odmawia („use administrator privileges”), choć zatwierdzony przebieg skończył się sukcesem.
+- **Przyczyna:** bot przepiął PR „Version Packages” (nowy commit po scaleniu innego PR) i nowy przebieg znów czeka na zatwierdzenie.
+- **Rozwiązanie:** bierz `headRefOid` PR, zatwierdź przebieg o tym `headSha`, czekaj na `completed success` i sprawdź, że `headRefOid` się nie zmienił.
