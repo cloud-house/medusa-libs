@@ -27,3 +27,10 @@ Słowa: nvm, PATH, non-interactive, `export`
 - **Objaw:** narzędzie uruchamiane z agenta lub CI używa innej wersji Node niż w terminalu.
 - **Przyczyna:** `nvm` ładuje się z profilu interaktywnego.
 - **Rozwiązanie:** ustaw `PATH` wprost na katalog właściwego Node na początku polecenia.
+
+## Podgląd z `.claude/launch.json` startuje z głównej kopii, nie z worktree
+Słowa: preview_start, launch.json, worktree, serwer dev
+
+- **Objaw:** sprawdzasz gałąź z worktree w przeglądarce, a serwery dev chodzą na kodzie z głównej kopii repo (albo padają na jej nieaktualnej instalacji).
+- **Przyczyna:** konfiguracje w `launch.json` projektu uruchamiają `pnpm --filter …` w katalogu głównej kopii.
+- **Rozwiązanie:** na czas kontroli dodaj konfiguracje z `cd <ścieżka-worktree> && …` (np. `backend-6c`, `storefront-6c`), sprawdź w logach ścieżki plików, a po zakończeniu je usuń.

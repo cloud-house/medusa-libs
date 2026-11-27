@@ -48,3 +48,10 @@ Słowa: `tsc`, `query.graph`, `.medusa/types`, typecheck
 - **Objaw:** typecheck przechodzi bez katalogu `.medusa/types`, a po uruchomieniu `medusa develop` pojawiają się błędy w wynikach `query.graph` (albo odwrotnie).
 - **Przyczyna:** `medusa develop` generuje typy zapytań, które zaostrzają wyniki.
 - **Rozwiązanie:** sprawdzaj typecheck w obu stanach (z katalogiem i bez). Wyniki `query.graph` typuj jawnie; przy nieznanych filtrach rzutuj (`as never`, wyniki `as unknown as T`).
+
+## Flaky `returns.spec.ts`: dwa maile do sklepu zamiast jednego
+Słowa: medusa-returns, return-alert, flaky, CI, test-shop
+
+- **Objaw:** w CI kitu `integration-tests/http/returns.spec.ts` („the customer and the shop get one e-mail each…”) dostaje 2 powiadomienia `return-alert` zamiast 1; ponowne uruchomienie przechodzi (2026-11-27, PR #66 – zmiana tylko w `next-commerce`).
+- **Przyczyna:** niezbadana; najpewniej wyścig subskrybenta z ponownie wysłanym zdarzeniem.
+- **Rozwiązanie:** gdy PR nie dotyka `medusa-returns`, `gh run rerun <id> --failed`; jeśli powtórzy się przy zmianie zwrotów – zbadaj idempotencję subskrybenta.
