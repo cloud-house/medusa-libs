@@ -33,7 +33,7 @@ packages/medusa-<nazwa>/
     lib/  __tests__/
 ```
 
-`package.json`: `license: MIT`, `repository` z `directory`, `publishConfig` (`registry` GitHub Packages, `access: public`), `files: [".medusa/server"]`, `keywords` (`medusa-plugin`, `medusa-v2`), `engines`. Wersje Medusy tylko z catalogów `pnpm-workspace.yaml`: `catalog:medusa` (dokładne, devDependencies) i `catalog:medusa-peer` (`~`, peerDependencies); w opublikowanym pliku nie zostaje `catalog:` ani `workspace:`. Peery ogranicz do tego, czego plugin używa (plugin bez panelu: tylko `@medusajs/framework` i `@medusajs/medusa`).
+`package.json`: `license: MIT`, `repository` z `directory`, `publishConfig` (`registry` GitHub Packages, `access: public`), `files: [".medusa/server"]`, `keywords` (`medusa-plugin`, `medusa-v2`), `engines`. Wersje Medusy tylko z catalogów `pnpm-workspace.yaml`: `catalog:medusa` (dokładne, devDependencies) i `catalog:medusa-peer` (`~`, peerDependencies); w opublikowanym pliku nie zostaje `catalog:` ani `workspace:`. Peery ogranicz do tego, czego plugin używa (plugin bez panelu: tylko `@medusajs/framework` i `@medusajs/medusa`). Pakiet ze skryptem `typecheck` ma `typescript` w `devDependencies` – bez niego CI pada na `tsc: not found`, choć lokalnie przechodzi.
 
 Mapa `exports` (szablon pluginu Medusy) musi mieć, obok `.`, `./package.json`, `./workflows`, `./admin` i `./*`:
 
