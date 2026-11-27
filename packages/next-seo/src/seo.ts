@@ -1,5 +1,6 @@
 import { type ResolvedSeoConfig, resolveConfig, type SeoConfig } from './config'
 import { createJsonLd } from './json-ld'
+import { createMerchantFeed } from './merchant-feed'
 import { createBuildRobots } from './robots'
 import { createSiteUrl } from './site'
 import { createBuildSitemap } from './sitemap'
@@ -20,6 +21,7 @@ export function createSeo(config: SeoConfig) {
     buildRobots: createBuildRobots(site),
     buildSitemap: createBuildSitemap(site),
     ...createJsonLd(resolved, site),
+    buildMerchantFeed: createMerchantFeed(resolved, site),
   }
 }
 
