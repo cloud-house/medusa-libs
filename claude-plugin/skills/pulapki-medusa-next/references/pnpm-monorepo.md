@@ -97,3 +97,10 @@ Słowa: `changeset version`, `dependents`, `updateInternalDependencies`, patch, 
 - **Objaw:** po zmianie `commerce-rules` na minor PR „Version packages” podbija też `medusa-omnibus`, `medusa-brands` i inne pakiety, którym nikt nie dopisał changesetu.
 - **Przyczyna:** pakiety zależą od `commerce-rules` zakresem `^` / dokładną wersją, a changesets aktualizuje wewnętrzne zależności i podnosi patch dependentów (zachowanie oczekiwane; źródło: PR-y „Version packages” #13, #21 kroku 2).
 - **Rozwiązanie:** nic nie poprawiaj; sklep po wydaniu aktualizuje wersje tych pakietów razem i dopisuje je do `minimumReleaseAgeExclude`.
+
+## Nowy pakiet: `tsc: not found` tylko w CI
+Słowa: `tsc: not found`, `typecheck`, `typescript`, devDependencies, hoisting
+
+- **Objaw:** w nowym pakiecie (`packages/next-seo`, krok 6d) `pnpm typecheck` przechodzi lokalnie, a w CI pada `sh: 1: tsc: not found` w `<pakiet>:typecheck`.
+- **Przyczyna:** pakiet nie ma `typescript` w `devDependencies`; lokalnie `tsc` znajduje się dzięki wcześniejszym instalacjom i hoistingowi w katalogu głównym, a czysta instalacja w CI daje pakietowi tylko jego własne binarki (źródło: PR #71 w `cloud-house/medusa-libs`, 2026-11-27).
+- **Rozwiązanie:** każdy pakiet ze skryptem `typecheck` dopisuje `"typescript": "~5.9.3"` (jak `next-commerce`, `next-content`, `commerce-rules`). Przy kopiowaniu szkieletu z innego pakietu sprawdź całe `devDependencies`, nie tylko narzędzia buildu.
